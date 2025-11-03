@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>poly - 简历</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #5e35b1;
+            --secondary: #3949ab;
+            --dark: #1a237e;
+            --light: #e8eaf6;
+            --text: #212121;
+            --background: #f5f5f5;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--background);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .contact {
+            margin-bottom: 20px;
+        }
+        section {
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: var(--secondary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 5px;
+            margin-top: 0;
+        }
+        h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+        .job, .project {
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .job:hover, .project:hover {
+            background-color: var(--light);
+            padding-left: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        .date {
+            color: #666;
+            font-style: italic;
+        }
+        .future-date {
+            color: #d81b60;
+            font-weight: bold;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+            transition: all 0.2s ease;
+        }
+        li:hover {
+            color: var(--primary);
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .skill {
+            background: var(--light);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+        .skill:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+        .project-block {
+            display:block;
+        }
+        .project-inline {
+            margin-left: 10px;
+        }
+        .project-card {
+            border: 1px solid rgb(211, 211, 211);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        a:hover {
+            color: var(--dark);
+        }
+        a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        a:hover::after {
+            transform: scaleX(1);
+        }
+        @media (max-width: 600px) {
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        /* 新增开发状态标签 */
+        .status {
+            font-size: 0.7em;
+            background: #eceff1;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .status.active {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status.developing {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+        .status.future {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        /* 媒体提及样式 */
+        .media-mention {
+            border-left: 3px solid #5e35b1;
+            padding-left: 10px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        /* 语言切换器样式 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            background: white;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8em;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 多语言内容样式 */
+        .i18n-content {
+            display: none;
+        }
+        .i18n-content.active {
+            display: block;
+        }
+        
+        /* 新增内容样式 */
+        .highlight {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <!-- 语言切换器 -->
+    <div class="language-switcher">
+        <button class="lang-btn active" data-lang="zh">中文</button>
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="ru">Русский</button>
+        <button class="lang-btn" data-lang="ja">日本語</button>
+    </div>
+
+    <!-- 中文内容 -->
+    <div class="i18n-content active" data-lang="zh">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>poly</h1>
+            <div class="contact">
+                ppolitenhammerc@gmail.com<br>
+                GitHub: <a href="https://github.com/polypopopo" target="_blank">github.com/polypopopo</a><br>
+                学历：本-西南财经大学天府学院<br>
+            </div>
+        </header>
+        
+        <section id="work" class="animate-section">
+            <h2>工作经历</h2>
+
+            <div class="job delay-1">
+                <h3><a href="" target="_blank">高校门户网站前端开发</a><span class="date">2022.11-2023.03</span></h3>
+                <ul>
+                    <li>基于Vue3+Thymeleaf技术栈，负责3个子站点的架构设计与前端开发，根据需求持续迭代优化</li>
+                    <li>实现教务系统数据对接，处理高频更新与静态内容，设计用户权限分级体系</li>
+                    <li>优化主从数据库索引结构与查询性能，提升系统响应速度</li>
+                </ul>
+            </div>
+
+            <div class="job delay-2">
+                <h3><a href="https://eulixos.com" target="_blank">中科院软件所</a> | 嵌入式系统研发助理工程师 <span class="date">2024.07-2024.11</span></h3>
+                <ul>
+                    <li>开发RISC-V架构轻量级AI算子测试框架，支持mxnet、pytorch、onnx三大深度学习框架的算子测试与性能分析</li>
+                    <li>设计自动化测试脚本，实现6000+行表格数据的高效录入与验证</li>
+                    <li>参与基于OpenEuler RISC-V的傲来操作系统商业发行版性能对比测试，提供数据支撑</li>
+                </ul>
+            </div>
+
+            <div class="job delay-3">
+                <h3><a href="https://iscas-ai.gitlab.io/" target="_blank">中科院软件所智能软件研究中心</a> | OpenEuler OLK开发 <span class="date">2025.06-2025.10</span></h3>
+                <ul>
+                    <li>负责Linux-riscv IOMMU验证与AIA驱动移植优化，基于RVCK项目开展底层开发</li>
+                    <li>测试验证RISC-V IOMMU裸机驱动，分析RISC-V IOMMU HPM与嵌套IOMMU支持迁移方案</li>
+                    <li>开展主流架构iommu-selftests测试验证与测试项深度分析</li>
+                </ul>
+            </div>
+        </section>
+ 
+        <section id="other" class="animate-section delay-3">
+            <h2>其他经历</h2>
+            <ul>
+                <li><strong>中科院Qulab生物细胞标注</strong>：兼职参与生物信息学项目，负责高精度细胞图像标注与数据预处理</li>
+            </ul>
+        </section>
+
+
+        <section id="projects" class="animate-section delay-1">
+            <h2>开源社区与项目</h2>
+            <h3>
+            <a href="https://github.com/OSchengdu" target="_blank">渺瀚（杭州）科技公司CTO/CEO</a>
+            &
+            <a href="https://github.com/OSchengdu" target="_blank">  OSC_DEV开源社区</a>
+            </h3>
+            <div class="project-block">
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="https://github.com/OSchengdu/SynthIQNexus" target="_blank">SynthNexus</a> <span class="status developing">智能体</span></h4>
+                        <p>智能搜索和向量化系统</p>
+                        <ul>
+                            <li>集成Tor网络爬虫(stem库)，实现匿名数据采集</li>
+                            <li>基于SQLite-VSS的复合向量搜索引擎</li>
+                            <li>混合语法生成引擎，支持Dork语法与SQL查询转换</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="" target="_blank">Sputnik</a><span class="status developing">AI终端</span></h4>
+                        <p>基于llm的terminal emulator</p>
+                        <ul>
+                            <li>支持x11，asm实现</li>
+                            <li>接入llm,用来实时控制和记录系统底层状态，能通过自然语言在终端操作几乎整个系统</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>PolyCtrlOS <span class="status developing"></span></h4>
+                        <p>自主开发的操作系统</p>
+                        <ul>
+                            <li><strong><a href="" target="_blank">命令行系统：</a></strong>基于Intel-NASM开发的原生命令行界面</li>
+                            <li><strong><a href="" target="_blank">文件系统：</a></strong>嵌入式直接存储文件系统设计</li>
+                            <li><strong><a href="" target="_blank">内存与中断管理：</a></strong>紧密耦合的内存管理与中断处理机制</li>
+                            <li><strong><a href="" target="_blank">开发工具集：</a></strong>配套测试、编译与维护脚本工具集</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>多语言多端通信框架 <span class="status developing"></span></h4>
+                        <p>基于库思想的新型通信框架</p>
+                        <ul>
+                            <li>提出基于库思想的多语言多端通信搭建框架</li>
+                            <li>实现跨语言、跨平台的高效通信方案</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>华中科技大学开源创新研究院建设 <span class="status developing"></span></h4>
+                        <p>7人开发小组项目</p>
+                        <ul>
+                            <li>负责前端技术选型和内容维护</li>
+                            <li>参与研究院整体架构设计</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>开源活动收集工具 <span class="status developing"></span></h4>
+                        <p>自动化工具开发</p>
+                        <ul>
+                            <li>负责开发CI/CD及其他自动化集成功能</li>
+                            <li>实现开源活动的自动收集与更新</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>基于模拟量子电路的OQS加密传感器系统 <span class="status developing"></span></h4>
+                        <p>本科毕业设计项目</p>
+                        <ul>
+                            <li>设计基于模拟量子电路进行OQS加密的极端环境传感器系统</li>
+                            <li>实现适用于极端环境的安全传感方案</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>基于NixOS的多端环境同步框架 <span class="status developing"></span></h4>
+                        <p>个人项目</p>
+                        <ul>
+                            <li>开发基于NixOS的统一开发环境配置与同步系统</li>
+                            <li>提升团队协作效率与开发环境一致性</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>量子化学模拟实验工具 <span class="status developing"></span></h4>
+                        <p>个人项目</p>
+                        <ul>
+                            <li>实现量子化学过程的模拟与可视化</li>
+                            <li>辅助相关领域研究与实验</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="community" class="animate-section delay-2">
+            <h3>开源社区参与</h3>
+            <ul>
+                <li><strong><a href="https://opencamp.cn" target="_blank">OpenCamp训练营助教</a></strong>：海淀区注册志愿者，担任傲来操作系统、Rust等三个训练营助教，获志愿北京荣誉奖励与媒体报道</li>
+                <li><strong><a href="https://github.com/RISCVers" target="_blank">RISCVers社区校园大使</a></strong>：中科院软件所下属开源社区特邀校园大使，参与社区建设讨论与技术开发</li>
+                <li><strong><a href="https://hust.openatom.club" target="_blank">华中科技大学开源俱乐部骨干</a></strong>：担任OSPP项目"RISC-V Online"反汇编工具维护者，负责俱乐部主页维护与发展,对开源实习项目的成员进行技术面试，<strong>负责俱乐部校外开源奖项的申报工作</strong></li>
+                <li><strong><a href="https://mp.weixin.qq.com/s/a2WyhQnTDrQiNC8HC96Rog" target="_blank">GOSIM CHINA</a></strong>：接受旗下媒体专访，分享黑客松经验</li>
+                <li><strong><a href="https://github.com/rustsbi/rustsbi/issues/118" target="_blank">RustSBI贡献者</a></strong>：参与武汉十大开源软件Rust操作系统引导程序开发</li>
+                <li><strong>黄鹤社区维护者</strong>：负责文章同步与社区内容维护</li>
+                <li><strong>清华rCore训练营助教</strong>：担任清华基于Rust的教学用操作系统训练营助教</li>
+                <li><strong>OpenCamp AI训练营讲师、QEMU训练营导师</strong>：担任多个技术训练营的讲师与导师</li>
+            </ul>
+        </section>
+
+        <section id="competitions" class="animate-section delay-2">
+            <h2>技术竞赛</h2>
+            <ul>
+                <li><strong><a href="https://opencamp.cn/gosim/camp/MoFA2025/stage/1" target="_blank">MOFA智能体大赛</a></strong> 三等奖 (5/3000) SyntIQNexus队长，负责系统架构与全栈开发</li>
+                <li><strong><a href="https://www.marscode.cn/events/2024-competition">MarsCode编程赛</a></strong> 优胜奖 (初赛第2/决赛第7) MoFA队长，负责项目演示与技术展示</li>
+                <li><strong><a href="https://hackru-s23.devpost.com/project-gallery" target="_blank">HackRU黑客松</a></strong> 参与新泽西警局POC系统开发（题目），负责前端展示界面实现</li>
+                <li><strong><a href="https://ai.hackberkeley.org/" target="_blank">UCB黑客松</a></strong> 7人团队核心成员，负责智能体模块开发</li>
+                <li><strong><a href="">2025具身智能机器人目标检测算法大赛</a></strong> 第六名，负责数据集筛选测试与成果展示</li>
+                <li><strong><a href="">AdventureX黑客松</a></strong> 获kimi赛道三等奖</li>
+            </ul>
+        </section>
+
+        <section id="skills" class="animate-section delay-3">
+            <h2>技术栈</h2>
+            <div class="skills">
+                <span class="skill">RISC-V</span>
+                <span class="skill">Linux内核</span>
+                <span class="skill">Rust</span>
+                <span class="skill">C/C++</span>
+                <span class="skill">Python</span>
+                <span class="skill">Vue.js</span>
+                <span class="skill">嵌入式系统</span>
+                <span class="skill">操作系统开发</span>
+                <span class="skill">AI算子</span>
+                <span class="skill">OpenEuler</span>
+                <span class="skill">IOMMU</span>
+                <span class="skill">SQLite</span>
+                <span class="skill">向量搜索</span>
+                <span class="skill">LLM</span>
+                <span class="skill">汇编语言</span>
+                <span class="skill">Git</span>
+                <span class="skill">Docker</span>
+                <span class="skill">PyTorch</span>
+                <span class="skill">ONNX</span>
+                <span class="skill">MXNet</span>
+                <span class="skill">Thymeleaf</span>
+                <span class="skill">数据库优化</span>
+                <span class="skill">自动化测试</span>
+                <span class="skill">NixOS</span>
+                <span class="skill">量子加密(OQS)</span>
+                <span class="skill">量子化学模拟</span>
+                <span class="skill">CI/CD</span>
+            </div>
+        </section>
+           </div>
+
+    <!-- 英文内容 -->
+    <div class="i18n-content" data-lang="en">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>poly</h1>
+            <div class="contact">
+                ppolitenhammerc@gmail.com<br>
+                GitHub: <a href="https://github.com/polypopopo" target="_blank">github.com/polypopopo</a><br>
+                Education: Bachelor - Tianfu College of SWUFE<br>
+            </div>
+        </header>
+               <section id="work" class="animate-section">
+            <h2>Work Experience</h2>
+
+            <div class="job delay-1">
+                <h3><a href="" target="_blank">University Portal Frontend Developer</a><span class="date">2022.11-2023.03</span></h3>
+                <ul>
+                    <li>Architecture design and frontend development for 3 sub-sites using Vue3+Thymeleaf stack</li>
+                    <li>Integrated educational administration system data, handled high-frequency updates and static content, designed user permission hierarchy</li>
+                    <li>Optimized master-slave database index structure and query performance, improved system response speed</li>
+                </ul>
+            </div>
+
+            <div class="job delay-2">
+                <h3><a href="https://eulixos.com" target="_blank">Institute of Software, Chinese Academy of Sciences</a> | Embedded Systems R&D Assistant Engineer <span class="date">2024.07-2024.11</span></h3>
+                <ul>
+                    <li>Developed lightweight AI operator testing framework for RISC-V architecture, supporting mxnet, pytorch, and onnx deep learning frameworks</li>
+                    <li>Designed automated testing scripts for efficient entry and validation of 6000+ rows of tabular data</li>
+                    <li>Participated in performance comparison testing for OpenEuler RISC-V commercial distribution, providing data support</li>
+                </ul>
+            </div>
+
+            <div class="job delay-3">
+                <h3><a href="https://iscas-ai.gitlab.io/" target="_blank">ISCAS Intelligent Software Research Center</a> | OpenEuler OLK Development <span class="date">2025.06-2025.10</span></h3>
+                <ul>
+                    <li>Responsible for Linux-riscv IOMMU verification and AIA driver porting optimization, based on RVCK project</li>
+                    <li>Tested and validated RISC-V IOMMU bare-metal drivers, analyzed RISC-V IOMMU HPM and nested IOMMU migration solutions</li>
+                    <li>Conducted testing and in-depth analysis of mainstream architecture iommu-selftests</li>
+                </ul>
+            </div>
+        </section>
+        <section id="other" class="animate-section delay-3">
+            <h2>Other Experience</h2>
+            <ul>
+                <li><strong>CAS Qulab Biological Cell Annotation</strong>: Part-time participation in bioinformatics projects, responsible for high-precision cell image annotation and data preprocessing</li>
+            </ul>
+        </section>
+        <section id="projects" class="animate-section delay-1">
+            <h2>Open Source Community & Projects</h2>
+            <h3>
+            <a href="https://github.com/OSchengdu" target="_blank">Miaohan (Hangzhou) Technology CTO/CEO</a>
+            &
+            <a href="https://github.com/OSchengdu" target="_blank">OSC_DEV Open Source Community</a>
+            </h3>
+            <div class="project-block">
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="https://github.com/OSchengdu/SynthIQNexus" target="_blank">SynthNexus</a> <span class="status developing">AI Agent</span></h4>
+                        <p>Intelligent Search and Vectorization System</p>
+                        <ul>
+                            <li>Integrated Tor network crawler (stem library) for anonymous data collection</li>
+                            <li>Composite vector search engine based on SQLite-VSS</li>
+                            <li>Hybrid syntax generation engine supporting Dork syntax and SQL query conversion</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="" target="_blank">Sputnik</a><span class="status developing">AI Terminal</span></h4>
+                        <p>LLM-based terminal emulator</p>
+                        <ul>
+                            <li>X11 support, assembly implementation</li>
+                            <li>Integrated LLM for real-time system control and state recording, enabling natural language terminal operations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>PolyCtrlOS <span class="status developing"></span></h4>
+                        <p>Self-developed Operating System</p>
+                        <ul>
+                            <li><strong><a href="" target="_blank">Command Line System:</a></strong> Native CLI developed with Intel-NASM</li>
+                            <li><strong><a href="" target="_blank">File System:</a></strong> Embedded direct storage file system design</li>
+                            <li><strong><a href="" target="_blank">Memory & Interrupt Management:</a></strong> Tightly coupled memory management and interrupt handling</li>
+                            <li><strong><a href="" target="_blank">Development Toolset:</a></strong> Supporting testing, compilation and maintenance script tools</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Multi-language Multi-end Communication Framework <span class="status developing"></span></h4>
+                        <p>New communication framework based on library concept</p>
+                        <ul>
+                            <li>Proposed a new multi-language multi-end communication framework based on library concept</li>
+                            <li>Implemented efficient cross-language, cross-platform communication solution</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Huazhong University of Science and Technology Open Source Innovation Institute Construction <span class="status developing"></span></h4>
+                        <p>7-person development team project</p>
+                        <ul>
+                            <li>Responsible for frontend technology selection and content maintenance</li>
+                            <li>Participated in overall institute architecture design</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Open Source Activity Collection Tool <span class="status developing"></span></h4>
+                        <p>Automated tool development</p>
+                        <ul>
+                            <li>Responsible for developing CI/CD and other automated integration features</li>
+                            <li>Implemented automatic collection and updating of open source activities</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>OQS Encryption Sensor System Based on Simulated Quantum Circuits <span class="status developing"></span></h4>
+                        <p>Undergraduate graduation project</p>
+                        <ul>
+                            <li>Designed extreme environment sensor system using OQS encryption based on simulated quantum circuits</li>
+                            <li>Implemented secure sensing solution suitable for extreme environments</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>NixOS-based Multi-end Environment Synchronization Framework <span class="status developing"></span></h4>
+                        <p>Personal project</p>
+                        <ul>
+                            <li>Developed unified development environment configuration and synchronization system based on NixOS</li>
+                            <li>Improved team collaboration efficiency and development environment consistency</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Quantum Chemistry Simulation Experiment Tool <span class="status developing"></span></h4>
+                        <p>Personal project</p>
+                        <ul>
+                            <li>Implemented simulation and visualization of quantum chemical processes</li>
+                            <li>Assisted related field research and experiments</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="community" class="animate-section delay-2">
+            <h3>Open Source Community Participation</h3>
+            <ul>
+                <li><strong><a href="https://opencamp.cn" target="_blank">OpenCamp Teaching Assistant</a></strong>: Haidian District registered volunteer, TA for three training camps including Aolai OS and Rust, received Beijing volunteer honors and media coverage</li>
+                <li><strong><a href="https://github.com/RISCVers" target="_blank">RISCVers Community Campus Ambassador</a></strong>: Invited campus ambassador for ISCAS open source community, participated in community building and technical development</li>
+                <li><strong><a href="https://hust.openatom.club" target="_blank">Huazhong University of Science and Technology Open Source Club Core Member</a></strong>: Maintainer of OSPP project "RISC-V Online" disassembly tool, responsible for club homepage maintenance and development, technical interviews for open source internship candidates, <strong>responsible for club external open source award applications</strong></li>
+                <li><strong><a href="https://mp.weixin.qq.com/s/a2WyhQnTDrQiNC8HC96Rog" target="_blank">GOSIM CHINA</a></strong>: Featured in media interview sharing hackathon experience</li>
+                <li><strong><a href="https://github.com/rustsbi/rustsbi/issues/118" target="_blank">RustSBI Contributor</a></strong>: Contributed to Wuhan's Top 10 Open Source Software Rust OS bootloader</li>
+                <li><strong>Yellow Crane Community Maintainer</strong>: Responsible for article synchronization and community content maintenance</li>
+                <li><strong>Tsinghua rCore Training Camp TA</strong>: Served as TA for Tsinghua's Rust-based teaching operating system training camp</li>
+                <li><strong>OpenCamp AI Training Camp Instructor, QEMU Training Camp Mentor</strong>: Served as instructor and mentor for multiple technical training camps</li>
+            </ul>
+        </section>
+
+        <section id="competitions" class="animate-section delay-2">
+            <h2>Technical Competitions</h2>
+            <ul>
+                <li><strong><a href="https://opencamp.cn/gosim/camp/MoFA2025/stage/1" target="_blank">MOFA AI Agent Competition</a></strong> Third Prize (5/3000) SyntIQNexus team lead, responsible for system architecture and full-stack development</li>
+                <li><strong><a href="https://www.marscode.cn/events/2024-competition">MarsCode Programming Competition</a></strong> Excellence Award (Preliminary 2nd/Final 7th) MoFA team lead, responsible for project demonstration and technical presentation</li>
+                <li><strong><a href="https://hackru-s23.devpost.com/project-gallery" target="_blank">HackRU Hackathon</a></strong> Participated in New Jersey Police Department POC system development, responsible for frontend interface implementation</li>
+                <li><strong><a href="https://ai.hackberkeley.org/" target="_blank">UCB Hackathon</a></strong> Core member of 7-person team, responsible for AI agent module development</li>
+                <li><strong><a href="">2025 Embodied AI Robot Object Detection Algorithm Competition</a></strong> 6th Place, responsible for dataset screening testing and results presentation</li>
+                <li><strong><a href="">AdventureX Hackathon</a></strong> Third Prize in kimi track</li>
+            </ul>
+        </section>
+
+        <section id="skills" class="animate-section delay-3">
+            <h2>Technical Stack</h2>
+            <div class="skills">
+                <span class="skill">RISC-V</span>
+                <span class="skill">Linux Kernel</span>
+                <span class="skill">Rust</span>
+                <span class="skill">C/C++</span>
+                <span class="skill">Python</span>
+                <span class="skill">Vue.js</span>
+                <span class="skill">Embedded Systems</span>
+                <span class="skill">OS Development</span>
+                <span class="skill">AI Operators</span>
+                <span class="skill">OpenEuler</span>
+                <span class="skill">IOMMU</span>
+                <span class="skill">SQLite</span>
+                <span class="skill">Vector Search</span>
+                <span class="skill">LLM</span>
+                <span class="skill">Assembly</span>
+                <span class="skill">Git</span>
+                <span class="skill">Docker</span>
+                <span class="skill">PyTorch</span>
+                <span class="skill">ONNX</span>
+                <span class="skill">MXNet</span>
+                <span class="skill">Thymeleaf</span>
+                <span class="skill">Database Optimization</span>
+                <span class="skill">Automated Testing</span>
+                <span class="skill">NixOS</span>
+                <span class="skill">Quantum Encryption (OQS)</span>
+                <span class="skill">Quantum Chemistry Simulation</span>
+                <span class="skill">CI/CD</span>
+            </div>
+        </section>
+        
+
+    </div>
+
+    <!-- 俄语内容 -->
+    <div class="i18n-content" data-lang="ru">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>poly</h1>
+            <div class="contact">
+                ppolitenhammerc@gmail.com<br>
+                GitHub: <a href="https://github.com/polypopopo" target="_blank">github.com/polypopopo</a><br>
+                Образование: Бакалавр - Тяньфу Колледж SWUFE<br>
+            </div>
+        </header>
+                <section id="work" class="animate-section">
+            <h2>Опыт работы</h2>
+
+            <div class="job delay-1">
+                <h3><a href="" target="_blank">Фронтенд-разработчик университетского портала</a><span class="date">2022.11-2023.03</span></h3>
+                <ul>
+                    <li>Архитектурное проектирование и фронтенд-разработка 3 подсайтов на стеке Vue3+Thymeleaf</li>
+                    <li>Интеграция данных системы управления образованием, обработка частых обновлений и статического контента, разработка иерархии прав пользователей</li>
+                    <li>Оптимизация структуры индексов и производительности запросов master-slave базы данных, повышение скорости отклика системы</li>
+                </ul>
+            </div>
+
+            <div class="job delay-2">
+                <h3><a href="https://eulixos.com" target="_blank">Институт программного обеспечения КАН</a> | Ассистент инженера по разработке встроенных систем <span class="date">2024.07-2024.11</span></h3>
+                <ul>
+                    <li>Разработка легковесного фреймворка тестирования AI операторов для архитектуры RISC-V, поддержка фреймворков mxnet, pytorch и onnx</li>
+                    <li>Создание автоматизированных скриптов тестирования для эффективного ввода и проверки 6000+ строк табличных данных</li>
+                    <li>Участие в сравнительном тестировании производительности коммерческого дистрибутива OpenEuler RISC-V, предоставление данных</li>
+                </ul>
+            </div>
+
+            <div class="job delay-3">
+                <h3><a href="https://iscas-ai.gitlab.io/" target="_blank">Центр исследований интеллектуального программного обеспечения ISCAS</a> | Разработка OpenEuler OLK <span class="date">2025.06-2025.10</span></h3>
+                <ul>
+                    <li>Ответственность за верификацию Linux-riscv IOMMU и оптимизацию портирования драйверов AIA на основе проекта RVCK</li>
+                    <li>Тестирование и валидация bare-metal драйверов RISC-V IOMMU, анализ RISC-V IOMMU HPM и решений миграции вложенного IOMMU</li>
+                    <li>Проведение тестирования и углубленного анализа iommu-selftests для основных архитектур</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="other" class="animate-section delay-3">
+            <h2>Другой опыт</h2>
+            <ul>
+                <li><strong>Аннотация биологических клеток CAS Qulab</strong>: Частичное участие в биоинформатических проектах, ответственность за высокоточную аннотацию изображений клеток и предварительную обработку данных</li>
+            </ul>
+        </section>
+
+        <section id="projects" class="animate-section delay-1">
+            <h2>Открытое сообщество и проекты</h2>
+            <h3>
+            <a href="https://github.com/OSchengdu" target="_blank">Технологическая компания Miaohan (Ханчжоу) CTO/CEO</a>
+            &
+            <a href="https://github.com/OSchengdu" target="_blank">Сообщество OSC_DEV с открытым исходным кодом</a>
+            </h3>
+            <div class="project-block">
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="https://github.com/OSchengdu/SynthIQNexus" target="_blank">SynthNexus</a> <span class="status developing">AI Агент</span></h4>
+                        <p>Интеллектуальная система поиска и векторного преобразования</p>
+                        <ul>
+                            <li>Интегрированный краулер сети Tor (библиотека stem) для анонимного сбора данных</li>
+                            <li>Композитная векторная поисковая система на основе SQLite-VSS</li>
+                            <li>Гибридный движок генерации синтаксиса с поддержкой Dork синтаксиса и преобразования SQL запросов</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="" target="_blank">Sputnik</a><span class="status developing">AI Терминал</span></h4>
+                        <p>Терминальный эмулятор на основе LLM</p>
+                        <ul>
+                            <li>Поддержка X11, реализация на ассемблере</li>
+                            <li>Интеграция LLM для управления системой в реальном времени и записи состояния, возможность операций в терминале на естественном языке</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>PolyCtrlOS <span class="status developing"></span></h4>
+                        <p>Самостоятельно разработанная операционная система</p>
+                        <ul>
+                            <li><strong><a href="" target="_blank">Командная строка:</a></strong> Нативный CLI разработан на Intel-NASM</li>
+                            <li><strong><a href="" target="_blank">Файловая система:</a></strong> Дизайн встроенной файловой системы с прямым хранением</li>
+                            <li><strong><a href="" target="_blank">Управление памятью и прерываниями:</a></strong> Тесно связанное управление памятью и обработка прерываний</li>
+                            <li><strong><a href="" target="_blank">Инструменты разработки:</a></strong> Вспомогательные инструменты тестирования, компиляции и обслуживания</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Многоязычная многоконечная коммуникационная платформа <span class="status developing"></span></h4>
+                        <p>Новая коммуникационная платформа на основе библиотечной концепции</p>
+                        <ul>
+                            <li>Предложена новая многоязычная многоконечная коммуникационная платформа на основе библиотечной концепции</li>
+                            <li>Реализовано эффективное кроссязычное, кроссплатформенное коммуникационное решение</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Строительство Института инноваций открытого исходного кода Хуачжунского университета науки и технологий <span class="status developing"></span></h4>
+                        <p>Проект команды разработчиков из 7 человек</p>
+                        <ul>
+                            <li>Ответственность за выбор фронтенд-технологий и обслуживание контента</li>
+                            <li>Участие в общем архитектурном проектировании института</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Инструмент сбора активности открытого исходного кода <span class="status developing"></span></h4>
+                        <p>Разработка автоматизированного инструмента</p>
+                        <ul>
+                            <li>Ответственность за разработку CI/CD и других функций автоматизированной интеграции</li>
+                            <li>Реализован автоматический сбор и обновление активности открытого исходного кода</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Система сенсоров с шифрованием OQS на основе моделированных квантовых цепей <span class="status developing"></span></h4>
+                        <p>Дипломный проект бакалавра</p>
+                        <ul>
+                            <li>Разработана система сенсоров для экстремальных сред с использованием шифрования OQS на основе моделированных квантовых цепей</li>
+                            <li>Реализовано безопасное сенсорное решение, подходящее для экстремальных сред</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Платформа синхронизации многоконечной среды на основе NixOS <span class="status developing"></span></h4>
+                        <p>Личный проект</p>
+                        <ul>
+                            <li>Разработана унифицированная система конфигурации и синхронизации среды разработки на основе NixOS</li>
+                            <li>Улучшена эффективность сотрудничества команды и согласованность среды разработки</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>Инструмент экспериментального моделирования квантовой химии <span class="status developing"></span></h4>
+                        <p>Личный проект</p>
+                        <ul>
+                            <li>Реализовано моделирование и визуализация квантовых химических процессов</li>
+                            <li>Помощь в исследованиях и экспериментах в связанных областях</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="community" class="animate-section delay-2">
+            <h3>Участие в сообществе открытого исходного кода</h3>
+            <ul>
+                <li><strong><a href="https://opencamp.cn" target="_blank">Ассистент OpenCamp</a></strong>: Зарегистрированный волонтер района Хайдянь, ассистент трех учебных лагерей включая Aolai OS и Rust, получил награды волонтера Пекина и освещение в СМИ</li>
+                <li><strong><a href="https://github.com/RISCVers" target="_blank">Посол кампуса сообщества RISCVers</a></strong>: Приглашенный посол кампуса сообщества открытого исходного кода ISCAS, участвовал в построении сообщества и технической разработке</li>
+                <li><strong><a href="https://hust.openatom.club" target="_blank">Ключевой член открытого клуба Хуачжунского университета науки и технологий</a></strong>: Сопровождающий проекта OSPP "RISC-V Online" дизассемблера, отвечал за обслуживание и развитие главной страницы клуба, технические собеседования кандидатов на стажировку, <strong>отвечал за подачу заявок на внешние награды открытого исходного кода клуба</strong></li>
+                <li><strong><a href="https://mp.weixin.qq.com/s/a2WyhQnTDrQiNC8HC96Rog" target="_blank">GOSIM CHINA</a></strong>: Участие в медиа-интервью с опытом хакатонов</li>
+                <li><strong><a href="https://github.com/rustsbi/rustsbi/issues/118" target="_blank">Участник RustSBI</a></strong>: Вклад в загрузчик ОС Rust, входящий в Топ-10 открытого программного обеспечения Уханя</li>
+                <li><strong>Сопровождающий сообщества Yellow Crane</strong>: Ответственность за синхронизацию статей и обслуживание контента сообщества</li>
+                <li><strong>Ассистент учебного лагеря Tsinghua rCore</strong>: Служил ассистентом учебного лагеря операционной системы Tsinghua на основе Rust</li>
+                <li><strong>Инструктор учебного лагеря OpenCamp AI, наставник учебного лагеря QEMU</strong>: Служил инструктором и наставником для нескольких технических учебных лагерей</li>
+            </ul>
+        </section>
+
+        <section id="competitions" class="animate-section delay-2">
+            <h2>Технические соревнования</h2>
+            <ul>
+                <li><strong><a href="https://opencamp.cn/gosim/camp/MoFA2025/stage/1" target="_blank">Соревнование AI агентов MOFA</a></strong> Третья премия (5/3000) Лидер команды SyntIQNexus, ответственность за архитектуру системы и полную разработку</li>
+                <li><strong><a href="https://www.marscode.cn/events/2024-competition">Программистское соревнование MarsCode</a></strong> Награда за excellence (Предварительный 2-й/Финальный 7-й) Лидер команды MoFA, ответственность за демонстрацию проекта и техническую презентацию</li>
+                <li><strong><a href="https://hackru-s23.devpost.com/project-gallery" target="_blank">Хакатон HackRU</a></strong> Участие в разработке POC системы для полиции Нью-Джерси, ответственность за реализацию интерфейса</li>
+                <li><strong><a href="https://ai.hackberkeley.org/" target="_blank">Хакатон UCB</a></strong> Ключевой член команды из 7 человек, ответственность за разработку модуля AI агента</li>
+                <li><strong><a href="">Соревнование алгоритмов обнаружения объектов для роботов с воплощенным ИИ 2025</a></strong> 6-е место, ответственность за тестирование отбора наборов данных и презентацию результатов</li>
+                <li><strong><a href="">Хакатон AdventureX</a></strong> Третья премия в треке kimi</li>
+            </ul>
+        </section>
+
+        <section id="skills" class="animate-section delay-3">
+            <h2>Технический стек</h2>
+            <div class="skills">
+                <span class="skill">RISC-V</span>
+                <span class="skill">Ядро Linux</span>
+                <span class="skill">Rust</span>
+                <span class="skill">C/C++</span>
+                <span class="skill">Python</span>
+                <span class="skill">Vue.js</span>
+                <span class="skill">Встроенные системы</span>
+                <span class="skill">Разработка ОС</span>
+                <span class="skill">AI операторы</span>
+                <span class="skill">OpenEuler</span>
+                <span class="skill">IOMMU</span>
+                <span class="skill">SQLite</span>
+                <span class="skill">Векторный поиск</span>
+                <span class="skill">LLM</span>
+                <span class="skill">Ассемблер</span>
+                <span class="skill">Git</span>
+                <span class="skill">Docker</span>
+                <span class="skill">PyTorch</span>
+                <span class="skill">ONNX</span>
+                <span class="skill">MXNet</span>
+                <span class="skill">Thymeleaf</span>
+                <span class="skill">Оптимизация БД</span>
+                <span class="skill">Автоматизированное тестирование</span>
+                <span class="skill">NixOS</span>
+                <span class="skill">Квантовое шифрование (OQS)</span>
+                <span class="skill">Моделирование квантовой химии</span>
+                <span class="skill">CI/CD</span>
+            </div>
+        </section>
+        
+    </div>
+
+    <!-- 日语内容 -->
+    <div class="i18n-content" data-lang="ja">
+        <header class="animate__animated animate__fadeInDown">
+            <h1>poly</h1>
+            <div class="contact">
+                ppolitenhammerc@gmail.com<br>
+                GitHub: <a href="https://github.com/polypopopo" target="_blank">github.com/polypopopo</a><br>
+                学歴: 学士 - 西南財経大学天府学院<br>
+            </div>
+        </header>
+               <section id="work" class="animate-section">
+            <h2>職務経歴</h2>
+
+            <div class="job delay-1">
+                <h3><a href="" target="_blank">大学ポータルサイトフロントエンド開発</a><span class="date">2022.11-2023.03</span></h3>
+                <ul>
+                    <li>Vue3+Thymeleaf技術スタックを使用した3つのサブサイトのアーキテクチャ設計とフロントエンド開発</li>
+                    <li>教務システムデータ連携の実装、高頻度更新と静的コンテンツの処理、ユーザー権限階層の設計</li>
+                    <li>マスタースレーブデータベースのインデックス構造とクエリ性能の最適化、システム応答速度の向上</li>
+                </ul>
+            </div>
+
+            <div class="job delay-2">
+                <h3><a href="https://eulixos.com" target="_blank">中国科学院ソフトウェア研究所</a> | 組み込みシステム研究開発アシスタントエンジニア <span class="date">2024.07-2024.11</span></h3>
+                <ul>
+                    <li>RISC-Vアーキテクチャ向け軽量AI演算子テストフレームワークの開発、mxnet、pytorch、onnxの3大ディープラーニングフレームワークの演算子テストと性能分析をサポート</li>
+                    <li>自動化テストスクリプトの設計、6000+行の表データの効率的な入力と検証を実現</li>
+                    <li>OpenEuler RISC-Vベースの傲来オペレーティングシステム商業ディストリビューションの性能比較テストに参加、データサポートを提供</li>
+                </ul>
+            </div>
+
+            <div class="job delay-3">
+                <h3><a href="https://iscas-ai.gitlab.io/" target="_blank">ISCASインテリジェントソフトウェア研究センター</a> | OpenEuler OLK開発 <span class="date">2025.06-2025.10</span></h3>
+                <ul>
+                    <li>Linux-riscv IOMMU検証とAIAドライバ移植最適化を担当、RVCKプロジェクトに基づく低レベル開発を実施</li>
+                    <li>RISC-V IOMMUベアメタルドライバのテスト検証、RISC-V IOMMU HPMとネストIOMMUサポート移行方案の分析</li>
+                    <li>主流アーキテクチャiommu-selftestsのテスト検証とテスト項目の詳細分析を実施</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="other" class="animate-section delay-3">
+            <h2>その他の経験</h2>
+            <ul>
+                <li><strong>中国科学院Qulab生物細胞アノテーション</strong>：バイオインフォマティクスプロジェクトへのパートタイム参加、高精度細胞画像アノテーションとデータ前処理を担当</li>
+            </ul>
+        </section>
+        <section id="projects" class="animate-section delay-1">
+            <h2>オープンソースコミュニティとプロジェクト</h2>
+            <h3>
+            <a href="https://github.com/OSchengdu" target="_blank">渺瀚（杭州）科技公司CTO/CEO</a>
+            &
+            <a href="https://github.com/OSchengdu" target="_blank">OSC_DEVオープンソースコミュニティ</a>
+            </h3>
+            <div class="project-block">
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="https://github.com/OSchengdu/SynthIQNexus" target="_blank">SynthNexus</a> <span class="status developing">AIエージェント</span></h4>
+                        <p>インテリジェント検索とベクトル化システム</p>
+                        <ul>
+                            <li>Torネットワーククローラー（stemライブラリ）を統合、匿名データ収集を実現</li>
+                            <li>SQLite-VSSベースの複合ベクトル検索エンジン</li>
+                            <li>Dork構文とSQLクエリ変換をサポートするハイブリッド構文生成エンジン</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-1">
+                    <div class="project-inline">
+                        <h4><a href="" target="_blank">Sputnik</a><span class="status developing">AIターミナル</span></h4>
+                        <p>LLMベースのターミナルエミュレータ</p>
+                        <ul>
+                            <li>X11サポート、アセンブリ実装</li>
+                            <li>LLMを統合、システム低レベル状態のリアルタイム制御と記録、自然言語によるターミナル操作を実現</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>PolyCtrlOS <span class="status developing"></span></h4>
+                        <p>独自開発オペレーティングシステム</p>
+                        <ul>
+                            <li><strong><a href="" target="_blank">コマンドラインシステム：</a></strong>Intel-NASMで開発されたネイティブコマンドラインインターフェース</li>
+                            <li><strong><a href="" target="_blank">ファイルシステム：</a></strong>組み込み直接ストレージファイルシステム設計</li>
+                            <li><strong><a href="" target="_blank">メモリと割り込み管理：</a></strong>密結合のメモリ管理と割り込み処理メカニズム</li>
+                            <li><strong><a href="" target="_blank">開発ツールセット：</a></strong>対応するテスト、コンパイル、メンテナンススクリプトツールセット</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>多言語多端通信フレームワーク <span class="status developing"></span></h4>
+                        <p>ライブラリ思想に基づく新しい通信フレームワーク</p>
+                        <ul>
+                            <li>ライブラリ思想に基づく多言語多端通信構築フレームワークを提案</li>
+                            <li>言語横断、プラットフォーム横断の効率的な通信ソリューションを実現</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>華中科技大学オープンソースイノベーション研究院建設 <span class="status developing"></span></h4>
+                        <p>7人開発チームプロジェクト</p>
+                        <ul>
+                            <li>フロントエンド技術選定とコンテンツメンテナンスを担当</li>
+                            <li>研究院全体のアーキテクチャ設計に参加</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>オープンソース活動収集ツール <span class="status developing"></span></h4>
+                        <p>自動化ツール開発</p>
+                        <ul>
+                            <li>CI/CDおよびその他の自動化統合機能の開発を担当</li>
+                            <li>オープンソース活動の自動収集と更新を実現</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>模擬量子回路に基づくOQS暗号化センサーシステム <span class="status developing"></span></h4>
+                        <p>学士卒業設計プロジェクト</p>
+                        <ul>
+                            <li>模擬量子回路を使用したOQS暗号化の極限環境センサーシステムを設計</li>
+                            <li>極限環境に適した安全なセンシングソリューションを実現</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>NixOSベースの多端環境同期フレームワーク <span class="status developing"></span></h4>
+                        <p>個人プロジェクト</p>
+                        <ul>
+                            <li>NixOSベースの統一開発環境設定と同期システムを開発</li>
+                            <li>チーム協力効率と開発環境の一貫性を向上</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="project-card delay-2">
+                    <div class="project-inline">
+                        <h4>量子化学シミュレーション実験ツール <span class="status developing"></span></h4>
+                        <p>個人プロジェクト</p>
+                        <ul>
+                            <li>量子化学プロセスのシミュレーションと可視化を実現</li>
+                            <li>関連分野の研究と実験を支援</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="community" class="animate-section delay-2">
+            <h3>オープンソースコミュニティ参加</h3>
+            <ul>
+                <li><strong><a href="https://opencamp.cn" target="_blank">OpenCampトレーニングキャンプTA</a></strong>：海淀区登録ボランティア、傲来オペレーティングシステム、Rustなど3つのトレーニングキャンプのTAを担当、北京ボランティア栄誉賞とメディア報道を受賞</li>
+                <li><strong><a href="https://github.com/RISCVers" target="_blank">RISCVersコミュニティキャンパスアンバサダー</a></strong>：中国科学院ソフトウェア研究所傘下オープンソースコミュニティ特別招待キャンパスアンバサダー、コミュニティ構築議論と技術開発に参加</li>
+                <li><strong><a href="https://hust.openatom.club" target="_blank">華中科技大学オープンソースクラブ中核メンバー</a></strong>：OSPPプロジェクト"RISC-V Online"逆アセンブラツールメンテナーを担当、クラブホームページの維持と発展、オープンソースインターンシッププロジェクトのメンバー技術面接を担当、<strong>クラブ校外オープンソース賞の申請業務を担当</strong></li>
+                <li><strong><a href="https://mp.weixin.qq.com/s/a2WyhQnTDrQiNC8HC96Rog" target="_blank">GOSIM CHINA</a></strong>：メディアインタビューを受け、ハッカソン経験を共有</li>
+                <li><strong><a href="https://github.com/rustsbi/rustsbi/issues/118" target="_blank">RustSBIコントリビューター</a></strong>：武漢十大オープンソースソフトウェアRustオペレーティングシステムブートローダー開発に参加</li>
+                <li><strong>黄鶴コミュニティメンテナー</strong>：記事同期とコミュニティコンテンツメンテナンスを担当</li>
+                <li><strong>清華rCoreトレーニングキャンプTA</strong>：清華のRustベースの教育用オペレーティングシステムトレーニングキャンプのTAを担当</li>
+                <li><strong>OpenCamp AIトレーニングキャンプ講師、QEMUトレーニングキャンプメンター</strong>：複数の技術トレーニングキャンプの講師とメンターを担当</li>
+            </ul>
+        </section>
+
+        <section id="competitions" class="animate-section delay-2">
+            <h2>技術競技会</h2>
+            <ul>
+                <li><strong><a href="https://opencamp.cn/gosim/camp/MoFA2025/stage/1" target="_blank">MOFA AIエージェントコンテスト</a></strong> 三等賞 (5/3000) SyntIQNexusチームリーダー、システムアーキテクチャとフルスタック開発を担当</li>
+                <li><strong><a href="https://www.marscode.cn/events/2024-competition">MarsCodeプログラミングコンテスト</a></strong> 優秀賞 (予選2位/決勝7位) MoFAチームリーダー、プロジェクトデモンストレーションと技術展示を担当</li>
+                <li><strong><a href="https://hackru-s23.devpost.com/project-gallery" target="_blank">HackRUハッカソン</a></strong> ニュージャージー州警察POCシステム開発に参加（課題）、フロントエンド表示インターフェース実装を担当</li>
+                <li><strong><a href="https://ai.hackberkeley.org/" target="_blank">UCBハッカソン</a></strong> 7人チームの中核メンバー、AIエージェントモジュール開発を担当</li>
+                <li><strong><a href="">2025具身AIロボット物体検出アルゴリズムコンテスト</a></strong> 6位、データセット選別テストと成果展示を担当</li>
+                <li><strong><a href="">AdventureXハッカソン</a></strong> kimiトラックで三等賞受賞</li>
+            </ul>
+        </section>
+
+        <section id="skills" class="animate-section delay-3">
+            <h2>技術スタック</h2>
+            <div class="skills">
+                <span class="skill">RISC-V</span>
+                <span class="skill">Linuxカーネル</span>
+                <span class="skill">Rust</span>
+                <span class="skill">C/C++</span>
+                <span class="skill">Python</span>
+                <span class="skill">Vue.js</span>
+                <span class="skill">組み込みシステム</span>
+                <span class="skill">OS開発</span>
+                <span class="skill">AI演算子</span>
+                <span class="skill">OpenEuler</span>
+                <span class="skill">IOMMU</span>
+                <span class="skill">SQLite</span>
+                <span class="skill">ベクトル検索</span>
+                <span class="skill">LLM</span>
+                <span class="skill">アセンブリ</span>
+                <span class="skill">Git</span>
+                <span class="skill">Docker</span>
+                <span class="skill">PyTorch</span>
+                <span class="skill">ONNX</span>
+                <span class="skill">MXNet</span>
+                <span class="skill">Thymeleaf</span>
+                <span class="skill">データベース最適化</span>
+                <span class="skill">自動化テスト</span>
+                <span class="skill">NixOS</span>
+                <span class="skill">量子暗号(OQS)</span>
+                <span class="skill">量子化学シミュレーション</span>
+                <span class="skill">CI/CD</span>
+            </div>
+        </section>
+        
+    </div>
+
+    <script>
+        // 语言切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const contents = document.querySelectorAll('.i18n-content');
+
+            langButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const lang = this.getAttribute('data-lang');
+
+                    // 更新按钮状态
+                    langButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 显示对应语言内容
+                    contents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.getAttribute('data-lang') === lang) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
