@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>演讲者脚本：开源驱动中国科技自立</title>
+    <!-- 引入 Reveal.js 样式和脚本 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/black.min.css">
+    <!-- 引入 Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- 引入 Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .reveal .slide {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            color: #ffffff;
+        }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5 {
+            font-family: 'Arial', sans-serif;
+            font-size: 30px;
+            color: #ffffff;
+        }
+        .reveal p, .reveal li {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #e0e0e0;
+        }
+        .reveal .flex-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .reveal .box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            flex: 1;
+        }
+        .reveal .conclusion {
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            margin-top: 0.8rem;
+            text-align: center;
+            font-size: 16px;
+        }
+        .reveal img.icon {
+            max-height: 40px;
+            margin: 0.4rem;
+        }
+        .reveal .flow-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .reveal .flow-diagram .gear {
+            text-align: center;
+        }
+        .logo {
+            display: -webkit-inline-box;
+            width: 48px;
+            height: 48px;
+        }
+
+        /* 控制按钮 */
+        .control-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #191919;
+            padding: 1rem 1rem;
+            border-radius: 30px;
+            display: flex;
+            gap: 1rem;
+            z-index: 1002;
+        }
+        .control-btn {
+            background: #0f0f0f;
+            color: white;
+            border: none;
+            width: 250px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .control-btn:hover {
+            background: #191917;
+        }
+
+        /* AI 助手面板样式 */
+        .ai-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: #1a1a1a;
+            border-left: 1px solid #333;
+            z-index: 1003;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        }
+
+        .ai-panel.open {
+            right: 0;
+        }
+
+        .ai-header {
+            background: #2a2a2a;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        .ai-header button {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .ai-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ai-message {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .ai-user {
+            background: #0066cc;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .ai-bot {
+            background: #333;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+	    line-height:27px;
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #444;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: white;
+        }
+
+        .ai-send {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* 内置浏览器样式 */
+        .browser-container {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: 10%;
+            right: 10%;
+            width: 80%;
+            height: 80%;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #eee;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .browser-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .browser-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .browser-close {
+            background: #ff5f57;
+        }
+
+        .browser-minimize {
+            background: #ffbc2f;
+        }
+
+        .browser-expand {
+            background: #28c840;
+        }
+
+        .browser-url-bar {
+            flex: 1;
+            margin: 0 10px;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .browser-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .browser-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 新增：学术内容盒子 */
+        .reveal .box-academic {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* 脚本专有样式 */
+        .script-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+        }
+        .script-note {
+            font-style: italic;
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 浏览器 -->
+    <div class="browser-container" id="browserContainer">
+        <div class="browser-header">
+            <div class="browser-controls">
+                <div class="browser-btn browser-close" id="browserClose"></div>
+                <div class="browser-btn browser-minimize" id="browserMinimize"></div>
+                <div class="browser-btn browser-expand" id="browserExpand"></div>
+            </div>
+            <input type="text" class="browser-url-bar" id="browserUrl" value="#" placeholder="输入网址...">
+            <button id="browserGo" style="background:#4a5568;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">前往</button>
+        </div>
+        <div class="browser-content">
+            <iframe class="browser-iframe" id="browserIframe" src="#"></iframe>
+        </div>
+    </div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- 第1页：封面页脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+1');">
+                <div class="text-center">
+                    <h1 class="mb-3">开源驱动中国科技自立：APEC视野下的人才·产业·教育调研</h1>
+                    <h3 class="mb-3">主题调研与案例分析</h3>
+                    <p class="script-text">各位领导、老师、同学们，大家好！今天，我很荣幸为大家呈现我们的调研报告：《开源驱动中国科技自立：APEC视野下的人才·产业·教育调研》。我是小组成员之一，我们小组由缪宇轩、苗雪冰、谭峻瀚和郑天诣组成。这个报告基于习近平总书记在APEC会议上的重要讲话，以及《习近平新时代中国特色社会主义思想概论》第七章的内容，聚焦开源如何赋能教育、科技和人才战略。我们将从理论到实践，一步步展开讨论。让我们开始吧！（暂停3秒，微笑扫视观众，过渡到下一页）</p>
+                    <p class="script-note">时长约1分钟：开场吸引注意力，建立主题。</p>
+                </div>
+            </section>
+
+            <!-- 第2页：开源与教育强国脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+2');">
+                <h2 class="mb-3">开源：建设教育强国的战略先手棋</h2>
+                <p class="script-text">首先，让我们从教育强国建设入手。正如习近平总书记所强调，‘教育兴则国家兴，教育强则国家强。’在《习近平新时代中国特色社会主义思想概论》第七章第一节中，教育被定位为社会主义现代化建设的基础性、先导性、全局性地位。开源技术，正是这一战略的‘先手棋’。它以‘共建共享’的理念，服务于中华民族伟大复兴的需求。开源社区如OpenEuler，不仅提供免费资源，还推动教育公平，帮助农村和民族地区缩小差距。举例来说，通过开源在线平台，学生可以随时访问全球顶尖代码和教程，这直接体现了党的教育方针——德智体美劳全面培养。坚持党的全面领导是关键，开源项目需融入习近平新时代中国特色社会主义思想，确保为党育人、为国育才。想象一下，一个大学生在开源社区贡献代码，不仅学到技能，还锤炼了爱国情怀。这就是开源赋能高质量教育的魅力！在实践层面，开源促进产教融合，比如华为与高校合作开发开源课程，培养技术技能人才；同时，推动终身教育体系，如社区学习和在线MOOC，实现全民学习。开源不是简单的工具分享，而是教育公平的桥梁，帮助我们从‘有学上’向‘上好学’转型。总之，开源是教育强国建设的强大支撑，让我们以立德树人为根本，培养时代新人。（过渡：接下来，我们看开源如何驱动科技自立。）</p>
+                <p class="script-note">时长约2分钟：详细解释理论，举例扩展，确保流畅过渡。</p>
+            </section>
+
+            <!-- 第3页：开源与科技自立自强脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+3');">
+                <h2 class="mb-3">开源：实现高水平科技自立自强的核心引擎</h2>
+                <p class="script-text">承接教育强国，我们进入科技自立自强的讨论。习近平总书记指出：‘创新是引领发展的第一动力。’在第七章第二节中，科技自立自强被定义为实现关键核心技术自主可控，在全球竞争中掌握主动。开源，正是这一核心引擎。它帮助我们突破‘卡脖子’问题，比如在芯片和操作系统领域，RISC-V开源指令集让中国企业避免依赖国外专利。开源的内涵不是封闭排外，而是开放合作，实现互利共赢。这与APEC会议精神一致，推动数据有序流动和开放创新生态。举个生动例子：华为的HarmonyOS基于开源框架，不仅提升了国产手机竞争力，还带动了整个产业链升级。这体现了‘四个面向’——面向世界科技前沿、面向经济主战场、面向国家重大需求、面向人民生命健康。坚持党的领导和社会主义制度优势是保证，开源社区像国家实验室一样，集中力量办大事。企业如阿里和腾讯主导开源项目，激发市场活力；同时，深化体制改革，破除‘唯论文’顽疾，让创新从实验室走向市场。在数字科技领域，开源加速人工智能和量子计算发展，推动科技与经济深度融合。朋友们，开源不是零和游戏，而是共赢之路。它为高质量发展注入不竭动力，帮助中国从科技跟跑到领跑。警惕‘技术异化’，我们需平衡人文与科技，确保创新服务人民。（过渡：科技自立离不开人才，下面看开源如何建设人才强国。）</p>
+                <p class="script-note">时长约2分钟：结合例子，强调战略意义。</p>
+            </section>
+
+            <!-- 第4页：开源与人才强国脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+4');">
+                <h2 class="mb-3">开源：加快建设人才强国的战略资源</h2>
+                <p class="script-text">现在，我们聚焦人才强国战略。习近平总书记强调：‘人才是第一资源。’第七章第三节指出，人才是实现民族复兴的战略资源，开源正是这一资源的催化剂。它实现教育链、人才链、产业链、创新链的‘四链融合’。看这个流程图：开源社区如齿轮，驱动青年人才通过代码贡献锤炼技能；教育链融入开源课程，实现产教融合；产业链则通过企业需求落地项目。这体现了党管人才原则，营造尊重人才的环境。现实中，我国人才总量世界第一，但结构需优化，开源帮助吸引全球英才，如OSPP计划提供资金和导师，让学生融入社区。举例，CIE开源大赛培养了无数青年拔尖人才，他们不仅技术过硬，还服务国家需求。举措包括‘千人计划’吸引海外专家，打破身份限制，促进人才流动；同时，建立贡献导向的评价体系，完善激励机制。开源社区是青年舞台，激发‘大众创业、万众创新’活力。但我们需警惕‘技术异化’，避免过度追求技术而忽略人文。总之，开源将我国建成规模宏大、布局合理的人才队伍，为现代化注入动能。（过渡：从理论到实践，接下来看国产芯片产业现状。）</p>
+                <p class="script-note">时长约2分钟：解释图表，举竞赛例子。</p>
+            </section>
+
+            <!-- 第5页：国产芯片硬件产业脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+5');">
+                <h2 class="mb-3">国产芯片硬件产业：国际现状与发展</h2>
+                <p class="script-text">理论指导实践，让我们审视国产芯片硬件产业。全球格局中，X86和ARM主导市场，英特尔和高通垄断核心技术，中国常常面临‘卡脖子’风险。国际制裁加剧了这一挑战，如中美科技摩擦影响供应链。但正如第七章强调的自立自强，我们正加速进展。麒麟和龙芯系列处理器已应用于服务器和PC；寒武纪AI芯片在智能计算领域领先；制造工艺追赶台积电，从28nm向7nm迈进。这得益于开源硬件，如RISC-V指令集，帮助我们实现自主可控。结合APEC创新倡议，我们推进数据流动和开源合作，避免封闭。举例，华为海思芯片在5G领域的突破，不仅提升竞争力，还带动上下游产业升级。但挑战仍存：生态不完善，需更多投资和人才。开源软件支撑是关键，如OpenEuler适配硬件，解决兼容问题。从依赖到自主，这条路虽艰辛，但前景光明。它体现了科技自立自强的战略意义，为高质量发展提供硬件基础。（过渡：硬件离不开软件，下面看RISC-V生态。）</p>
+                <p class="script-note">时长约1.5分钟：分析现状，举例说明。</p>
+            </section>
+
+            <!-- 第6页：RISC-V软硬件生态脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+6');">
+                <h2 class="mb-3">RISC-V生态：软件+硬件融合</h2>
+                <p class="script-text">国产芯片的核心是生态构建，RISC-V正是典范。它是开源指令集，允许灵活定制硬件，应用于IoT到服务器领域。中国企业如阿里和平头哥主导开发，避免专利壁垒，实现国际合作中的自立。硬件层面，开源让设计更高效；软件层面，OpenEuler操作系统适配RISC-V，深度学习框架迁移优化性能，EDA工具开源降低门槛。软硬协同是关键，但生态瓶颈如兼容性和应用规模仍需突破。举例，在航天设备中，RISC-V结合RustSBI BIOS，提升可靠性。这践行开源理念，推动产业升级，与第七章科技自立相呼应。开源社区全球协作，加速迭代，帮助中国从芯片大国向强国转型。未来，RISC-V将驱动数字经济高质量发展。（过渡：学术贡献是生态亮点，接下来看Asterinas案例。）</p>
+                <p class="script-note">时长约1.5分钟：描述融合，举应用例子。</p>
+            </section>
+
+            <!-- 第6.5页：Asterinas学术开源案例脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+6.5');">
+                <h2 class="mb-3">学术前沿：开源赋能教育科研</h2>
+                <p class="script-text">在RISC-V生态中，学术贡献尤为亮眼。以蚂蚁集团田洪亮主导的Asterinas（星绽）项目为例，这是一款基于Rust的Linux ABI兼容帧内核开源安全操作系统。南方科技大学Yuke Peng作为第一作者，荣获ACM SOSP 2025最佳论文奖。该项目利用Rust的内存安全机制，构建最小化可信计算基（TCB），极大提升系统鲁棒性，适用于云原生和边缘计算。开源的作用显而易见：促进教育，通过开放代码，学生和研究者可直接贡献，培养跨界人才；驱动科研，全球协作验证内核，加速创新迭代；服务产业，企业需求反哺学术，实现产学研融合。这契合习近平总书记在APEC讲话：‘深化技术开源开放合作，创建具有竞争力的开放创新生态。’Asterinas不仅是技术突破，更是教育-科技-人才协同的典范，帮助我们贯通链条，助力中国式现代化。这样的案例，激励我们更多青年投身开源。（过渡：从学术到个人实践，下面分享我们组的贡献。）</p>
+                <p class="script-note">时长约2分钟：详细介绍项目，强调作用。</p>
+            </section>
+
+            <!-- 第7页：组员贡献实践脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+7');">
+                <h2 class="mb-3">组员开源贡献：缪宇轩与郑天诣实践</h2>
+                <p class="script-text">理论和案例启发我们行动。作为小组，我们也积极贡献开源。缪宇轩参与RISC-online反汇编工具优化，通过PR合并到RustSBI项目，提升了开发者易用性，反哺航天设备BIOS开发。这不仅技术实践，还体现了科技自立精神。郑天诣则专注OpenEuler深度学习框架迁移，进行平台优化，帮助基础软件更成熟，助力生态构建。看这个GitHub截图，就是我们的实际提交记录。这些贡献虽小，却是我们将第七章理论落地的努力。通过OSPP计划，我们获得导师指导，融入社区。这过程让我们成长：从学生到贡献者，锤炼技能，服务国家。开源不是遥远的概念，而是每个人可参与的行动。（过渡：这些启示让我们展望未来。）</p>
+                <p class="script-note">时长约1.5分钟：分享个人故事，展示截图。</p>
+            </section>
+
+            <!-- 第8页：升华总结脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+8');">
+                <h2 class="mb-3">启示与展望：开源引领教育·科技·人才融合</h2>
+                <p class="script-text">通过调研，我们得出深刻启示。首先，教育启示：开源式学习培养时代新人，产教融合服务国家战略。其次，科技启示：开源突破‘卡脖子’，激活创新引擎，实现自立自强。最后，人才启示：社区实践锤炼技能，避免‘技术异化’，聚天下英才建设强国。这些启示源于第七章‘三位一体’战略，展望未来，开源将引领融合。教育、科技、人才如‘三驾马车’并驾齐驱，助力中华民族伟大复兴。我们呼吁大家拥抱开源，赢得科技未来！（暂停，强调）开源不是终点，而是新征程的起点。（过渡：感谢聆听。）</p>
+                <p class="script-note">时长约1.5分钟：总结要点，情感升华。</p>
+            </section>
+
+            <!-- 第9页：致谢脚本 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+9');" class="text-center">
+                <h1 class="mb-3">感谢聆听，欢迎讨论开源未来！</h1>
+                <p class="script-text">感谢各位聆听我们的报告！如果有疑问，欢迎讨论开源未来。我们是缪宇轩、郑天诣、苗雪冰、谭峻瀚。谢谢！（鞠躬，互动Q&A）</p>
+                <p class="script-note">时长约1分钟：结束语，邀请互动。</p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- AI 答疑助手面板 -->
+    <div id="aiPanel" class="ai-panel">
+        <div class="ai-header">
+            <span>AI 答疑助手</span>
+            <button onclick="toggleAI()">关闭</button>
+        </div>
+        <div id="aiBody" class="ai-body">
+            <div class="ai-message ai-bot">您好！我是RISC-V与开源生态AI助手，可回答技术、项目、社区等问题。</div>
+        </div>
+        <div class="ai-input-area">
+            <input type="text" id="aiInput" class="ai-input" placeholder="输入问题...">
+            <button class="ai-send" onclick="sendAI()">发送</button>
+        </div>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="control-bar">
+        <button class="control-btn" onclick="toggleBrowser()" title="内置浏览器">browse</button>
+        <button class="control-btn" id="ai-panel" onclick="toggleAI()" title="AI答疑助手">AI</button>
+    </div>
+
+    <!-- 引入 Reveal.js 脚本 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            controls: true,
+            progress: true,
+            center: true,
+            width: 960,
+            height: 700
+        });
+        // 其他JS保持不变
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RISC-V与开源操作系统生态调研报告</title>
+    <title>开源驱动中国科技自立：APEC视野下的人才·产业·教育调研</title>
     <!-- 引入 Reveal.js 样式和脚本 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/black.min.css">
@@ -111,11 +111,11 @@
             flex-direction: column;
             box-shadow: -5px 0 15px rgba(0,0,0,0.5);
         }
-        
+
         .ai-panel.open {
             right: 0;
         }
-        
+
         .ai-header {
             background: #2a2a2a;
             color: white;
@@ -125,7 +125,7 @@
             align-items: center;
             border-bottom: 1px solid #444;
         }
-        
+
         .ai-header button {
             background: #444;
             color: white;
@@ -134,7 +134,7 @@
             border-radius: 3px;
             cursor: pointer;
         }
-        
+
         .ai-body {
             flex: 1;
             padding: 15px;
@@ -143,21 +143,21 @@
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .ai-message {
             padding: 10px 15px;
             border-radius: 18px;
             max-width: 80%;
             word-wrap: break-word;
         }
-        
+
         .ai-user {
             background: #0066cc;
             color: white;
             align-self: flex-end;
             border-bottom-right-radius: 5px;
         }
-        
+
         .ai-bot {
             background: #333;
             color: white;
@@ -165,14 +165,14 @@
             border-bottom-left-radius: 5px;
 	    line-height:27px;
         }
-        
+
         .ai-input-area {
             padding: 15px;
             display: flex;
             gap: 10px;
             border-top: 1px solid #444;
         }
-        
+
         .ai-input {
             flex: 1;
             padding: 10px;
@@ -181,7 +181,7 @@
             background: #2a2a2a;
             color: white;
         }
-        
+
         .ai-send {
             background: #0066cc;
             color: white;
@@ -190,16 +190,109 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        /* 内置浏览器样式 */
+        .browser-container {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: 10%;
+            right: 10%;
+            width: 80%;
+            height: 80%;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: #eee;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .browser-controls {
+            display: flex;
+            gap: 6px;
+        }
+
+        .browser-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .browser-close {
+            background: #ff5f57;
+        }
+
+        .browser-minimize {
+            background: #ffbc2f;
+        }
+
+        .browser-expand {
+            background: #28c840;
+        }
+
+        .browser-url-bar {
+            flex: 1;
+            margin: 0 10px;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .browser-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .browser-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 新增：学术内容盒子 */
+        .reveal .box-academic {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
+
+    <!-- 浏览器 -->
+    <div class="browser-container" id="browserContainer">
+        <div class="browser-header">
+            <div class="browser-controls">
+                <div class="browser-btn browser-close" id="browserClose"></div>
+                <div class="browser-btn browser-minimize" id="browserMinimize"></div>
+                <div class="browser-btn browser-expand" id="browserExpand"></div>
+            </div>
+            <input type="text" class="browser-url-bar" id="browserUrl" value="#" placeholder="输入网址...">
+            <button id="browserGo" style="background:#4a5568;color:white;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">前往</button>
+        </div>
+        <div class="browser-content">
+            <iframe class="browser-iframe" id="browserIframe" src="#"></iframe>
+        </div>
+    </div>
+
     <div class="reveal">
         <div class="slides">
+
             <!-- 第1页：封面页 -->
             <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+1');">
                 <div class="text-center">
                     <div class="x" style="">
-                        <h1 class="mb-3">"教育-科技-人才"视角下的RISC-V与开源操作系统生态调研</h1>
+                        <h1 class="mb-3">开源驱动中国科技自立：APEC视野下的人才·产业·教育调研</h1>
                         <h3 class="mb-3">主题调研与案例分析</h3>
                         <p>
                             <img src="https://avatars.githubusercontent.com/u/190277873?s=64&v=4" alt="Logo" class="logo">
@@ -209,156 +302,217 @@
                 </div>
             </section>
 
-            <!-- 第2页：引言 -->
+            <!-- 第2页：开源与教育强国（第七章第一节） -->
             <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+2');">
-                <h2 class="mb-3">国家战略下的数字根基</h2>
+                <h2 class="mb-3">开源：建设教育强国的战略先手棋</h2>
                 <div class="flex-container">
                     <div class="box">
-                        <h3>现在的芯片格局</h3>
-                        <p><i class="fa-brands fa-intel icon"></i> X86/Windows (Wintel) 体系-微软、英特尔等</p>
-                        <p><i class="fa-solid fa-microchip icon"></i> ARM/Android (AA) 体系</p>
-                        <p class="font-bold mt-2">生态繁荣，容易被卡脖</p>
+                        <h3>教育兴则国家兴</h3>
+                        <p>习近平总书记指出：“教育是国之大计、党之大计。”开源以“共建共享”理念，服务中华民族伟大复兴战略需求。</p>
+                        <p class="font-bold mt-2">坚持党的领导，推进开源进教材、进课堂、进头脑。</p>
                     </div>
-
                     <div class="box">
-                        <h3>国产芯片架构</h3>
-                        <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/RISC-V-logo.svg/250px-RISC-V-logo.svg.png" alt="RISC-V Logo" class="icon" style="max-height: 20px;margin-left: 157px">  RISC-V 开源指令集</p>
-                        <img src="https://www.openeuler.org/assets/logo.XeUCiAZu.svg" alt="OpenEuler Logo" class="icon" style="margin-left: 148px">
-                        <p> OpenEuler 开源操作系统</p>
-                        <p class="font-bold mt-2">riscv成熟度相比龙芯等国产芯片高，在开源的基础上，其生态和商业基本已被国家企业掌握</p>
+                        <h3>开源赋能高质量教育</h3>
+                        <ul class="list-disc ml-5">
+                            <li>构建德智体美劳全面培养体系</li>
+                            <li>产教融合、校企合作培养技术技能人才</li>
+                            <li>在线教育、社区学习推动终身教育</li>
+                        </ul>
+                        <p class="font-bold mt-2">开源实现教育公平与资源均衡。</p>
                     </div>
                 </div>
                 <div class="conclusion">
-                    <div class="box">
-                        <h3>现在的芯片格局</h3>
-                        <p><i class="fa-brands fa-intel icon"></i> X86/Windows (Wintel) 体系-微软、英特尔等</p>
-                        <p><i class="fa-solid fa-microchip icon"></i> ARM/Android (AA) 体系</p>
-                        <p class="font-bold mt-2">生态繁荣，容易被卡脖</p>
-                    </div>
+                    <p>开源是教育强国建设的“先手棋”，培养担当民族复兴大任的时代新人。</p>
                 </div>
             </section>
 
-            <!-- 第3页：核心发现一 -->
+            <!-- 第3页：开源与科技自立自强（第七章第二节） -->
             <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+3');">
-                <h2 class="mb-3">技术底座初具规模，应用生态是瓶颈</h2>
+                <h2 class="mb-3">开源：实现高水平科技自立自强的核心引擎</h2>
                 <div class="flex-container">
                     <div class="box">
-                        <h3>已成熟领域 - 基础稳固</h3>
-                        <ul class="list-disc ml-5">
-                            <li>Web服务器 (Nginx)</li>
-                            <li>数据库 (MySQL)</li>
-                            <li>编程语言 (Python, Go)</li>
-                        </ul>
-                        <p class="font-bold mt-2">技术验证和布局</p>
+                        <h3>创新是第一动力</h3>
+                        <p>开源打破技术垄断，助力“卡脖子”领域突破，如芯片、操作系统。</p>
+                        <p class="font-bold mt-2">面向“四个面向”，开源构建全链条创新生态。</p>
                     </div>
                     <div class="box">
-                        <h3>生态鸿沟</h3>
+                        <h3>制度优势驱动开源</h3>
                         <ul class="list-disc ml-5">
-                            <li>专业工业软件 (CAD/CAE)</li>
-                            <li>芯片设计工具 (EDA)</li>
-                            <li>高端图形处理</li>
-                            <li>游戏与多媒体生态</li>
+                            <li>集中力量办大事：国家实验室、开源社区协同攻关</li>
+                            <li>企业创新主体：华为、阿里主导RISC-V开源项目</li>
+                            <li>国际合作：共建共享，避免封闭排外</li>
                         </ul>
-                        <p class="font-bold mt-2">规模化应用和arm以及aarch等系列仍然有不小差距</p>
+                        <p class="font-bold mt-2">开源是科技自立自强的关键路径。</p>
                     </div>
                 </div>
-                <div class="conclusion"></div>
-                <div class="box">
-                    <h3>贡献经历</h3>
-                    <ul class="list-disc ml-5">
-                        <li>参与基于openeuler的分发版上的深度学习框架的迁移和平台优化</li>
-                        <li>基础软件布局已经趋于成熟，但还有很多空间可以参与贡献</li>
-                    </ul>
-                    <p class="font-bold mt-2"></p>
+                <div class="conclusion">
+                    <p>开源践行“科技是第一生产力”，为高质量发展注入不竭动力。</p>
                 </div>
             </section>
 
-            <!-- 第4页：核心发现二 -->
+            <!-- 第4页：开源与人才强国（第七章第三节） -->
             <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+4');">
-                <h2 class="mb-3">开源社区已成为"产-学-研"协同的核心枢纽</h2>
+                <h2 class="mb-3">开源：加快建设人才强国的战略资源</h2>
                 <div class="flow-diagram">
                     <div class="gear">
                         <i class="fa-solid fa-gear fa-2x mb-2"></i>
-                        <p class="font-bold">开源社区 (如 OpenEuler)</p>
+                        <p class="font-bold">开源社区</p>
                     </div>
                     <div class="flex-container">
                         <div class="box text-center">
-                            <i class="fa-solid fa-building fa-lg mb-2"></i>
-                            <p>产业 (出题)</p>
-                            <p class="text-sm">提出真实场景需求、提供应用场景</p>
+                            <i class="fa-solid fa-user fa-lg mb-2"></i>
+                            <p>青年人才</p>
+                            <p class="text-sm">代码贡献、社区实践</p>
                         </div>
                         <div class="box text-center">
                             <i class="fa-solid fa-graduation-cap fa-lg mb-2"></i>
-                            <p>高校 (研究)</p>
-                            <p class="text-sm">理论创新、算法研究、人才培养</p>
+                            <p>教育链</p>
+                            <p class="text-sm">产教融合、开源课程</p>
                         </div>
                         <div class="box text-center">
-                            <i class="fa-solid fa-user fa-lg mb-2"></i>
-                            <p>人才 (贡献)</p>
-                            <p class="text-sm">代码贡献、文档维护、生态推广</p>
+                            <i class="fa-solid fa-building fa-lg mb-2"></i>
+                            <p>产业链</p>
+                            <p class="text-sm">企业需求、项目落地</p>
                         </div>
                     </div>
                 </div>
                 <div class="conclusion">
-                    <p>社区实现了【教育】赋能【科技】、【科技】锤炼【人才】、【人才】反哺【产业】的完美协同</p>
+                    <p>开源实现教育链、人才链、产业链、创新链“四链融合”，警惕“技术异化”。</p>
                 </div>
-                <p>
-                    相关社区：OSC-DEV、GTOC、RISCVers <br>
-                    相关竞赛：Cie全国risc-v高水平创新及应用大赛、Rvspoc
-                </p>
+                <p>举措：OSPP计划、CIE大赛、万人计划吸引全球英才。</p>
             </section>
 
-            <!-- 第5页：开源贡献实践 -->
+            <!-- 第5页：国产芯片硬件产业：国际现状与发展 -->
             <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+5');">
-                <h3 class="mb-3">开源贡献实践：以RISC-online项目为例</h2>
+                <h2 class="mb-3">国产芯片硬件产业：国际现状与发展</h2>
                 <div class="flex-container">
                     <div class="box">
-                        <h2>RISC-online：反汇编工具</h2>
-                        <p>专为RISC-V优化的反汇编工具，将二进制代码解析为汇编语言，支持调试与分析。</p>
-                        <p><strong>工具链定位：</strong>嵌入SDK与开发工具，未来扩展至命令行与APP，降低开发门槛。</p>
-                        <p><strong>生态作用：</strong>反哺上游RustSBI（航天设备使用BIOS），作为sdk的一部分便利更多开发者。</p>
+                        <h3>全球格局</h3>
+                        <p>X86/ARM主导，英特尔/高通垄断；中国易被“卡脖子”。</p>
+                        <p class="font-bold mt-2">国际制裁下，硬件自立迫在眉睫。</p>
                     </div>
                     <div class="box">
-                        <h2>制度与地域支撑</h2>
-                        <p><strong>OSPP计划：</strong>"GSoC中国版"，提供资金与导师，助力学生融入开源社区。</p>
-                        <p><strong>武汉十大开源：</strong>RISC-online隶属RustSBI，体现城市对开源的战略投入。</p>
-                        <p><strong>实践成果：</strong>团队PR优化显示逻辑被合并，提升工具易用性。</p>
+                        <h3>中国技术进展</h3>
+                        <ul class="list-disc ml-5">
+                            <li>麒麟/龙芯系列</li>
+                            <li>AI芯片如寒武纪</li>
+                            <li>制造工艺追赶台积电</li>
+                        </ul>
+                        <p class="font-bold mt-2">结合APEC创新，推进数据流动与开源硬件。</p>
                     </div>
                 </div>
-                <div class="conclusion"></div>
-                <div class="box">
-                    <h2>贡献经历(谬)</h2>
-                    <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%2Fid%2FOIP.IcOlXUM-VPow5SI98-9oKgHaGS%3Fcb%3D12%26pid%3DApi&f=1&ipt=be56bd9dca5061adb966026418ec1cd71807721752b8b0289a5ced68e67b9a91&ipo=images" alt="" style="width:325px;height: 340px;margin-left: 34%;">
+                <div class="conclusion">
+                    <p>硬件产业从依赖到自主，需开源软件支撑。</p>
                 </div>
             </section>
 
-            <!-- 第6页：启示与展望 -->
+            <!-- 第6页：RISC-V软硬件生态 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+6');">
+                <h2 class="mb-3">RISC-V生态：软件+硬件融合</h2>
+                <div class="flex-container">
+                    <div class="box">
+                        <h3>硬件层面</h3>
+                        <ul class="list-disc ml-5">
+                            <li>开源指令集，灵活定制</li>
+                            <li>应用于IoT/服务器</li>
+                            <li>中国企业如阿里/华为主导</li>
+                        </ul>
+                        <p class="font-bold mt-2">国际合作中，实现自立。</p>
+                    </div>
+                    <div class="box">
+                        <h3>软件层面</h3>
+                        <ul class="list-disc ml-5">
+                            <li>OpenEuler适配</li>
+                            <li>深度学习框架迁移</li>
+                            <li>EDA工具开源</li>
+                        </ul>
+                        <p class="font-bold mt-2">软硬协同，生态瓶颈待破。</p>
+                    </div>
+                </div>
+                <div class="conclusion">
+                    <p>RISC-V践行开源理念，推动产业科技升级。</p>
+                </div>
+            </section>
+
+            <!-- 第6.5页（新增）：Asterinas学术开源案例（原第六页与第七页之间） -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+6.5');">
+                <h2 class="mb-3">学术前沿：开源赋能教育科研</h2>
+                <div class="box-academic">
+                    <h4>Asterinas项目：Rust安全OS获SOSP 2025最佳论文</h4>
+                    <p>蚂蚁集团田洪亮主导的<strong>Asterinas（星绽）</strong>项目——一款基于Rust的Linux ABI兼容帧内核开源安全操作系统，以中国南方科技大学<strong>Yuke Peng</strong>为第一作者，荣获ACM SOSP 2025最佳论文奖。</p>
+                    <p>该项目通过Rust内存安全机制，构建最小化可信计算基（TCB），显著提升系统鲁棒性。</p>
+                    <p class="font-bold mt-2">开源对教育科研的作用：</p>
+                    <ul class="list-disc ml-5">
+                        <li><strong>促进教育</strong>：开放代码便于学生/研究者贡献，培养跨界人才</li>
+                        <li><strong>驱动科研</strong>：全球协作验证内核，加速创新迭代</li>
+                        <li><strong>服务产业</strong>：企业需求反哺学术，产学研深度融合</li>
+                    </ul>
+                    <p>契合习近平总书记APEC讲话：<strong>“深化技术开源开放合作，创建具有竞争力的开放创新生态。”</strong></p>
+                    <p>获奖论文：</p>
+                    <img src="../assets/sosp.png" style="height:200px;width:600px;margin-left:150px">
+                </div>
+                <div class="conclusion">
+                    <p>Asterinas以开源实践，贯通教育-科技-人才链条，助力中国式现代化。</p>
+                </div>
+            </section>
+
+            <!-- 第7页：组员贡献实践 -->
             <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+7');">
-                <h2 class="mb-3">启示与展望：拥抱开源，赢得未来</h2>
-                <div class="box">
-                    <p><i class="fa-solid fa-book fa-lg mr-2"></i> <strong>对教育的启示</strong></p>
-                    <ul class="list-disc ml-5">
-                        <li>鼓励"开源式学习"，将社区贡献作为高阶实践</li>
-                        <li>培养学生解决真实、开放性问题的能力</li>
-                    </ul>
-                </div>
-                <div class="box">
-                    <p><i class="fa-solid fa-person-hiking fa-lg mr-2"></i> <strong>对个人的启示</strong></p>
-                    <ul class="list-disc ml-5">
-                        <li>将个人成长与国家战略需求相结合</li>
-                        <li>在RISC-V与开源OS的广阔天地中，实现个人价值</li>
-                    </ul>
+                <h2 class="mb-3">组员开源贡献：缪宇轩与郑天诣实践</h2>
+                <div class="flex-container">
+                    <div class="box">
+                        <h3>缪宇轩贡献</h3>
+                        <p>参与RISC-online反汇编工具优化，PR合并RustSBI。</p>
+                        <p><strong>提升开发者易用性，反哺航天设备。</strong></p>
+                    <img src="../assets/pr2.png" style="width:325px;height:340px;margin-left:34%;">
+                    </div>
+                    <div class="box">
+                        <h3>郑天诣贡献</h3>
+                        <p>OpenEuler深度学习框架迁移，平台优化。</p>
+                        <p><strong>基础软件贡献，助力生态成熟。</strong></p>
+                        <img src="../assets/pr1.png" style="width:325px;height:340px;margin-left:20%;">
+                    </div>
                 </div>
             </section>
 
-            <!-- 第7页：谢谢聆听 -->
-            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+8');" class="text-center">
-                <h1 class="mb-3">感谢聆听，欢迎提问！</h1>
-                <p>谬雨轩、郑天诣、苗雪冰、谭峻瀚</p>
+            <!-- 第8页：升华总结 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+8');">
+                <h2 class="mb-3">启示与展望：开源引领教育·科技·人才融合</h2>
+                <div class="box">
+                    <p><i class="fa-solid fa-graduation-cap fa-lg mr-2"></i> <strong>教育启示</strong></p>
+                    <ul class="list-disc ml-5">
+                        <li>开源式学习，培养时代新人</li>
+                        <li>产教融合，服务国家战略</li>
+                    </ul>
+                </div>
+                <div class="box">
+                    <p><i class="fa-solid fa-microchip fa-lg mr-2"></i> <strong>科技启示</strong></p>
+                    <ul class="list-disc ml-5">
+                        <li>突破“卡脖子”，实现自立自强</li>
+                        <li>开源共建，激活创新引擎</li>
+                    </ul>
+                </div>
+                <div class="box">
+                    <p><i class="fa-solid fa-user fa-lg mr-2"></i> <strong>人才启示</strong></p>
+                    <ul class="list-disc ml-5">
+                        <li>社区实践锤炼技能，避免“技术异化”</li>
+                        <li>聚天下英才，建设人才强国</li>
+                    </ul>
+                </div>
+                <div class="conclusion">
+                    <p>拥抱开源，赢得未来——教育、科技、人才“三驾马车”并驾齐驱。</p>
+                </div>
             </section>
+
+            <!-- 第9页：致谢 -->
+            <section style="background-image: url('https://via.placeholder.com/960x700?text=Tech+Background+9');" class="text-center">
+                <h1 class="mb-3">感谢聆听，欢迎讨论开源未来！</h1>
+                <p>缪宇轩、郑天诣、苗雪冰、谭峻瀚</p>
+            </section>
+
         </div>
     </div>
-    
+
     <!-- AI 答疑助手面板 -->
     <div id="aiPanel" class="ai-panel">
         <div class="ai-header">
@@ -392,7 +546,88 @@
             width: 960,
             height: 700
         });
-        
+
+        // ================== 内置浏览器完美实现 ==================
+        document.addEventListener('DOMContentLoaded', function() {
+            const browserContainer = document.getElementById('browserContainer');
+            const browserIframe = document.getElementById('browserIframe');
+            const browserUrl = document.getElementById('browserUrl');
+            const browserGo = document.getElementById('browserGo');
+            const browserClose = document.getElementById('browserClose');
+            const browserMinimize = document.getElementById('browserMinimize');
+            const browserExpand = document.getElementById('browserExpand');
+
+            let isMinimized = false;
+            let isExpanded = false;
+
+            browserClose.onclick = () => {
+                browserContainer.style.display = 'none';
+            };
+
+            browserMinimize.onclick = () => {
+                if (isMinimized) {
+                    browserContainer.style.height = '80%';
+                    isMinimized = false;
+                } else {
+                    browserContainer.style.height = '40px';
+                    isMinimized = true;
+                }
+            };
+
+            browserExpand.onclick = () => {
+                if (isExpanded) {
+                    resetBrowserSize();
+                    isExpanded = false;
+                } else {
+                    browserContainer.style.width = '95%';
+                    browserContainer.style.height = '95%';
+                    browserContainer.style.top = '2.5%';
+                    browserContainer.style.right = '2.5%';
+                    isExpanded = true;
+                }
+            };
+
+            function resetBrowserSize() {
+                browserContainer.style.width = '80%';
+                browserContainer.style.height = '80%';
+                browserContainer.style.top = '10%';
+                browserContainer.style.right = '10%';
+            }
+
+            browserGo.onclick = () => {
+                let url = browserUrl.value.trim();
+                if (!url) return;
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                browserIframe.src = url;
+            };
+
+            browserUrl.addEventListener('keypress', e => {
+                if (e.key === 'Enter') browserGo.click();
+            });
+
+            window.openInBrowser = function(url) {
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                browserUrl.value = url;
+                browserIframe.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+                browserContainer.style.display = 'flex';
+                resetBrowserSize();
+                isMinimized = false;
+                isExpanded = false;
+            };
+
+            document.querySelector('.control-btn[title="内置浏览器"]')?.addEventListener('click', () => {
+                if (browserContainer.style.display === 'flex') {
+                    browserContainer.style.display = 'none';
+                } else {
+                    openInBrowser('https://openeuler.org');
+                }
+            });
+        });
+
         // AI 答疑助手
         async function sendAI() {
             const input = document.getElementById('aiInput');
@@ -400,7 +635,6 @@
             const question = input.value.trim();
             if (!question) return;
 
-            // 用户消息
             const userMsg = document.createElement('div');
             userMsg.className = 'ai-message ai-user';
             userMsg.textContent = question;
@@ -408,7 +642,6 @@
             input.value = '';
             body.scrollTop = body.scrollHeight;
 
-            // 加载中
             const loading = document.createElement('div');
             loading.className = 'ai-message ai-bot';
             loading.textContent = '思考中...';
@@ -427,11 +660,10 @@
                         "messages": [
                             {
                                 "role": "system",
-                                "content": "构建\"开源创新共同体\"：以新时代思想阐释技术变革与协作精神**一、核心指导思想与宣传基调**1.  **以\"新发展理念\"为统领：** 全文需贯穿\"创新、协调、绿色、开放、共享\"的新发展理念，将其作为解读开源运动与科技发展的核心框架。强调开源本身就是\"开放\"与\"共享\"的典范，是驱动\"创新\"的沃土，并通过社区治理实现\"协调\"，最终通过高效、透明的数字基础设施助力\"绿色\"发展。2.  **锚定\"新发展格局\"与\"高水平科技自立自强\"：** 将开源社区的构建，与中国加快构建以国内大循环为主体、国内国际双循环相互促进的新发展格局相联系。阐述参与和主导开源项目，不是闭门造车，而是在更高水平上融入全球科技网络，是实现\"科技自立自强\"的必由之路和智慧路径。这体现了\"守正创新\"的原则——守住核心技术能力之\"正\"，创开源协作模式之\"新\"。3.  **体现\"人类命运共同体\"理念：** 将全球开源协作视为构建\"网络空间命运共同体\"和\"人类命运共同体\"在数字时代的生动实践。超越国界、种族、意识形态的开发者们，为了一个共同的技术目标而协作，这正是\"和而不同\"、\"美美与共\"的东方智慧在全球技术治理中的体现。**二、技术词汇的思想性阐释框架**请运用以下思想，对关键的技术概念进行升维阐释,比如：1.  **\"人民至上\"与\"开源许可证（如GPL）：**    *   **阐释路径：** 传统私有软件将代码视为私有财产，设置访问壁垒。而GPL等开源许可证的核心思想是\"代码为人民服务\"，它通过法律框架确保了软件的自由使用、学习、修改和分发权，将数字时代的\"生产资料\"向最广大的人民开发者开放。这体现了\"发展为了人民、发展依靠人民、发展成果由人民共享\"的思想。**可以说，开源许可证是\"人民至上\"价值观在数字产权领域的一次伟大制度创新。**2.  **\"全过程人民民主\"与\"社区治理（Governance）：**    *   **阐释路径：** 一个健康的开源社区，其决策并非由单一公司或个人独断，而是通过公开的邮件列表、论坛、代码审查和投票机制，让所有贡献者都能参与到项目的\"立规、议事、决策\"中来。这种基于贡献和共识的治理模式，是\"全过程人民民主\"在技术社区的微观缩影。它确保了项目的发展方向能够反映最广泛贡献者的共同意志，实现了技术领域的众人事众人商。",
-
+                                "content": "你是一个专注于RISC-V、开源操作系统、产学研协同的AI助手。请用习近平新时代思想框架（如新发展理念、科技自立自强、人类命运共同体）来阐释技术问题，语言庄重、深刻、有思想高度。"
                             },
                             {
-                                "role": "user", 
+                                "role": "user",
                                 "content": question
                             }
                         ]
@@ -440,7 +672,7 @@
 
                 const response = await fetch(url, options);
                 const data = await response.json();
-                
+
                 loading.remove();
                 const botMsg = document.createElement('div');
                 botMsg.className = 'ai-message ai-bot';
@@ -459,12 +691,7 @@
         function toggleAI() {
             document.getElementById('aiPanel').classList.toggle('open');
         }
-        
-        function toggleBrowser() {
-            alert("");
-        }
 
-        // 回车发送
         document.getElementById('aiInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendAI();
         });
