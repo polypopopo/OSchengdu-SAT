@@ -1,3 +1,6 @@
 [submodule "word-card"]
 	path = word-card
 	url = https://github.com/OSchengdu/word-card.git
+[submodule "book_list"]
+	path = book_list
+	url = git@github.com:polypopopo/book_list.git
