@@ -1,16 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "**",
-      "use": "@vercel/static"
-    }
-  ],
   "git": {
     "submodules": true
   },
   "routes": [
     { "handle": "filesystem" },
+    { "src": "/book_list/(.*)", "dest": "/book_list/$1" },
+    { "src": "/word-card/(.*)", "dest": "/word-card/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "cleanUrls": true
