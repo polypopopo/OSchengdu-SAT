@@ -6,4 +6,26 @@
   ]
 }
 
-
+{
+  "rewrites": [
+    {
+      "source": "/reader",
+      "destination": "/reader.html"
+    },
+    {
+      "source": "/pdf-viewer",
+      "destination": "/pdf-viewer.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/book_list/books/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
