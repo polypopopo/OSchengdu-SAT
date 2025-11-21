@@ -1,8 +1,17 @@
 {
   "version": 2,
-  "routes": [
-    { "handle": "filesystem" }
+  "builds": [
+    {
+      "src": "**",
+      "use": "@vercel/static"
+    }
   ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  "git": {
+    "submodules": true
+  },
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "cleanUrls": true
 }
