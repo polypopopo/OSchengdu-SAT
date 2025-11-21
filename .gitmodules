@@ -4,5 +4,3 @@
 [submodule "book_list"]
 	path = book_list
 	url = git@github.com:polypopopo/book_list.git
-[submodule "path/to/submodule"]
-	branch = main
