@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词卡片学习系统 - 3000词</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            background: #34495e;
+            color: #ecf0f1;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #e74c3c;
+            transition: width 0.3s ease;
+        }
+        
+        .card {
+            padding: 30px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card-front, .card-back {
+            text-align: center;
+        }
+        
+        .word {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .phonetic {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-family: 'Arial';
+        }
+        
+        .hint {
+            color: #bdc3c7;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .definition {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin: 20px 0;
+            line-height: 1.6;
+            min-height: 60px;
+        }
+        
+        .example {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+            font-style: italic;
+            color: #34495e;
+        }
+        
+        .part-of-speech {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #prevBtn {
+            background: #95a5a6;
+        }
+        
+        #knownBtn {
+            background: #27ae60;
+        }
+        
+        #knownBtn.known {
+            background: #2ecc71;
+        }
+        
+        #nextBtn {
+            background: #3498db;
+        }
+        
+        .flip-enter-active {
+            transition: all 0.6s ease;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #34495e;
+            color: white;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>单词卡片</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalWords">0</div>
+                    <div>总词数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="knownWords">0</div>
+                    <div>已掌握</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="remainingWords">0</div>
+                    <div>待学习</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="card" onclick="flipCard()">
+            <div class="card-front" id="front">
+                <div class="word" id="word">加载中...</div>
+                <div class="phonetic" id="phonetic">...</div>
+                <div class="hint">点击卡片查看释义</div>
+            </div>
+            <div class="card-back" id="back" style="display: none;">
+                <div class="part-of-speech" id="partOfSpeech">...</div>
+                <div class="definition" id="definition">...</div>
+                <div class="example" id="example">...</div>
+                <div class="hint">点击卡片返回</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="previousCard()" id="prevBtn">上一个</button>
+            <button onclick="markAsKnown()" id="knownBtn">标记掌握</button>
+            <button onclick="nextCard()" id="nextBtn">下一个</button>
+        </div>
+    </div>
+
+    <script src="word-cards.js"></script>
+</body>
+</html>

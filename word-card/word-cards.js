@@ -1,0 +1,18522 @@
+// word-cards.js
+
+let currentIndex = 0;
+let isFlipped = false;
+let wordsData = [];
+
+async function init() {
+    wordsData = await loadWordData();
+    
+    const savedProgress = localStorage.getItem('wordCardProgress');
+    if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        currentIndex = progress.currentIndex || 0;
+        if (progress.knownWords) {
+            progress.knownWords.forEach(index => {
+                if (wordsData[index]) {
+                    wordsData[index].known = true;
+                }
+            });
+        }
+    }
+    
+    displayCurrentCard();
+    updateProgress();
+}
+
+async function loadWordData() {
+    return [
+    {
+      "id": 1,
+      "word": "mercy",
+      "phonetic": "[ˈmɜ:si]",
+      "partOfSpeech": "n.",
+      "definition": "仁慈,怜悯",
+      "example": "He's going to throw himself on the mercy of the"
+    },
+    {
+      "id": 2,
+      "word": "metal",
+      "phonetic": "[ˈmetl]",
+      "partOfSpeech": "n.",
+      "definition": "金属,金属制品 Heavy Metal music really arose in the late 60s.",
+      "example": "重金属音乐真正形成于 60 年代后期。"
+    },
+    {
+      "id": 3,
+      "word": "miserable",
+      "phonetic": "[ˈmɪzrəbl]",
+      "partOfSpeech": "a.",
+      "definition": "痛苦的,悲惨的 Sheila was looking miserable.",
+      "example": "希拉看上去愁眉苦脸的。"
+    },
+    {
+      "id": 4,
+      "word": "mission",
+      "phonetic": "[ˈmɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "使命,任务;",
+      "example": "We would see much less frequent use of terms"
+    },
+    {
+      "id": 5,
+      "word": "modernize",
+      "phonetic": "[ˈmɒdənaɪz]",
+      "partOfSpeech": "vt.",
+      "definition": "使现代化",
+      "example": "Industries unable to modernize have been left"
+    },
+    {
+      "id": 6,
+      "word": "modify",
+      "phonetic": "[ˈmɒdɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "更改,修改,修饰 Established practices are difficult to modify.",
+      "example": "既定的惯例是很难更改的。"
+    },
+    {
+      "id": 7,
+      "word": "mortal",
+      "phonetic": "[ˈmɔ:tl]",
+      "partOfSpeech": "a.",
+      "definition": "致命的;终有一",
+      "example": "死的;"
+    },
+    {
+      "id": 8,
+      "word": "movement",
+      "phonetic": "[ˈmu:vmənt]",
+      "partOfSpeech": "n.",
+      "definition": "运动;移动,迁移Why has the movement to a cashless society",
+      "example": "been so slow in coming?"
+    },
+    {
+      "id": 9,
+      "word": "murder",
+      "phonetic": "[ˈmɜ:də(r)]",
+      "partOfSpeech": "v.",
+      "definition": "/n.谋杀, 凶杀 She denied the murder of four children who",
+      "example": "were in her care.（"
+    },
+    {
+      "id": 10,
+      "word": "mute",
+      "phonetic": "[mju:t]",
+      "partOfSpeech": "a.",
+      "definition": "哑的,缄默的",
+      "example": "v.减弱…的声音"
+    },
+    {
+      "id": 11,
+      "word": "mutual",
+      "phonetic": "[ˈmju:tʃuəl]",
+      "partOfSpeech": "a.",
+      "definition": "相互的,彼此的 It's plain that he adores his daughter, and the",
+      "example": "feeling is mutual."
+    },
+    {
+      "id": 12,
+      "word": "mysterious",
+      "phonetic": "[mɪˈstɪəriəs]",
+      "partOfSpeech": "a.",
+      "definition": "神秘的,可疑的 That expressionless face had seemed deep and",
+      "example": "mysterious."
+    },
+    {
+      "id": 13,
+      "word": "neither",
+      "phonetic": "[ˈnaɪðə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "两者都不",
+      "example": "pron.两者都不"
+    },
+    {
+      "id": 14,
+      "word": "novel",
+      "phonetic": "[ˈnɒvl]",
+      "partOfSpeech": "n.",
+      "definition": "(长篇)小说",
+      "example": "a.新奇的,新颖的"
+    },
+    {
+      "id": 15,
+      "word": "nursery",
+      "phonetic": "[ˈnɜ:səri]",
+      "partOfSpeech": "n.",
+      "definition": "托儿所,婴幼室 The nursery is bright and cheerful, with plenty",
+      "example": "of toys.托儿所明亮宜人,还有许多玩具。"
+    },
+    {
+      "id": 16,
+      "word": "nutrition",
+      "phonetic": "[njuˈtrɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "营养",
+      "example": "I use my bimonthly weigh-in result to get"
+    },
+    {
+      "id": 17,
+      "word": "orderly",
+      "phonetic": "[ˈɔ:dəli]",
+      "partOfSpeech": "a.",
+      "definition": "整齐的,有秩序",
+      "example": "的,有条理的"
+    },
+    {
+      "id": 18,
+      "word": "outset",
+      "phonetic": "[ˈaʊtset]",
+      "partOfSpeech": "n.",
+      "definition": "开始,开端",
+      "example": "The novel fascinates the reader from the outset."
+    },
+    {
+      "id": 19,
+      "word": "outstanding",
+      "phonetic": "[aʊtˈstændɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "突出的,显著的 As",
+      "example": "an"
+    },
+    {
+      "id": 20,
+      "word": "outward",
+      "phonetic": "[ˈaʊtwəd]",
+      "partOfSpeech": "ad.",
+      "definition": "(outwards) 向",
+      "example": "外,在外"
+    },
+    {
+      "id": 21,
+      "word": "parallel",
+      "phonetic": "[\nˈ\np\nærəlel]",
+      "partOfSpeech": "a.",
+      "definition": "(to)平行的;(to)",
+      "example": "相同的"
+    },
+    {
+      "id": 22,
+      "word": "patience",
+      "phonetic": "[\nˈ\np\neɪʃns]",
+      "partOfSpeech": "n.",
+      "definition": "耐心,忍耐",
+      "example": "Her husband was sympathetic at first but his"
+    },
+    {
+      "id": 23,
+      "word": "patrol",
+      "phonetic": "[pəˈtrəʊl]",
+      "partOfSpeech": "n.",
+      "definition": "巡逻,巡查,巡查",
+      "example": "队"
+    },
+    {
+      "id": 24,
+      "word": "perceive",
+      "phonetic": "[pəˈsi:v]",
+      "partOfSpeech": "v.",
+      "definition": "察觉,感知;理",
+      "example": "解,领悟"
+    },
+    {
+      "id": 25,
+      "word": "permit",
+      "phonetic": "[pəˈmɪt]",
+      "partOfSpeech": "v.",
+      "definition": "许可,允许",
+      "example": "n.许可证,执照"
+    },
+    {
+      "id": 26,
+      "word": "persuade",
+      "phonetic": "[pəˈsweɪd]",
+      "partOfSpeech": "v.",
+      "definition": "说服,劝说;(of)",
+      "example": "使相信"
+    },
+    {
+      "id": 27,
+      "word": "pessimistic",
+      "phonetic": "[ˌpesɪˈmɪstɪk]",
+      "partOfSpeech": "a.",
+      "definition": "悲观(主义)的 Not everyone is so pessimistic about the future.",
+      "example": "不是每个人都对未来如此悲观。"
+    },
+    {
+      "id": 28,
+      "word": "pipe",
+      "phonetic": "[paɪp]",
+      "partOfSpeech": "n.",
+      "definition": "管子,导管;烟",
+      "example": "斗;笛"
+    },
+    {
+      "id": 29,
+      "word": "plug",
+      "phonetic": "[plʌg]",
+      "partOfSpeech": "n.",
+      "definition": "塞子,插头",
+      "example": "v.堵塞"
+    },
+    {
+      "id": 30,
+      "word": "plumber",
+      "phonetic": "[\nˈ\np\nlʌmə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "水管工",
+      "example": "When the pipe leaked, we sent for a plumber."
+    },
+    {
+      "id": 31,
+      "word": "pray",
+      "phonetic": "[preɪ]",
+      "partOfSpeech": "v.",
+      "definition": "请求,恳求;祈",
+      "example": "祷,祈求"
+    },
+    {
+      "id": 32,
+      "word": "prediction",
+      "phonetic": "[prɪˈdɪkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "预言;预报",
+      "example": "This great prediction is coming true."
+    },
+    {
+      "id": 33,
+      "word": "pregnant",
+      "phonetic": "[\nˈ\np\nregnənt]",
+      "partOfSpeech": "a.",
+      "definition": "怀孕的;",
+      "example": "pregnant women"
+    },
+    {
+      "id": 34,
+      "word": "pretend",
+      "phonetic": "[prɪˈtend]",
+      "partOfSpeech": "v.",
+      "definition": "假装,装扮",
+      "example": "Don't pretend to know when you don't."
+    },
+    {
+      "id": 35,
+      "word": "prime",
+      "phonetic": "[praɪm]",
+      "partOfSpeech": "a.",
+      "definition": "首要的;最好的,",
+      "example": "第一流的"
+    },
+    {
+      "id": 36,
+      "word": "prince",
+      "phonetic": "[prɪns]",
+      "partOfSpeech": "n.",
+      "definition": "王子,亲王",
+      "example": "He was speaking without the prince's authority."
+    },
+    {
+      "id": 37,
+      "word": "print",
+      "phonetic": "[prɪnt]",
+      "partOfSpeech": "n.",
+      "definition": "印刷,印刷品,字",
+      "example": "体"
+    },
+    {
+      "id": 38,
+      "word": "protection",
+      "phonetic": "[prəˈtekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "保护",
+      "example": "This universal protection sends the message."
+    },
+    {
+      "id": 39,
+      "word": "publication",
+      "phonetic": "[ˌpʌblɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "出版物;出版,发",
+      "example": "行;公布,发表"
+    },
+    {
+      "id": 40,
+      "word": "quotation",
+      "phonetic": "[kwəʊˈteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "引用,引文;报",
+      "example": "价"
+    },
+    {
+      "id": 41,
+      "word": "rail",
+      "phonetic": "[reɪl]",
+      "partOfSpeech": "n.",
+      "definition": "栏杆,铁路",
+      "example": "The president traveled by rail to his home town."
+    },
+    {
+      "id": 42,
+      "word": "rational",
+      "phonetic": "[ˈræʃnəl]",
+      "partOfSpeech": "a.",
+      "definition": "理性的,合理的 He was rational and consistent in the conduct",
+      "example": "of his affairs."
+    },
+    {
+      "id": 43,
+      "word": "rebel",
+      "phonetic": "[ˈrebl]",
+      "partOfSpeech": "v.",
+      "definition": "反抗,反叛,起义",
+      "example": "n.叛逆者,起义者"
+    },
+    {
+      "id": 44,
+      "word": "recall",
+      "phonetic": "[rɪˈkɔ:l]",
+      "partOfSpeech": "v.",
+      "definition": "回忆,回想;撤",
+      "example": "消,收回"
+    },
+    {
+      "id": 45,
+      "word": "receipt",
+      "phonetic": "[rɪˈsi:pt]",
+      "partOfSpeech": "n.",
+      "definition": "收据,收条;收",
+      "example": "到,接到"
+    },
+    {
+      "id": 46,
+      "word": "reception",
+      "phonetic": "[rɪˈsepʃn]",
+      "partOfSpeech": "n.",
+      "definition": "接待,招待会;接",
+      "example": "收,接受,接收效"
+    },
+    {
+      "id": 47,
+      "word": "refer",
+      "phonetic": "[rɪˈfɜ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "参考,查询;(to)",
+      "example": "提到,引用;提交,"
+    },
+    {
+      "id": 48,
+      "word": "reference",
+      "phonetic": "[ˈrefrəns]",
+      "partOfSpeech": "n.",
+      "definition": "提及;参考,参考",
+      "example": "书目;证明书(人)"
+    },
+    {
+      "id": 49,
+      "word": "refrain",
+      "phonetic": "[rɪˈfreɪn]",
+      "partOfSpeech": "vi.",
+      "definition": "抑制;",
+      "example": "n.经常重复的评"
+    },
+    {
+      "id": 50,
+      "word": "regarding",
+      "phonetic": "[rɪˈgɑ:dɪŋ]",
+      "partOfSpeech": "prep.",
+      "definition": "关于",
+      "example": "She has said nothing regarding your request."
+    },
+    {
+      "id": 51,
+      "word": "regardless",
+      "phonetic": "[rɪˈgɑ:dləs]",
+      "partOfSpeech": "ad.",
+      "definition": "不留心的,不",
+      "example": "注意的;(of)不管"
+    },
+    {
+      "id": 52,
+      "word": "reign",
+      "phonetic": "[reɪn]",
+      "partOfSpeech": "v.",
+      "definition": "(over) 统 治 ; 盛",
+      "example": "行 n.统治,支配;"
+    },
+    {
+      "id": 53,
+      "word": "rein",
+      "phonetic": "[reɪn]",
+      "partOfSpeech": "n.",
+      "definition": "缰绳;统治",
+      "example": "vt.控制"
+    },
+    {
+      "id": 54,
+      "word": "relay",
+      "phonetic": "[ˈri:leɪ]",
+      "partOfSpeech": "v.",
+      "definition": "中继,转播,接力",
+      "example": "n.接替人员,替班"
+    },
+    {
+      "id": 55,
+      "word": "relief",
+      "phonetic": "[rɪˈli:f]",
+      "partOfSpeech": "n.",
+      "definition": "(痛苦等)减轻,",
+      "example": "解除;援救,救济"
+    },
+    {
+      "id": 56,
+      "word": "reply",
+      "phonetic": "[rɪ\nˈ\np\nlaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.(to) 回 答 , 答",
+      "example": "复,以…作答"
+    },
+    {
+      "id": 57,
+      "word": "rescue",
+      "phonetic": "[ˈreskju:]",
+      "partOfSpeech": "v.",
+      "definition": "/n.营救,援救",
+      "example": "40 people were rescued."
+    },
+    {
+      "id": 58,
+      "word": "resemble",
+      "phonetic": "[rɪˈzembl]",
+      "partOfSpeech": "v.",
+      "definition": "像,类似",
+      "example": "China's south does not at all resemble the U.S."
+    },
+    {
+      "id": 59,
+      "word": "reserve",
+      "phonetic": "[rɪˈzɜ:v]",
+      "partOfSpeech": "n.",
+      "definition": "储备(物),储备",
+      "example": "金;缄默"
+    },
+    {
+      "id": 60,
+      "word": "resolve",
+      "phonetic": "[rɪˈzɒlv]",
+      "partOfSpeech": "v.",
+      "definition": "决心;(使)分解;",
+      "example": "决议"
+    },
+    {
+      "id": 61,
+      "word": "respective",
+      "phonetic": "[rɪˈspektɪv]",
+      "partOfSpeech": "a.",
+      "definition": "各自的,各个的 All men have their respective duties.",
+      "example": "各人有各人的职责。"
+    },
+    {
+      "id": 62,
+      "word": "resume",
+      "phonetic": "[rɪ'zju:m]",
+      "partOfSpeech": "v.",
+      "definition": "再继续,重新开",
+      "example": "始;再用;恢复"
+    },
+    {
+      "id": 63,
+      "word": "ribbon",
+      "phonetic": "[ˈrɪbən]",
+      "partOfSpeech": "n.",
+      "definition": "缎带,丝带,带,",
+      "example": "带状物"
+    },
+    {
+      "id": 64,
+      "word": "rip",
+      "phonetic": "[rɪp]",
+      "partOfSpeech": "vi.",
+      "definition": "扯破,划破",
+      "example": "But once we rip off the band-aid."
+    },
+    {
+      "id": 65,
+      "word": "rival",
+      "phonetic": "[ˈraɪvl]",
+      "partOfSpeech": "n.",
+      "definition": "竞争者,对手",
+      "example": "v.竞争,对抗"
+    },
+    {
+      "id": 66,
+      "word": "roll",
+      "phonetic": "[rəʊl]",
+      "partOfSpeech": "v.",
+      "definition": "滚动;使摇摆;",
+      "example": "卷;(up)卷起"
+    },
+    {
+      "id": 67,
+      "word": "roof",
+      "phonetic": "[ru:f]",
+      "partOfSpeech": "n.",
+      "definition": "屋顶,顶",
+      "example": "Last night some of the prisoners appeared on"
+    },
+    {
+      "id": 68,
+      "word": "route",
+      "phonetic": "[ru:t]",
+      "partOfSpeech": "n.",
+      "definition": "路线,路程",
+      "example": "People tend to underestimate the time it takes to"
+    },
+    {
+      "id": 69,
+      "word": "rub",
+      "phonetic": "[rʌb]",
+      "partOfSpeech": "v.",
+      "definition": "擦,摩擦",
+      "example": "She couldn't rub off the blood stain on her"
+    },
+    {
+      "id": 70,
+      "word": "ruby",
+      "phonetic": "[ˈru:bi]",
+      "partOfSpeech": "n.",
+      "definition": "红宝石",
+      "example": "She is wearing a small ruby earring."
+    },
+    {
+      "id": 71,
+      "word": "sacred",
+      "phonetic": "[ˈseɪkrɪd]",
+      "partOfSpeech": "a.",
+      "definition": "神 圣 的 ; 宗 教",
+      "example": "的;庄严的"
+    },
+    {
+      "id": 72,
+      "word": "sample",
+      "phonetic": "[ˈsɑ:mpl]",
+      "partOfSpeech": "n.",
+      "definition": "样品,标本",
+      "example": "v.抽样试验,抽样"
+    },
+    {
+      "id": 73,
+      "word": "sanction",
+      "phonetic": "[ˈsæŋkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "制裁,处罚;批",
+      "example": "准,认可;约束力"
+    },
+    {
+      "id": 74,
+      "word": "scan",
+      "phonetic": "[skæn]",
+      "partOfSpeech": "v.",
+      "definition": "细看,审视;浏",
+      "example": "览;扫描"
+    },
+    {
+      "id": 75,
+      "word": "scarce",
+      "phonetic": "[skeəs]",
+      "partOfSpeech": "a.",
+      "definition": "缺乏的,不足的;",
+      "example": "稀少的,罕见的"
+    },
+    {
+      "id": 76,
+      "word": "scare",
+      "phonetic": "[skeə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "惊恐,恐慌",
+      "example": "v.惊吓,受惊"
+    },
+    {
+      "id": 77,
+      "word": "scatter",
+      "phonetic": "[ˈskætə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "散开,驱散;散",
+      "example": "布,散播"
+    },
+    {
+      "id": 78,
+      "word": "scenery",
+      "phonetic": "[ˈsi:nəri]",
+      "partOfSpeech": "n.",
+      "definition": "风景,舞台布景 They pay little attention to the passing scenery.",
+      "example": "（"
+    },
+    {
+      "id": 79,
+      "word": "scholar",
+      "phonetic": "[ˈskɒlə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "学者",
+      "example": "He was a highly regarded scholar."
+    },
+    {
+      "id": 80,
+      "word": "search",
+      "phonetic": "[sɜ:tʃ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.(for)搜索,寻",
+      "example": "找,探查"
+    },
+    {
+      "id": 81,
+      "word": "secondary",
+      "phonetic": "[ˈsekəndri]",
+      "partOfSpeech": "a.",
+      "definition": "次要的,二级的;",
+      "example": "中级的,第二的"
+    },
+    {
+      "id": 82,
+      "word": "senator",
+      "phonetic": "[ˈsenətə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "参议员",
+      "example": "The senator claims to have been misquoted in"
+    },
+    {
+      "id": 83,
+      "word": "sew",
+      "phonetic": "[səʊ]",
+      "partOfSpeech": "v.",
+      "definition": "缝,缝纫",
+      "example": "I took a sewing and design course."
+    },
+    {
+      "id": 84,
+      "word": "sheer",
+      "phonetic": "[ʃɪə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "纯粹的,十足的,",
+      "example": "全然的;陡峭的,"
+    },
+    {
+      "id": 85,
+      "word": "shore",
+      "phonetic": "[ʃɔ:(r)]",
+      "partOfSpeech": "n.",
+      "definition": "海滨,湖滨",
+      "example": "The discussion took place in a famous villa on"
+    },
+    {
+      "id": 86,
+      "word": "sick",
+      "phonetic": "[sɪk]",
+      "partOfSpeech": "a.",
+      "definition": "有病的,患病的;",
+      "example": "恶心的,想吐的"
+    },
+    {
+      "id": 87,
+      "word": "silicon",
+      "phonetic": "[ˈsɪlɪkən]",
+      "partOfSpeech": "n.",
+      "definition": "硅",
+      "example": "This company pioneered the use of silicon chip."
+    },
+    {
+      "id": 88,
+      "word": "slip",
+      "phonetic": "[slɪp]",
+      "partOfSpeech": "v.",
+      "definition": "滑,滑倒;滑掉;",
+      "example": "溜走"
+    },
+    {
+      "id": 89,
+      "word": "spin",
+      "phonetic": "[spɪn]",
+      "partOfSpeech": "v.",
+      "definition": "旋转;纺纱;织",
+      "example": "网,吐丝"
+    },
+    {
+      "id": 90,
+      "word": "spite",
+      "phonetic": "[spaɪt]",
+      "partOfSpeech": "n.",
+      "definition": "恶意;怨恨",
+      "example": "In spite of her hostility, she was attracted to"
+    },
+    {
+      "id": 91,
+      "word": "spoil",
+      "phonetic": "[spɔɪl]",
+      "partOfSpeech": "v.",
+      "definition": "损坏,搞错;宠",
+      "example": "坏,溺爱"
+    },
+    {
+      "id": 92,
+      "word": "spray",
+      "phonetic": "[spreɪ]",
+      "partOfSpeech": "n.",
+      "definition": "喷雾,飞沫,浪",
+      "example": "花,水花"
+    },
+    {
+      "id": 93,
+      "word": "spread",
+      "phonetic": "[spred]",
+      "partOfSpeech": "v.",
+      "definition": "/n.伸开,伸展;散",
+      "example": "布,传播"
+    },
+    {
+      "id": 94,
+      "word": "staple",
+      "phonetic": "[ˈsteɪpl]",
+      "partOfSpeech": "n.",
+      "definition": "主要产品",
+      "example": "plastic staples"
+    },
+    {
+      "id": 95,
+      "word": "starve",
+      "phonetic": "[stɑ:v]",
+      "partOfSpeech": "v.",
+      "definition": "(使)饿死,饿得",
+      "example": "慌,挨饿"
+    },
+    {
+      "id": 96,
+      "word": "steady",
+      "phonetic": "[ˈstedi]",
+      "partOfSpeech": "a.",
+      "definition": "稳定的,不变的;",
+      "example": "坚定的"
+    },
+    {
+      "id": 97,
+      "word": "steal",
+      "phonetic": "[sti:l]",
+      "partOfSpeech": "v.",
+      "definition": "偷,窃取;",
+      "example": "The thief was perceived to steal into the house."
+    },
+    {
+      "id": 98,
+      "word": "stockpile",
+      "phonetic": "[ˈstɒkpaɪl]",
+      "partOfSpeech": "n.",
+      "definition": "储蓄,积蓄,库存People are stockpiling food for the coming",
+      "example": "winter."
+    },
+    {
+      "id": 99,
+      "word": "stripe",
+      "phonetic": "[straɪp]",
+      "partOfSpeech": "n.",
+      "definition": "条纹",
+      "example": "The walls in the front bedroom are painted with"
+    },
+    {
+      "id": 100,
+      "word": "surge",
+      "phonetic": "[sɜ:dʒ]",
+      "partOfSpeech": "n.",
+      "definition": "激增",
+      "example": "vt.激增;汹涌,澎"
+    },
+    {
+      "id": 101,
+      "word": "agree",
+      "phonetic": "[əˈgri:]",
+      "partOfSpeech": "v.",
+      "definition": "(+to,with) 同",
+      "example": "意, 赞成; 一"
+    },
+    {
+      "id": 102,
+      "word": "address",
+      "phonetic": "[əˈdres]",
+      "partOfSpeech": "n.",
+      "definition": "地址;称呼,演",
+      "example": "讲"
+    },
+    {
+      "id": 103,
+      "word": "discover",
+      "phonetic": "[dɪˈskʌvə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "发现,显示",
+      "example": "aims at discovering talents"
+    },
+    {
+      "id": 104,
+      "word": "discovery",
+      "phonetic": "[dɪˈskʌvəri]",
+      "partOfSpeech": "n.",
+      "definition": "发现;被发现",
+      "example": "的事物"
+    },
+    {
+      "id": 105,
+      "word": "effect",
+      "phonetic": "[ɪn'kɝɪdʒmənt]",
+      "partOfSpeech": "n.",
+      "definition": "(+on)作用,影",
+      "example": "响;结果"
+    },
+    {
+      "id": 106,
+      "word": "effective",
+      "phonetic": "[ɪ\n'\nf\nektɪv]",
+      "partOfSpeech": "a.",
+      "definition": "有效果的,生",
+      "example": "效的"
+    },
+    {
+      "id": 107,
+      "word": "efficient",
+      "phonetic": "[ɪ\n'\nf\nɪʃnt]",
+      "partOfSpeech": "a.",
+      "definition": "效率高的;",
+      "example": "They tend to be more efficient."
+    },
+    {
+      "id": 108,
+      "word": "efficiency",
+      "phonetic": "[ɪ\n'\nf\nɪʃ(ə)nsɪ]",
+      "partOfSpeech": "n.",
+      "definition": "效率;功效",
+      "example": "There are many ways to increase agricultural"
+    },
+    {
+      "id": 109,
+      "word": "consider",
+      "phonetic": "[kənˈsɪdə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "认为,把…看",
+      "example": "作;考虑,细想;"
+    },
+    {
+      "id": 110,
+      "word": "considerable",
+      "phonetic": "[kənˈsɪdərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "相当大(或多)",
+      "example": "的,可观的;值"
+    },
+    {
+      "id": 111,
+      "word": "considerate",
+      "phonetic": "[kənˈsɪdərət]",
+      "partOfSpeech": "a.",
+      "definition": "考虑周到的,",
+      "example": "体谅的"
+    },
+    {
+      "id": 112,
+      "word": "worth",
+      "phonetic": "[wɜ:θ]",
+      "partOfSpeech": "a.",
+      "definition": "值的,值得的",
+      "example": "n.价值"
+    },
+    {
+      "id": 113,
+      "word": "worthy",
+      "phonetic": "[ˈwɜ:ði]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)值得…",
+      "example": "的,有价值的,"
+    },
+    {
+      "id": 114,
+      "word": "worthwhile",
+      "phonetic": "[ˌwɜ:θˈwaɪl]",
+      "partOfSpeech": "a.",
+      "definition": "值得做的",
+      "example": "may prove to be a worthwhile purchase"
+    },
+    {
+      "id": 115,
+      "word": "worthless",
+      "phonetic": "[ˈwɜ:θləs]",
+      "partOfSpeech": "a.",
+      "definition": "无价值的,无",
+      "example": "用的"
+    },
+    {
+      "id": 116,
+      "word": "absent",
+      "phonetic": "[ˈæbsənt]",
+      "partOfSpeech": "a.",
+      "definition": "缺席的,不在",
+      "example": "场的;心不在焉"
+    },
+    {
+      "id": 117,
+      "word": "vegetarian",
+      "phonetic": "[ˌvedʒəˈteəriən]",
+      "partOfSpeech": "n.",
+      "definition": "素食主义者 Over 1.5 million people in Britain are",
+      "example": "vegetarian."
+    },
+    {
+      "id": 118,
+      "word": "affect",
+      "phonetic": "[əˈfekt]",
+      "partOfSpeech": "v.",
+      "definition": "影响;（使）感",
+      "example": "动"
+    },
+    {
+      "id": 119,
+      "word": "affection",
+      "phonetic": "[əˈfekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "爱,感情",
+      "example": "She thought of him with affection."
+    },
+    {
+      "id": 120,
+      "word": "achievement",
+      "phonetic": "[əˈtʃi:vmənt]",
+      "partOfSpeech": "n.",
+      "definition": "完成,达到,成",
+      "example": "就,成绩"
+    },
+    {
+      "id": 121,
+      "word": "agreement",
+      "phonetic": "[əˈgri:mənt]",
+      "partOfSpeech": "n.",
+      "definition": "同意,一致;协",
+      "example": "定,协议"
+    },
+    {
+      "id": 122,
+      "word": "alter",
+      "phonetic": "[ˈɔ:ltə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "改变,变更",
+      "example": "Versions that had been altered to appear"
+    },
+    {
+      "id": 123,
+      "word": "proverb",
+      "phonetic": "[\nˈ\np\nrɒvɜ:b]",
+      "partOfSpeech": "n.",
+      "definition": "谚语;",
+      "example": "An old Arab proverb says, 'The enemy of"
+    },
+    {
+      "id": 124,
+      "word": "reflect",
+      "phonetic": "[rɪˈflekt]",
+      "partOfSpeech": "v.",
+      "definition": "反映,表现;反",
+      "example": "省,细想;考虑"
+    },
+    {
+      "id": 125,
+      "word": "reflection",
+      "phonetic": "[rɪˈflekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "映像,倒影;反",
+      "example": "省,沉思"
+    },
+    {
+      "id": 126,
+      "word": "specific",
+      "phonetic": "[spəˈsɪfɪk]",
+      "partOfSpeech": "a.",
+      "definition": "明确的,具体",
+      "example": "的;特定的"
+    },
+    {
+      "id": 127,
+      "word": "specification",
+      "phonetic": "[ˌspesɪfɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "详述;规格,说",
+      "example": "明书,规范"
+    },
+    {
+      "id": 128,
+      "word": "vegetable",
+      "phonetic": "[ˈvedʒtəbl]",
+      "partOfSpeech": "n.",
+      "definition": "蔬菜,植物",
+      "example": "a.植物的,蔬菜"
+    },
+    {
+      "id": 129,
+      "word": "abuse",
+      "phonetic": "[əˈbju:s]",
+      "partOfSpeech": "v.",
+      "definition": "/n.滥用;虐待;",
+      "example": "谩骂"
+    },
+    {
+      "id": 130,
+      "word": "large",
+      "phonetic": "[lɑ:dʒ]",
+      "partOfSpeech": "a.",
+      "definition": "大的,广大的,",
+      "example": "大规模的"
+    },
+    {
+      "id": 131,
+      "word": "largely",
+      "phonetic": "[ˈlɑ:dʒli]",
+      "partOfSpeech": "ad.",
+      "definition": "主要地,基",
+      "example": "本上;大量地,"
+    },
+    {
+      "id": 132,
+      "word": "lead",
+      "phonetic": "[li:d]",
+      "partOfSpeech": "v.",
+      "definition": "领导;领",
+      "example": "先;(to)通向 n."
+    },
+    {
+      "id": 133,
+      "word": "leader",
+      "phonetic": "[ˈli:də(r)]",
+      "partOfSpeech": "n.",
+      "definition": "领袖,首领",
+      "example": "We are going to hold a rally next month to"
+    },
+    {
+      "id": 134,
+      "word": "dismiss",
+      "phonetic": "[dɪsˈmɪs]",
+      "partOfSpeech": "v.",
+      "definition": "免职,解雇,解",
+      "example": "散,驳回,拒绝"
+    },
+    {
+      "id": 135,
+      "word": "absolute",
+      "phonetic": "[ˈæbsəlu:t]",
+      "partOfSpeech": "a.",
+      "definition": "绝对的,完全",
+      "example": "的"
+    },
+    {
+      "id": 136,
+      "word": "prove",
+      "phonetic": "[pru:v]",
+      "partOfSpeech": "v.",
+      "definition": "证明,证实;检",
+      "example": "验;考验;鉴定;"
+    },
+    {
+      "id": 137,
+      "word": "alternate",
+      "phonetic": "[ɔ:lˈtɜ:nət]",
+      "partOfSpeech": "a.",
+      "definition": "交替的,轮流",
+      "example": "的"
+    },
+    {
+      "id": 138,
+      "word": "alternative",
+      "phonetic": "[ɔ:lˈtɜ:nətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "两者挑一的",
+      "example": "n.可供选择的"
+    },
+    {
+      "id": 139,
+      "word": "impress",
+      "phonetic": "[ɪm\nˈ\np\nres]",
+      "partOfSpeech": "v.",
+      "definition": "(on)印,盖印;",
+      "example": "留下印象,引人"
+    },
+    {
+      "id": 140,
+      "word": "impression",
+      "phonetic": "[ɪm\nˈ\np\nreʃn]",
+      "partOfSpeech": "n.",
+      "definition": "印象,感想;盖",
+      "example": "印,压痕"
+    },
+    {
+      "id": 141,
+      "word": "impressive",
+      "phonetic": "[ɪm\nˈ\np\nresɪv]",
+      "partOfSpeech": "a.",
+      "definition": "给人深刻印",
+      "example": "象的,感人的"
+    },
+    {
+      "id": 143,
+      "word": "abolish",
+      "phonetic": "[əˈbɒlɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "废除,取消",
+      "example": "。This law abolished special"
+    },
+    {
+      "id": 145,
+      "word": "emotion",
+      "phonetic": "[ɪˈməʊʃn]",
+      "partOfSpeech": "n.",
+      "definition": "情绪,情感",
+      "example": "We learn to control our emotions."
+    },
+    {
+      "id": 146,
+      "word": "emotional",
+      "phonetic": "[ɪˈməʊʃənl]",
+      "partOfSpeech": "a.",
+      "definition": "感情的,情绪",
+      "example": "的"
+    },
+    {
+      "id": 147,
+      "word": "number",
+      "phonetic": "[ˈnʌmbə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "数(目);",
+      "example": "v.编号;总计"
+    },
+    {
+      "id": 148,
+      "word": "pain",
+      "phonetic": "[peɪn]",
+      "partOfSpeech": "n.",
+      "definition": "痛,痛苦;(pl.)",
+      "example": "努力,劳苦"
+    },
+    {
+      "id": 149,
+      "word": "painful",
+      "phonetic": "[\nˈ\np\neɪnfl]",
+      "partOfSpeech": "a.",
+      "definition": "疼痛的,使痛",
+      "example": "苦的"
+    },
+    {
+      "id": 150,
+      "word": "several",
+      "phonetic": "[ˈsevrəl]",
+      "partOfSpeech": "a.",
+      "definition": "几个,若干,数",
+      "example": "个"
+    },
+    {
+      "id": 151,
+      "word": "achieve",
+      "phonetic": "[əˈtʃi:v]",
+      "partOfSpeech": "v.",
+      "definition": "完成;达到,获",
+      "example": "得"
+    },
+    {
+      "id": 152,
+      "word": "achievement",
+      "phonetic": "[əˈtʃi:vmənt]",
+      "partOfSpeech": "n.",
+      "definition": "完成;达到,成",
+      "example": "就,成绩"
+    },
+    {
+      "id": 153,
+      "word": "August",
+      "phonetic": "[ˈɔ:gəst]",
+      "partOfSpeech": "n.",
+      "definition": "八月,简写：",
+      "example": "Aug."
+    },
+    {
+      "id": 154,
+      "word": "education",
+      "phonetic": "[ˌedʒuˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "教育,培养,训",
+      "example": "练"
+    },
+    {
+      "id": 155,
+      "word": "concern",
+      "phonetic": "[kənˈsɜ:n]",
+      "partOfSpeech": "v.",
+      "definition": "涉及,关系到",
+      "example": "v./n. 关心 n.(利"
+    },
+    {
+      "id": 157,
+      "word": "indulge",
+      "phonetic": "[ɪnˈdʌldʒ]",
+      "partOfSpeech": "vt.",
+      "definition": "（",
+      "example": "+in）纵情"
+    },
+    {
+      "id": 158,
+      "word": "indulgence",
+      "phonetic": "[ɪnˈdʌldʒəns]",
+      "partOfSpeech": "n.",
+      "definition": "纵容;放任",
+      "example": "The king's indulgence towards his sons"
+    },
+    {
+      "id": 160,
+      "word": "should",
+      "phonetic": "[ʃʊd]",
+      "partOfSpeech": "shall",
+      "definition": "的过去",
+      "example": "式;(表示义务,"
+    },
+    {
+      "id": 161,
+      "word": "shoulder",
+      "phonetic": "[ˈʃəʊldə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "肩,肩部",
+      "example": "v.肩负,承担"
+    },
+    {
+      "id": 162,
+      "word": "salary",
+      "phonetic": "[ˈsæləri]",
+      "partOfSpeech": "n.",
+      "definition": "薪金,薪水",
+      "example": "ask for a moderate salary"
+    },
+    {
+      "id": 163,
+      "word": "image",
+      "phonetic": "[ˈ\nɪmɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "形象;肖像,影",
+      "example": "像,映象"
+    },
+    {
+      "id": 164,
+      "word": "imagine",
+      "phonetic": "[ɪˈmædʒɪn]",
+      "partOfSpeech": "v.",
+      "definition": "想象,设想,料",
+      "example": "想"
+    },
+    {
+      "id": 165,
+      "word": "imagination",
+      "phonetic": "[ɪˌmædʒɪˈneɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "想象,空想,想",
+      "example": "像力"
+    },
+    {
+      "id": 166,
+      "word": "mature",
+      "phonetic": "[məˈtʃʊə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "成熟的,熟的;",
+      "example": "成年人的"
+    },
+    {
+      "id": 167,
+      "word": "eventually",
+      "phonetic": "[ɪˈventʃuəli]",
+      "partOfSpeech": "ad.",
+      "definition": "终于,最后 The flight eventually got away six hours late.",
+      "example": "那个航班推迟了 6 个小时后终于起飞。"
+    },
+    {
+      "id": 168,
+      "word": "maturity",
+      "phonetic": "[məˈtʃʊərəti]",
+      "partOfSpeech": "n.",
+      "definition": "成熟",
+      "example": "Her speech showed great maturity and"
+    },
+    {
+      "id": 169,
+      "word": "September",
+      "phonetic": "[sepˈtembə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "九月;缩写：",
+      "example": "Sep."
+    },
+    {
+      "id": 170,
+      "word": "option",
+      "phonetic": "[ˈɒpʃn]",
+      "partOfSpeech": "n.",
+      "definition": "选择",
+      "example": "Impulsive spending isn't an option."
+    },
+    {
+      "id": 171,
+      "word": "optional",
+      "phonetic": "[ˈɒpʃənl]",
+      "partOfSpeech": "a.",
+      "definition": "可以任选的,",
+      "example": "非强制的"
+    },
+    {
+      "id": 173,
+      "word": "sense",
+      "phonetic": "[sens]",
+      "partOfSpeech": "n.",
+      "definition": "感官;感觉;意",
+      "example": "义"
+    },
+    {
+      "id": 174,
+      "word": "sensible",
+      "phonetic": "[ˈsensəbl]",
+      "partOfSpeech": "a.",
+      "definition": "明智的,达理",
+      "example": "的;可觉察的,"
+    },
+    {
+      "id": 175,
+      "word": "sensitive",
+      "phonetic": "[ˈsensətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)敏感的,",
+      "example": "易受伤害的;灵"
+    },
+    {
+      "id": 176,
+      "word": "insensitive",
+      "phonetic": "[ɪnˈsensətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "感觉迟钝的,",
+      "example": "对…没有感觉"
+    },
+    {
+      "id": 177,
+      "word": "moderate",
+      "phonetic": "[ˈmɒdərət]",
+      "partOfSpeech": "a.",
+      "definition": "中等的,适度",
+      "example": "的,温和的,稳"
+    },
+    {
+      "id": 178,
+      "word": "transform",
+      "phonetic": "[trænsˈfɔ:m]",
+      "partOfSpeech": "v.",
+      "definition": "改变,变换;变",
+      "example": "压;转化;改造,"
+    },
+    {
+      "id": 179,
+      "word": "transformation",
+      "phonetic": "[ˌtrænsfəˈmeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "改变;变化",
+      "example": "The transformation of American sea power"
+    },
+    {
+      "id": 180,
+      "word": "evident",
+      "phonetic": "[ˈevɪdənt]",
+      "partOfSpeech": "a.",
+      "definition": "明显的,明白",
+      "example": "的"
+    },
+    {
+      "id": 181,
+      "word": "evidence",
+      "phonetic": "[ˈevɪdəns]",
+      "partOfSpeech": "n.",
+      "definition": "根据,证据;形",
+      "example": "迹,迹象"
+    },
+    {
+      "id": 182,
+      "word": "paragraph",
+      "phonetic": "[\nˈ\np\nærəgrɑ:f]",
+      "partOfSpeech": "n.",
+      "definition": "段,节;小新",
+      "example": "闻,短评"
+    },
+    {
+      "id": 183,
+      "word": "evoke",
+      "phonetic": "[ɪ'vəʊk]",
+      "partOfSpeech": "vt.",
+      "definition": "唤起,引起",
+      "example": "…evoke a tradition of English landscape"
+    },
+    {
+      "id": 184,
+      "word": "engage",
+      "phonetic": "[ɪn'ɡedʒ]",
+      "partOfSpeech": "v.",
+      "definition": "(+in)(使)从事",
+      "example": "于 ,( 使 ) 忙"
+    },
+    {
+      "id": 185,
+      "word": "engagement",
+      "phonetic": "[ɪn'ɡedʒmənt]",
+      "partOfSpeech": "n.",
+      "definition": "约会;婚约,订",
+      "example": "婚,参与"
+    },
+    {
+      "id": 186,
+      "word": "accelerate",
+      "phonetic": "[əkˈsɛləˌret]",
+      "partOfSpeech": "v.",
+      "definition": "加速,促进",
+      "example": "will accelerate global environmental change"
+    },
+    {
+      "id": 187,
+      "word": "attention",
+      "phonetic": "[ə'tenʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "注意(力),留",
+      "example": "心;立正"
+    },
+    {
+      "id": 188,
+      "word": "inevitable",
+      "phonetic": "[ɪn'evɪtəb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "不可避免的,",
+      "example": "必然发生的"
+    },
+    {
+      "id": 189,
+      "word": "attribute",
+      "phonetic": "[ə'trɪbjuːt]",
+      "partOfSpeech": "n.",
+      "definition": "属性,品质",
+      "example": "v.(+to)把…归"
+    },
+    {
+      "id": 190,
+      "word": "bachelor",
+      "phonetic": "['bætʃələ]",
+      "partOfSpeech": "n.",
+      "definition": "单身汉;学士",
+      "example": "(学位)"
+    },
+    {
+      "id": 191,
+      "word": "bare",
+      "phonetic": "[beə]",
+      "partOfSpeech": "a.",
+      "definition": "赤裸的,空的;",
+      "example": "稀少的,仅有的"
+    },
+    {
+      "id": 192,
+      "word": "barely",
+      "phonetic": "['beəlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "赤裸裸地,",
+      "example": "无遮蔽地;仅"
+    },
+    {
+      "id": 193,
+      "word": "abnormal",
+      "phonetic": "[æb'nɔːml]",
+      "partOfSpeech": "a.",
+      "definition": "反常的,不正",
+      "example": "常的"
+    },
+    {
+      "id": 195,
+      "word": "respect",
+      "phonetic": "[rɪ'spekt]",
+      "partOfSpeech": "v.",
+      "definition": "尊敬,尊重",
+      "example": "n.尊敬,尊重"
+    },
+    {
+      "id": 196,
+      "word": "respectful",
+      "phonetic": "[rɪ'spɛktfəl]",
+      "partOfSpeech": "a.",
+      "definition": "充满敬意的,",
+      "example": "有礼貌的"
+    },
+    {
+      "id": 197,
+      "word": "zone",
+      "phonetic": "[zəʊn]",
+      "partOfSpeech": "n.",
+      "definition": "地区,区域,地",
+      "example": "带"
+    },
+    {
+      "id": 198,
+      "word": "practice",
+      "phonetic": "[\n'\np\nræktɪs]",
+      "partOfSpeech": "n.",
+      "definition": "练习,实习;实",
+      "example": "践,实际;v.练习"
+    },
+    {
+      "id": 199,
+      "word": "practical",
+      "phonetic": "[\n'\np\nræktɪk(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "实际的,实用",
+      "example": "的"
+    },
+    {
+      "id": 200,
+      "word": "practically",
+      "phonetic": "[\n'\np\nræktɪk(ə)l]",
+      "partOfSpeech": "ad.",
+      "definition": "几乎,实际",
+      "example": "上,简直"
+    },
+    {
+      "id": 201,
+      "word": "devalue",
+      "phonetic": "[ˌdi:ˈvælju:]",
+      "partOfSpeech": "vt.",
+      "definition": "减低< 货",
+      "example": "币> 的价值,贬"
+    },
+    {
+      "id": 202,
+      "word": "overvalue",
+      "phonetic": "[ˌəʊvəˈvælju:]",
+      "partOfSpeech": "v.",
+      "definition": "对…估价过",
+      "example": "高,高估;对…看"
+    },
+    {
+      "id": 203,
+      "word": "independent",
+      "phonetic": "[,ɪndɪ\n'\np\nendənt]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)独立的,",
+      "example": "自主的"
+    },
+    {
+      "id": 204,
+      "word": "independence",
+      "phonetic": "[ɪndɪ\n'\np\nend(ə)ns]",
+      "partOfSpeech": "n.",
+      "definition": "独立,自主",
+      "example": "A gap year pushes them ahead by preparing"
+    },
+    {
+      "id": 205,
+      "word": "express",
+      "phonetic": "[ɪk'sprɛs]",
+      "partOfSpeech": "v.",
+      "definition": "表达,表示 a.",
+      "example": "特快的,快速的"
+    },
+    {
+      "id": 206,
+      "word": "expression",
+      "phonetic": "[ɪk'sprɛʃən]",
+      "partOfSpeech": "n.",
+      "definition": "表达,表示;词",
+      "example": "句,措词;式,符"
+    },
+    {
+      "id": 207,
+      "word": "force",
+      "phonetic": "[fɔ:s]",
+      "partOfSpeech": "v.",
+      "definition": "强迫（",
+      "example": "~sb to"
+    },
+    {
+      "id": 208,
+      "word": "geometry",
+      "phonetic": "[dʒiˈɒmətri]",
+      "partOfSpeech": "n.",
+      "definition": "几何(学)",
+      "example": "Nothing is gained by forcing students to"
+    },
+    {
+      "id": 209,
+      "word": "inferiority",
+      "phonetic": "[ɪnˌ\nfɪəriˈɒrəti]",
+      "partOfSpeech": "n.",
+      "definition": "次等;下等",
+      "example": "Working with your hands is seen as almost a"
+    },
+    {
+      "id": 210,
+      "word": "cautious",
+      "phonetic": "[ˈkɔ:ʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "(+of )小心的,",
+      "example": "谨慎的"
+    },
+    {
+      "id": 211,
+      "word": "motivate",
+      "phonetic": "[ˈməʊtɪveɪt]",
+      "partOfSpeech": "v.",
+      "definition": "刺激;使有动",
+      "example": "机;激发…的积"
+    },
+    {
+      "id": 212,
+      "word": "motion",
+      "phonetic": "[ˈməʊʃn]",
+      "partOfSpeech": "n.",
+      "definition": "运动,动;提议,",
+      "example": "动议"
+    },
+    {
+      "id": 216,
+      "word": "occupy",
+      "phonetic": "['ɒkjʊpaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "占,占用;占据,",
+      "example": "占领;使忙碌,使"
+    },
+    {
+      "id": 217,
+      "word": "occupation",
+      "phonetic": "[ɒkjʊ\n'\np\neɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "职业,工作",
+      "example": "hold an occupation longer"
+    },
+    {
+      "id": 218,
+      "word": "gap",
+      "phonetic": "[gæp]",
+      "partOfSpeech": "n.",
+      "definition": "间隙,缺口",
+      "example": "There is a gap in working-class jobs."
+    },
+    {
+      "id": 220,
+      "word": "hardly",
+      "phonetic": "[ˈhɑ:dli]",
+      "partOfSpeech": "ad.",
+      "definition": "几乎不,简直",
+      "example": "不;仅仅"
+    },
+    {
+      "id": 221,
+      "word": "support",
+      "phonetic": "[sə\nˈ\np\nɔ:t]",
+      "partOfSpeech": "v.",
+      "definition": "支撑;支持;供",
+      "example": "养,维持 n.支撑"
+    },
+    {
+      "id": 222,
+      "word": "employment",
+      "phonetic": "[ɪm\nˈ\np\nlɔɪmənt]",
+      "partOfSpeech": "n.",
+      "definition": "雇用;使用;工",
+      "example": "作,职业"
+    },
+    {
+      "id": 223,
+      "word": "supporter",
+      "phonetic": "[sə\nˈ\np\nɔ:tə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "支持者;扶养",
+      "example": "者;支撑物,支柱"
+    },
+    {
+      "id": 224,
+      "word": "distraction",
+      "phonetic": "[dɪˈstrækʃn]",
+      "partOfSpeech": "n.",
+      "definition": "注意力分散;",
+      "example": "使人分心的事"
+    },
+    {
+      "id": 225,
+      "word": "master",
+      "phonetic": "[ˈmɑ:stə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "师傅,硕士 v.",
+      "example": "精通,掌握 a.主"
+    },
+    {
+      "id": 226,
+      "word": "inspire",
+      "phonetic": "[ɪn'spaɪə]",
+      "partOfSpeech": "v.",
+      "definition": "鼓舞,激起;使",
+      "example": "产生灵感"
+    },
+    {
+      "id": 227,
+      "word": "army",
+      "phonetic": "[ˈɑ:mi]",
+      "partOfSpeech": "n.",
+      "definition": "军(队),陆军;",
+      "example": "大群"
+    },
+    {
+      "id": 228,
+      "word": "stick",
+      "phonetic": "[stɪk]",
+      "partOfSpeech": "n.",
+      "definition": "棍,棒,手杖",
+      "example": "v.刺,戳,扎;粘贴"
+    },
+    {
+      "id": 230,
+      "word": "schedule",
+      "phonetic": "[ˈʃedju:l]",
+      "partOfSpeech": "n.",
+      "definition": "时间表,进度",
+      "example": "表 v.安排,预定"
+    },
+    {
+      "id": 231,
+      "word": "indispensable",
+      "phonetic": "[ɪndɪ'spensəb(ə)l \n]",
+      "partOfSpeech": "a.",
+      "definition": "(+to,for)必不",
+      "example": "可少的,必需的"
+    },
+    {
+      "id": 232,
+      "word": "approach",
+      "phonetic": "[ə\nˈ\np\nrəʊtʃ]",
+      "partOfSpeech": "v.",
+      "definition": "靠近,接近,邻",
+      "example": "近 n.方法,途"
+    },
+    {
+      "id": 233,
+      "word": "generation",
+      "phonetic": "[dʒenə'reɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "产生,发生;一",
+      "example": "代(人)"
+    },
+    {
+      "id": 234,
+      "word": "inspiration",
+      "phonetic": "[ɪnspəˈreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "灵感;鼓舞,激",
+      "example": "励"
+    },
+    {
+      "id": 235,
+      "word": "generate",
+      "phonetic": "['dʒenəreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "产生,发生",
+      "example": "Most cities generate a complex brew of"
+    },
+    {
+      "id": 236,
+      "word": "anecdote",
+      "phonetic": "['ænɪkdəʊt]",
+      "partOfSpeech": "n.",
+      "definition": "轶事;奇闻",
+      "example": "There are plenty of anecdotes and"
+    },
+    {
+      "id": 237,
+      "word": "elite",
+      "phonetic": "[ɪˈliː t]",
+      "partOfSpeech": "n.",
+      "definition": "(总称)上层人",
+      "example": "士,精英;出类拔"
+    },
+    {
+      "id": 238,
+      "word": "pledge",
+      "phonetic": "[pledʒ]",
+      "partOfSpeech": "n.",
+      "definition": "誓约;保证",
+      "example": "v.发誓;保证"
+    },
+    {
+      "id": 239,
+      "word": "plenty",
+      "phonetic": "[\n'\np\nlentɪ]",
+      "partOfSpeech": "n.",
+      "definition": "充分（表示情",
+      "example": "况、状态丰富）"
+    },
+    {
+      "id": 240,
+      "word": "roughly",
+      "phonetic": "['rʌflɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "粗略地;大",
+      "example": "约;粗暴地;粗"
+    },
+    {
+      "id": 241,
+      "word": "plentiful",
+      "phonetic": "[\n'\np\nlɛntɪfəl]",
+      "partOfSpeech": "a.",
+      "definition": "富裕的,丰富",
+      "example": "的"
+    },
+    {
+      "id": 243,
+      "word": "feather",
+      "phonetic": "['feðə]",
+      "partOfSpeech": "n.",
+      "definition": "羽毛;翎毛",
+      "example": "a hat that she had made herself from black"
+    },
+    {
+      "id": 244,
+      "word": "flock",
+      "phonetic": "[flɒk]",
+      "partOfSpeech": "n.",
+      "definition": "群",
+      "example": "vi.聚集;成群而"
+    },
+    {
+      "id": 245,
+      "word": "purpose",
+      "phonetic": "[\n'\np\nɜːpəs]",
+      "partOfSpeech": "n.",
+      "definition": "目的,意图",
+      "example": "But creating a future army of coders is not"
+    },
+    {
+      "id": 246,
+      "word": "charity",
+      "phonetic": "['tʃærɪtɪ]",
+      "partOfSpeech": "n.",
+      "definition": "慈善(团体),",
+      "example": "仁慈,施舍"
+    },
+    {
+      "id": 247,
+      "word": "federal",
+      "phonetic": "['fed(ə)r(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "联邦的",
+      "example": "federal government"
+    },
+    {
+      "id": 248,
+      "word": "content",
+      "phonetic": "[kən'tent]",
+      "partOfSpeech": "n.",
+      "definition": "容量,内",
+      "example": "容,(pl.) 目录"
+    },
+    {
+      "id": 249,
+      "word": "responsible",
+      "phonetic": "[rɪ'spɒnsɪb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "(+for,to) 应",
+      "example": "负责的;可靠"
+    },
+    {
+      "id": 250,
+      "word": "responsibility",
+      "phonetic": "[rɪˌspɒnsəˈbɪlətɪ]",
+      "partOfSpeech": "n.",
+      "definition": "责任,责任心;",
+      "example": "职责,任务"
+    },
+    {
+      "id": 251,
+      "word": "respond",
+      "phonetic": "[rɪ'spɒnd]",
+      "partOfSpeech": "v.",
+      "definition": "回答,答",
+      "example": "复;(+to)响应"
+    },
+    {
+      "id": 252,
+      "word": "recover",
+      "phonetic": "[rɪ'kʌvə]",
+      "partOfSpeech": "v.",
+      "definition": "收回;(+from)",
+      "example": "恢复,痊愈; 重"
+    },
+    {
+      "id": 253,
+      "word": "recovery",
+      "phonetic": "[rɪ'kʌv(ə)rɪ]",
+      "partOfSpeech": "n.",
+      "definition": "痊愈,复元;重",
+      "example": "获,恢复"
+    },
+    {
+      "id": 254,
+      "word": "seek",
+      "phonetic": "[siːk]",
+      "partOfSpeech": "v.",
+      "definition": "(+after,for)寻",
+      "example": "找,探索;试图,"
+    },
+    {
+      "id": 255,
+      "word": "budget",
+      "phonetic": "['bʌdʒɪt]",
+      "partOfSpeech": "n.",
+      "definition": "预算",
+      "example": "If you’re on a tight budget"
+    },
+    {
+      "id": 256,
+      "word": "headquarters",
+      "phonetic": "[hed'kwɔːtəz]",
+      "partOfSpeech": "n.",
+      "definition": "司令部,指挥",
+      "example": "部;总部,总局"
+    },
+    {
+      "id": 257,
+      "word": "cease",
+      "phonetic": "[siːs]",
+      "partOfSpeech": "v.",
+      "definition": "/n.停止,中止 He never ceases to amaze me.",
+      "example": "他总能给我惊喜。"
+    },
+    {
+      "id": 258,
+      "word": "story",
+      "phonetic": "['stɔː rɪ]",
+      "partOfSpeech": "n.",
+      "definition": "故事,传说,小",
+      "example": "说;(=storey)楼"
+    },
+    {
+      "id": 259,
+      "word": "volunteer",
+      "phonetic": "[,vɒlən'tɪə]",
+      "partOfSpeech": "n.",
+      "definition": "/v.自愿(者,",
+      "example": "兵);自愿(提供)"
+    },
+    {
+      "id": 260,
+      "word": "voluntary",
+      "phonetic": "['vɒlənt(ə)rɪ]",
+      "partOfSpeech": "a.",
+      "definition": "自愿的,志愿",
+      "example": "的"
+    },
+    {
+      "id": 261,
+      "word": "subsidy",
+      "phonetic": "['sʌbsɪdɪ]",
+      "partOfSpeech": "n.",
+      "definition": "补助金,津贴 seek subsidies from the government",
+      "example": "（12,T4）向政府寻求补贴"
+    },
+    {
+      "id": 262,
+      "word": "experience",
+      "phonetic": "[ɪkˈspɪərɪəns]",
+      "partOfSpeech": "n.",
+      "definition": "经验,经历",
+      "example": "v.体验,经历"
+    },
+    {
+      "id": 263,
+      "word": "acknowledge",
+      "phonetic": "[ək'nɒlɪdʒ]",
+      "partOfSpeech": "v.",
+      "definition": "承认;致谢",
+      "example": "He is also acknowledged as an excellent"
+    },
+    {
+      "id": 264,
+      "word": "appropriately",
+      "phonetic": "[ə\n'\np\nroprɪ,etlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "适当地",
+      "example": "What we need to do is find a way to"
+    },
+    {
+      "id": 265,
+      "word": "appropriate",
+      "phonetic": "[ə\nˈ\np\nroprɪət]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)适当的,",
+      "example": "恰如其分的"
+    },
+    {
+      "id": 267,
+      "word": "widespread",
+      "phonetic": "[ˈwʌɪdsprɛd]",
+      "partOfSpeech": "a.",
+      "definition": "分布广泛的,",
+      "example": "普遍的"
+    },
+    {
+      "id": 268,
+      "word": "available",
+      "phonetic": "[ə'veɪləb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "可用的,可得",
+      "example": "到的;可以见到"
+    },
+    {
+      "id": 269,
+      "word": "neglect",
+      "phonetic": "[nɪ'glekt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.忽视;疏忽,",
+      "example": "漏做,忽略"
+    },
+    {
+      "id": 270,
+      "word": "crisis",
+      "phonetic": "['kraɪsɪs]",
+      "partOfSpeech": "",
+      "definition": "((pl.)crises) n.",
+      "example": "危机,紧要关头"
+    },
+    {
+      "id": 271,
+      "word": "culture",
+      "phonetic": "['kʌltʃə]",
+      "partOfSpeech": "n.",
+      "definition": "修养,教养;文",
+      "example": "化,文明"
+    },
+    {
+      "id": 272,
+      "word": "affordable",
+      "phonetic": "[ə'fɔːdəbəl]",
+      "partOfSpeech": "a.",
+      "definition": "负担得起的 affordable housing",
+      "example": "经济适用房"
+    },
+    {
+      "id": 273,
+      "word": "desperate",
+      "phonetic": "['desp(ə)rət]",
+      "partOfSpeech": "a.",
+      "definition": "绝望的;不顾",
+      "example": "一切的,拼死的"
+    },
+    {
+      "id": 274,
+      "word": "apparent",
+      "phonetic": "[ə\n'\np\nærənt]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)明显的,",
+      "example": "显而易见的;表"
+    },
+    {
+      "id": 275,
+      "word": "relate",
+      "phonetic": "[rɪ'leɪt]",
+      "partOfSpeech": "v.",
+      "definition": "叙述,讲述;使",
+      "example": "互相关联"
+    },
+    {
+      "id": 276,
+      "word": "related",
+      "phonetic": "[rɪ'leɪtɪd]",
+      "partOfSpeech": "a.",
+      "definition": "有关联的",
+      "example": "They said the allegations related to an"
+    },
+    {
+      "id": 277,
+      "word": "logical",
+      "phonetic": "['lɒdʒɪk(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "逻辑的,符合",
+      "example": "逻辑的"
+    },
+    {
+      "id": 278,
+      "word": "democratic",
+      "phonetic": "[demə'krætɪk]",
+      "partOfSpeech": "a.",
+      "definition": "民主的",
+      "example": "It doesn’t feel like a human or democratic"
+    },
+    {
+      "id": 279,
+      "word": "democracy",
+      "phonetic": "[dɪˈmɑkrəsi]",
+      "partOfSpeech": "n.",
+      "definition": "民主,民主制,",
+      "example": "民主国家"
+    },
+    {
+      "id": 280,
+      "word": "congress",
+      "phonetic": "[ˈkɒŋɡres]",
+      "partOfSpeech": "n.",
+      "definition": "(代表)大",
+      "example": "会;(美国等国"
+    },
+    {
+      "id": 281,
+      "word": "block",
+      "phonetic": "[blɒk]",
+      "partOfSpeech": "n.",
+      "definition": "大块木料(或",
+      "example": "石料);一排房"
+    },
+    {
+      "id": 282,
+      "word": "restore",
+      "phonetic": "[rɪ'stɔː]",
+      "partOfSpeech": "v.",
+      "definition": "恢复,使回复;",
+      "example": "归还,交还;修"
+    },
+    {
+      "id": 283,
+      "word": "habitat",
+      "phonetic": "['hæbɪtæt]",
+      "partOfSpeech": "n.",
+      "definition": "(动物的)栖息",
+      "example": "地,(植物的)产"
+    },
+    {
+      "id": 284,
+      "word": "biologist",
+      "phonetic": "[baɪ'ɒlədʒɪst]",
+      "partOfSpeech": "n.",
+      "definition": "生物学家",
+      "example": "Susi Arnott is a biologist."
+    },
+    {
+      "id": 285,
+      "word": "appreciate",
+      "phonetic": "[ə\n'\np\nriʃɪet]",
+      "partOfSpeech": "v.",
+      "definition": "感谢,感激;正",
+      "example": "确评价,欣赏,赏"
+    },
+    {
+      "id": 286,
+      "word": "appreciation",
+      "phonetic": "[ə,priʃɪ'eʃən]",
+      "partOfSpeech": "n.",
+      "definition": "欣赏;感谢",
+      "example": "Brian whistled in appreciation."
+    },
+    {
+      "id": 287,
+      "word": "relationship",
+      "phonetic": "[rɪ'leɪʃ(ə)nʃɪp]",
+      "partOfSpeech": "n.",
+      "definition": "关系,联系",
+      "example": "We had been together for two years, but"
+    },
+    {
+      "id": 288,
+      "word": "evolution",
+      "phonetic": "[ˌɛvəˈluʃən]",
+      "partOfSpeech": "n.",
+      "definition": "进化,渐进,演",
+      "example": "化"
+    },
+    {
+      "id": 289,
+      "word": "relevant",
+      "phonetic": "[ˈreləvənt]",
+      "partOfSpeech": "a.",
+      "definition": "（",
+      "example": "+to）有关"
+    },
+    {
+      "id": 290,
+      "word": "organize",
+      "phonetic": "[ˈɔ:gənaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "(=organise)组",
+      "example": "织,编组"
+    },
+    {
+      "id": 291,
+      "word": "organization",
+      "phonetic": "[ˌɔːɡənaɪ'zeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "(=organisatio",
+      "example": "n)组织体制;团"
+    },
+    {
+      "id": 292,
+      "word": "landscape",
+      "phonetic": "[ˈlændskeɪp]",
+      "partOfSpeech": "n.",
+      "definition": "风景,景致",
+      "example": "Arizona's desert landscape"
+    },
+    {
+      "id": 293,
+      "word": "estimate",
+      "phonetic": "['estɪmeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.估计,估价 Biologists estimate that 2 million birds",
+      "example": "living on the landscape.（16,T2）"
+    },
+    {
+      "id": 294,
+      "word": "overestimate",
+      "phonetic": "[əʊvərˈɛstɪmət]",
+      "partOfSpeech": "v.",
+      "definition": "估计过高,过",
+      "example": "高评价"
+    },
+    {
+      "id": 295,
+      "word": "underestimate",
+      "phonetic": "[ʌndər'estɪmeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "低估",
+      "example": "People tend to underestimate the time it"
+    },
+    {
+      "id": 296,
+      "word": "typhoon",
+      "phonetic": "[taɪ\n'\nf\nuːn]",
+      "partOfSpeech": "n.",
+      "definition": "台风",
+      "example": "The typhoon sank a ferry, drowning over"
+    },
+    {
+      "id": 297,
+      "word": "viewpoint",
+      "phonetic": "['vjuːpɒɪnt]",
+      "partOfSpeech": "n.",
+      "definition": "观点",
+      "example": "That viewpoint is a logical product"
+    },
+    {
+      "id": 298,
+      "word": "negotiate",
+      "phonetic": "[nɪ'gəʊʃɪeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "谈判,交涉,商",
+      "example": "议"
+    },
+    {
+      "id": 299,
+      "word": "negotiation",
+      "phonetic": "[nɪ,ɡoʃɪ'eʃən]",
+      "partOfSpeech": "n.",
+      "definition": "谈判,磋商",
+      "example": "We have had meaningful negotiations and I"
+    },
+    {
+      "id": 300,
+      "word": "protect",
+      "phonetic": "[prə'tekt]",
+      "partOfSpeech": "v.",
+      "definition": "(from)保护,",
+      "example": "保卫"
+    },
+    {
+      "id": 301,
+      "word": "apply",
+      "phonetic": "[ə\nˈ\np\nlaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "(+for)申请,请",
+      "example": "求;(+to)适用,应用"
+    },
+    {
+      "id": 302,
+      "word": "wealth",
+      "phonetic": "[wɛlθ]",
+      "partOfSpeech": "n.",
+      "definition": "财富,财产;大量 Because it brings great wealth.",
+      "example": "（10,T1）因为它带来了巨大的财富。"
+    },
+    {
+      "id": 303,
+      "word": "wealthy",
+      "phonetic": "[ˈwelθi]",
+      "partOfSpeech": "a.",
+      "definition": "富裕的,丰富的 a wealthy international businessman",
+      "example": "富有的国际大亨"
+    },
+    {
+      "id": 304,
+      "word": "capital",
+      "phonetic": "['kæpɪt(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "首都;大写字母;",
+      "example": "资本 a.首位的,最"
+    },
+    {
+      "id": 305,
+      "word": "capitalism",
+      "phonetic": "['kæpɪtəlɪzəm]",
+      "partOfSpeech": "n.",
+      "definition": "资本主义",
+      "example": "the return of capitalism to Hungary"
+    },
+    {
+      "id": 306,
+      "word": "health",
+      "phonetic": "[helθ]",
+      "partOfSpeech": "n.",
+      "definition": "健康,健康状况;",
+      "example": "卫生"
+    },
+    {
+      "id": 307,
+      "word": "healthy",
+      "phonetic": "['helθɪ]",
+      "partOfSpeech": "a.",
+      "definition": "健康的,健壮的;",
+      "example": "有益健康的,卫生"
+    },
+    {
+      "id": 309,
+      "word": "choose",
+      "phonetic": "[tʃu:z]",
+      "partOfSpeech": "v.",
+      "definition": "选择,挑选;甘愿 They will be able to choose their own",
+      "example": "leaders in democratic elections."
+    },
+    {
+      "id": 310,
+      "word": "code",
+      "phonetic": "[kəʊd]",
+      "partOfSpeech": "n.",
+      "definition": "代码,代号,密码;",
+      "example": "法典,法规,规划"
+    },
+    {
+      "id": 312,
+      "word": "research",
+      "phonetic": "[rɪˈsɜ:tʃ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.(+into,on)研",
+      "example": "究,调查"
+    },
+    {
+      "id": 313,
+      "word": "researcher",
+      "phonetic": "[rɪ'sɜ:tʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "研究人员",
+      "example": "He chose to join the company as a"
+    },
+    {
+      "id": 315,
+      "word": "projector",
+      "phonetic": "[prəˈdʒektə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "放映机,幻灯机,",
+      "example": "投影仪"
+    },
+    {
+      "id": 316,
+      "word": "child",
+      "phonetic": "[tʃaɪld]",
+      "partOfSpeech": "",
+      "definition": "((pl.)children) n.",
+      "example": "小孩,儿童,儿女"
+    },
+    {
+      "id": 317,
+      "word": "behavior",
+      "phonetic": "[bɪ'heɪvjə]",
+      "partOfSpeech": "n.",
+      "definition": "行为,举止;态度;",
+      "example": "反应"
+    },
+    {
+      "id": 318,
+      "word": "advance",
+      "phonetic": "[ədˈvɑ:ns]",
+      "partOfSpeech": "v.",
+      "definition": "前进;推进;取得",
+      "example": "进展 n.前进,进展;"
+    },
+    {
+      "id": 319,
+      "word": "choice",
+      "phonetic": "[tʃɔɪs]",
+      "partOfSpeech": "n.",
+      "definition": "选择(机会),抉",
+      "example": "择,选择项;入选者"
+    },
+    {
+      "id": 320,
+      "word": "motive",
+      "phonetic": "[ˈməʊtɪv]",
+      "partOfSpeech": "n.",
+      "definition": "动机,目的",
+      "example": "The motive for the killing is unknown."
+    },
+    {
+      "id": 321,
+      "word": "potential",
+      "phonetic": "[pəˈtenʃl]",
+      "partOfSpeech": "a.",
+      "definition": "潜在的,可能的;",
+      "example": "n.潜能,潜力"
+    },
+    {
+      "id": 322,
+      "word": "uneasy",
+      "phonetic": "[ʌnˈi:zi]",
+      "partOfSpeech": "a.",
+      "definition": "不安的,焦虑的 They are often uneasy with federal",
+      "example": "action."
+    },
+    {
+      "id": 323,
+      "word": "dreary",
+      "phonetic": "[ˈdrɪəri]",
+      "partOfSpeech": "a.",
+      "definition": "沉闷的,枯燥的 a dreary winter's day",
+      "example": "阴沉的冬日"
+    },
+    {
+      "id": 324,
+      "word": "regular",
+      "phonetic": "[ˈregjələ(r)]",
+      "partOfSpeech": "a.",
+      "definition": "有规律的;整齐",
+      "example": "的,匀称的,正规"
+    },
+    {
+      "id": 325,
+      "word": "advanced",
+      "phonetic": "[ədˈvɑ:nst]",
+      "partOfSpeech": "a.",
+      "definition": "先进的,高级的 Without more training or advanced",
+      "example": "technical skills, they'll lose their jobs."
+    },
+    {
+      "id": 326,
+      "word": "require",
+      "phonetic": "[rɪˈkwaɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "需要;要求,命令 He is not required for advanced courses.",
+      "example": "（12,T1）他不需要高级课程。"
+    },
+    {
+      "id": 327,
+      "word": "requirement",
+      "phonetic": "[rɪˈkwaɪəmənt]",
+      "partOfSpeech": "n.",
+      "definition": "(+for)需要,需要",
+      "example": "的东西,要求"
+    },
+    {
+      "id": 328,
+      "word": "library",
+      "phonetic": "[ˈlaɪbrəri]",
+      "partOfSpeech": "n.",
+      "definition": "图书馆;藏书室;",
+      "example": "藏书,丛书,文库"
+    },
+    {
+      "id": 329,
+      "word": "contrast",
+      "phonetic": "[ˈkɒntrɑ:st]",
+      "partOfSpeech": "v.",
+      "definition": "(+with)使与…",
+      "example": "对比 n.对照,对比"
+    },
+    {
+      "id": 331,
+      "word": "risk",
+      "phonetic": "[rɪsk]",
+      "partOfSpeech": "v.",
+      "definition": "冒…的危险",
+      "example": "n.冒险;风险"
+    },
+    {
+      "id": 332,
+      "word": "immersive",
+      "phonetic": "[ɪˈmɜ:sɪv]",
+      "partOfSpeech": "a.",
+      "definition": "拟真的;沉浸式",
+      "example": "的;沉浸感的"
+    },
+    {
+      "id": 333,
+      "word": "announce",
+      "phonetic": "[əˈnaʊns]",
+      "partOfSpeech": "v.",
+      "definition": "宣布,发表,通行;",
+      "example": "报告…的来到"
+    },
+    {
+      "id": 334,
+      "word": "claim",
+      "phonetic": "[kleɪm]",
+      "partOfSpeech": "v.",
+      "definition": "要求;声称;索赔",
+      "example": "n.要求;断言;索"
+    },
+    {
+      "id": 335,
+      "word": "justify",
+      "phonetic": "[ˈdʒʌstɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "证明…是正当",
+      "example": "的,认为有理"
+    },
+    {
+      "id": 336,
+      "word": "just",
+      "phonetic": "[dʒʌst]",
+      "partOfSpeech": "ad.",
+      "definition": "正好;仅仅,只",
+      "example": "是;刚才"
+    },
+    {
+      "id": 337,
+      "word": "unjust",
+      "phonetic": "[ˌʌnˈdʒʌst]",
+      "partOfSpeech": "a.",
+      "definition": "不公平的",
+      "example": "The attack on Charles was deeply"
+    },
+    {
+      "id": 338,
+      "word": "justice",
+      "phonetic": "[ˈdʒʌstɪs]",
+      "partOfSpeech": "n.",
+      "definition": "公正,公平,正义;",
+      "example": "审判,司法"
+    },
+    {
+      "id": 339,
+      "word": "category",
+      "phonetic": "[ˈkætəgəri]",
+      "partOfSpeech": "n.",
+      "definition": "种类,类目",
+      "example": "We divide newcomers into two"
+    },
+    {
+      "id": 340,
+      "word": "adjust",
+      "phonetic": "[əˈdʒʌst]",
+      "partOfSpeech": "v.",
+      "definition": "（",
+      "example": "+to）调整,改"
+    },
+    {
+      "id": 341,
+      "word": "legal",
+      "phonetic": "[ˈli:gl]",
+      "partOfSpeech": "a.",
+      "definition": "法律的,法定的;",
+      "example": "合法的,正当的"
+    },
+    {
+      "id": 342,
+      "word": "illegal",
+      "phonetic": "[ɪˈli:gl]",
+      "partOfSpeech": "a.",
+      "definition": "非法的",
+      "example": "It is illegal to intercept radio messages."
+    },
+    {
+      "id": 343,
+      "word": "divide",
+      "phonetic": "[dɪˈvaɪd]",
+      "partOfSpeech": "v",
+      "definition": "（.",
+      "example": "+into）分,划分,"
+    },
+    {
+      "id": 344,
+      "word": "climate",
+      "phonetic": "[ˈklaɪmət]",
+      "partOfSpeech": "n.",
+      "definition": "气候;风气,社会",
+      "example": "思潮"
+    },
+    {
+      "id": 345,
+      "word": "provide",
+      "phonetic": "[prəˈvaɪd]",
+      "partOfSpeech": "v.",
+      "definition": "(+with,for)提供,",
+      "example": "供给"
+    },
+    {
+      "id": 346,
+      "word": "solution",
+      "phonetic": "[səˈlu:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "解答,解决办法;",
+      "example": "溶解,溶液"
+    },
+    {
+      "id": 347,
+      "word": "provided",
+      "phonetic": "[prəˈvaɪdɪd]",
+      "partOfSpeech": "conj.",
+      "definition": "如果;假如;",
+      "example": "在…的条件下;v."
+    },
+    {
+      "id": 348,
+      "word": "sweat",
+      "phonetic": "[swet]",
+      "partOfSpeech": "n.",
+      "definition": "汗",
+      "example": "v.(使)出汗"
+    },
+    {
+      "id": 349,
+      "word": "sweet",
+      "phonetic": "[swi:t]",
+      "partOfSpeech": "a.",
+      "definition": "甜的;可爱的,美",
+      "example": "好的 n.(常 pl.)糖"
+    },
+    {
+      "id": 350,
+      "word": "recommend",
+      "phonetic": "[ˌrekəˈmend]",
+      "partOfSpeech": "v.",
+      "definition": "推荐,介绍;劝告,",
+      "example": "建议"
+    },
+    {
+      "id": 352,
+      "word": "combat",
+      "phonetic": "[ˈkɒmbæt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.战斗,搏斗,格",
+      "example": "斗"
+    },
+    {
+      "id": 353,
+      "word": "constant",
+      "phonetic": "[ˈkɒnstənt]",
+      "partOfSpeech": "a.",
+      "definition": "经常的;坚定的,",
+      "example": "忠实的"
+    },
+    {
+      "id": 355,
+      "word": "primary",
+      "phonetic": "[\nˈ\np\nraɪməri]",
+      "partOfSpeech": "a.",
+      "definition": "最初的,初级的;",
+      "example": "首要的,主要的,基"
+    },
+    {
+      "id": 356,
+      "word": "opposition",
+      "phonetic": "[ˌɒpəˈzɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "敌对;反对",
+      "example": "Much of the opposition to this plan has"
+    },
+    {
+      "id": 357,
+      "word": "pupil",
+      "phonetic": "[\nˈ\np\nju:pl]",
+      "partOfSpeech": "n.",
+      "definition": "学生,小学生;瞳",
+      "example": "孔"
+    },
+    {
+      "id": 358,
+      "word": "energy",
+      "phonetic": "[ˈenədʒi]",
+      "partOfSpeech": "n.",
+      "definition": "活力,精力;能,能",
+      "example": "量"
+    },
+    {
+      "id": 359,
+      "word": "wide",
+      "phonetic": "[waɪd]",
+      "partOfSpeech": "a.",
+      "definition": "宽阔的;广泛的",
+      "example": "ad.完全地,充分地"
+    },
+    {
+      "id": 360,
+      "word": "source",
+      "phonetic": "[sɔ:s]",
+      "partOfSpeech": "n.",
+      "definition": "源,源泉;来源,出",
+      "example": "处"
+    },
+    {
+      "id": 361,
+      "word": "resource",
+      "phonetic": "[rɪˈsɔ:s]",
+      "partOfSpeech": "n.",
+      "definition": "(pl.)资源,财力;",
+      "example": "办法,智谋;应变之"
+    },
+    {
+      "id": 362,
+      "word": "energetic",
+      "phonetic": "[ˌenəˈdʒetɪk]",
+      "partOfSpeech": "a.",
+      "definition": "有力的,精力旺",
+      "example": "盛的"
+    },
+    {
+      "id": 363,
+      "word": "global",
+      "phonetic": "[ˈɡləʊbl]",
+      "partOfSpeech": "a.",
+      "definition": "全球的,世界的 It is high time to consider the problem on",
+      "example": "a global scale."
+    },
+    {
+      "id": 364,
+      "word": "economy",
+      "phonetic": "[ɪˈkɒnəmi]",
+      "partOfSpeech": "n.",
+      "definition": "经济;节约",
+      "example": "They are energetic participants in a"
+    },
+    {
+      "id": 365,
+      "word": "admire",
+      "phonetic": "[ədˈmaɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "赞赏,钦佩,羡慕 He admired the way she had coped with",
+      "example": "life."
+    },
+    {
+      "id": 366,
+      "word": "contribution",
+      "phonetic": "[ˌkɒntrɪˈbju:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "贡献;捐献(物) His contribution is immeasurable.",
+      "example": "他居功至伟。"
+    },
+    {
+      "id": 367,
+      "word": "economic",
+      "phonetic": "[ˌi:kəˈnɒmɪk]",
+      "partOfSpeech": "a.",
+      "definition": "经济(上)的,经",
+      "example": "济学的"
+    },
+    {
+      "id": 368,
+      "word": "growth",
+      "phonetic": "[grəʊθ]",
+      "partOfSpeech": "n.",
+      "definition": "生长,增长,发展 Housing can contribute to economic",
+      "example": "growth.（"
+    },
+    {
+      "id": 369,
+      "word": "grow",
+      "phonetic": "[grəʊ]",
+      "partOfSpeech": "v.",
+      "definition": "生长,发育,增长,",
+      "example": "发展,渐渐变得;种"
+    },
+    {
+      "id": 370,
+      "word": "grown-up",
+      "phonetic": "[ɡrəʊn ʌp]",
+      "partOfSpeech": "a.",
+      "definition": "成长的,成熟的,",
+      "example": "成人的"
+    },
+    {
+      "id": 371,
+      "word": "manage",
+      "phonetic": "[ˈmænɪdʒ]",
+      "partOfSpeech": "v.",
+      "definition": "经营,管理,处理;",
+      "example": "设法,对付;"
+    },
+    {
+      "id": 372,
+      "word": "management",
+      "phonetic": "[ˈmænɪdʒmənt]",
+      "partOfSpeech": "n.",
+      "definition": "经营,管理;管理",
+      "example": "部门"
+    },
+    {
+      "id": 373,
+      "word": "manager",
+      "phonetic": "[ˈmænɪdʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "经理,管理者",
+      "example": "The chef, staff and managers are all"
+    },
+    {
+      "id": 374,
+      "word": "contribute",
+      "phonetic": "[kənˈtrɪbju:t]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)贡献,捐助,",
+      "example": "捐献;投稿"
+    },
+    {
+      "id": 375,
+      "word": "avoid",
+      "phonetic": "[əˈvɔɪd]",
+      "partOfSpeech": "v.",
+      "definition": "避免,回避,逃避 Managers admire it but avoid it.",
+      "example": "（15,T3）经理们赞赏它,但避免（使用）"
+    },
+    {
+      "id": 376,
+      "word": "avoidable",
+      "phonetic": "[əˈvɔɪdəbl]",
+      "partOfSpeech": "a.",
+      "definition": "可避免的",
+      "example": "These injuries were avoidable."
+    },
+    {
+      "id": 377,
+      "word": "pink",
+      "phonetic": "[pɪŋk]",
+      "partOfSpeech": "n.",
+      "definition": "粉红色",
+      "example": "a.粉红色的"
+    },
+    {
+      "id": 378,
+      "word": "attraction",
+      "phonetic": "[əˈtrækʃn]",
+      "partOfSpeech": "n.",
+      "definition": "吸引,吸引力",
+      "example": "Girls’ attraction to pink may seem"
+    },
+    {
+      "id": 379,
+      "word": "attract",
+      "phonetic": "[əˈtrækt]",
+      "partOfSpeech": "vt.",
+      "definition": "吸引,诱惑",
+      "example": "The Cardiff Bay project is attracting"
+    },
+    {
+      "id": 380,
+      "word": "argument",
+      "phonetic": "[ˈɑ:gjumənt]",
+      "partOfSpeech": "n.",
+      "definition": "争论,辨认;论据,",
+      "example": "论点"
+    },
+    {
+      "id": 381,
+      "word": "generally",
+      "phonetic": "[ˈdʒenrəli]",
+      "partOfSpeech": "ad.",
+      "definition": "一般地,通常地 It is generally true that the darker the",
+      "example": "fruit the higher its iron content."
+    },
+    {
+      "id": 382,
+      "word": "inherent",
+      "phonetic": "[ɪnˈhɪərənt]",
+      "partOfSpeech": "a.",
+      "definition": "天生;固有的,内",
+      "example": "在的"
+    },
+    {
+      "id": 383,
+      "word": "inherently",
+      "phonetic": "[ɪnˈhɪərəntlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "天性地,固有地 War is inherently a dirty business.",
+      "example": "战争与生俱来就是肮脏的。"
+    },
+    {
+      "id": 384,
+      "word": "attractive",
+      "phonetic": "[əˈtræktɪv]",
+      "partOfSpeech": "a.",
+      "definition": "有吸引力的,引",
+      "example": "起兴趣的,动人的"
+    },
+    {
+      "id": 385,
+      "word": "argue",
+      "phonetic": "[ˈɑ:gju:]",
+      "partOfSpeech": "v.",
+      "definition": "争论,辩论;主张,",
+      "example": "论证;说服"
+    },
+    {
+      "id": 387,
+      "word": "state",
+      "phonetic": "[steɪt]",
+      "partOfSpeech": "n.",
+      "definition": "状态;国,州",
+      "example": "v.陈述,说明"
+    },
+    {
+      "id": 388,
+      "word": "following",
+      "phonetic": "[ˈfɒləʊɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "接着的,下列的 We went to dinner the following Monday",
+      "example": "evening."
+    },
+    {
+      "id": 389,
+      "word": "statement",
+      "phonetic": "[ˈsteɪtmənt]",
+      "partOfSpeech": "n.",
+      "definition": "声明,陈述",
+      "example": "Which of the following statements is"
+    },
+    {
+      "id": 390,
+      "word": "statesman",
+      "phonetic": "[ˈsteɪtsmən]",
+      "partOfSpeech": "n.",
+      "definition": "政治家,国务活",
+      "example": "动家"
+    },
+    {
+      "id": 391,
+      "word": "necessary",
+      "phonetic": "[ˈnesəsəri]",
+      "partOfSpeech": "a.",
+      "definition": "必需的,必要的;",
+      "example": "必然的"
+    },
+    {
+      "id": 392,
+      "word": "population",
+      "phonetic": "[ˌpɒpjuˈleɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "人口",
+      "example": "But the general population was"
+    },
+    {
+      "id": 393,
+      "word": "follow",
+      "phonetic": "[ˈfɒləʊ]",
+      "partOfSpeech": "v.",
+      "definition": "跟随,接着;沿",
+      "example": "着…前进,遵循;结"
+    },
+    {
+      "id": 394,
+      "word": "director",
+      "phonetic": "[dəˈrektə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "指导者,主任,导",
+      "example": "演；董事会成员"
+    },
+    {
+      "id": 395,
+      "word": "without",
+      "phonetic": "[wɪˈðaʊt]",
+      "partOfSpeech": "prep.",
+      "definition": "无,没有",
+      "example": "Even without knowing what was in the"
+    },
+    {
+      "id": 396,
+      "word": "annoy",
+      "phonetic": "[əˈnɔɪ]",
+      "partOfSpeech": "v.",
+      "definition": "使恼怒,使生气,",
+      "example": "打搅 n.烦恼"
+    },
+    {
+      "id": 397,
+      "word": "direction",
+      "phonetic": "[dəˈrekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "方向,方位;指令,",
+      "example": "说明"
+    },
+    {
+      "id": 398,
+      "word": "circumstance",
+      "phonetic": "[ˈsɜ:kəmstəns]",
+      "partOfSpeech": "n.",
+      "definition": "(pl.)情况,形势,",
+      "example": "环境;经济情形,境"
+    },
+    {
+      "id": 399,
+      "word": "direct",
+      "phonetic": "[dəˈrekt]",
+      "partOfSpeech": "a.",
+      "definition": "/ad.径直的( 地)",
+      "example": "v.管理, 指"
+    },
+    {
+      "id": 400,
+      "word": "general",
+      "phonetic": "[ˈdʒenrəl]",
+      "partOfSpeech": "a.",
+      "definition": "一般的,普通的;",
+      "example": "总的,大体的"
+    },
+    {
+      "id": 401,
+      "word": "formal",
+      "phonetic": "[ˈfɔ:ml]",
+      "partOfSpeech": "a.",
+      "definition": "正式的;",
+      "example": "形式的"
+    },
+    {
+      "id": 402,
+      "word": "formally",
+      "phonetic": "['fɔ:məlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "正式",
+      "example": "地;形式上;"
+    },
+    {
+      "id": 403,
+      "word": "curb",
+      "phonetic": "[kɜ:b]",
+      "partOfSpeech": "n.",
+      "definition": "抑制,勒",
+      "example": "马绳 vt.抑"
+    },
+    {
+      "id": 404,
+      "word": "addict",
+      "phonetic": "[ˈædɪkt]",
+      "partOfSpeech": "v.",
+      "definition": "使沉溺,",
+      "example": "使上瘾"
+    },
+    {
+      "id": 405,
+      "word": "finally",
+      "phonetic": "[ˈfaɪnəli]",
+      "partOfSpeech": "ad.",
+      "definition": "最后,最",
+      "example": "终"
+    },
+    {
+      "id": 406,
+      "word": "forward",
+      "phonetic": "[ˈfɔ:wəd]",
+      "partOfSpeech": "ad.",
+      "definition": "(forwar",
+      "example": "ds) 向前"
+    },
+    {
+      "id": 407,
+      "word": "allow",
+      "phonetic": "[əˈlaʊ]",
+      "partOfSpeech": "v.",
+      "definition": "允许,准",
+      "example": "许;承认;"
+    },
+    {
+      "id": 408,
+      "word": "allowance",
+      "phonetic": "[əˈlaʊəns]",
+      "partOfSpeech": "n.",
+      "definition": "津贴,补",
+      "example": "助(费)"
+    },
+    {
+      "id": 409,
+      "word": "population",
+      "phonetic": "[ˌpɒpjuˈleɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "人口",
+      "example": "But the general population was"
+    },
+    {
+      "id": 411,
+      "word": "principle",
+      "phonetic": "[\nˈ\np\nrɪnsəpl]",
+      "partOfSpeech": "n.",
+      "definition": "原理,原",
+      "example": "则;主义,信"
+    },
+    {
+      "id": 412,
+      "word": "principal",
+      "phonetic": "[\nˈ\np\nrɪnsəpl]",
+      "partOfSpeech": "a.",
+      "definition": "最重要",
+      "example": "的,主要的"
+    },
+    {
+      "id": 413,
+      "word": "already",
+      "phonetic": "[ɔ:lˈredi]",
+      "partOfSpeech": "ad.",
+      "definition": "已,已经 In many parts of the world renewable energy is",
+      "example": "already a principal energy source.（18, T2）"
+    },
+    {
+      "id": 414,
+      "word": "apology",
+      "phonetic": "[ə\nˈ\np\nɒlədʒi]",
+      "partOfSpeech": "n.",
+      "definition": "道歉,歉",
+      "example": "意,认错"
+    },
+    {
+      "id": 415,
+      "word": "apologize",
+      "phonetic": "[ə\nˈ\np\nɒlədʒaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "(+to,for)",
+      "example": "道歉,认错"
+    },
+    {
+      "id": 416,
+      "word": "appeal",
+      "phonetic": "[ə\nˈ\np\ni:l]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)呼",
+      "example": "吁,要求;"
+    },
+    {
+      "id": 417,
+      "word": "finding",
+      "phonetic": "[ˈfaɪndɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "发现,发",
+      "example": "现物;(常"
+    },
+    {
+      "id": 418,
+      "word": "court",
+      "phonetic": "[kɔ:rt]",
+      "partOfSpeech": "n.",
+      "definition": "法院,法",
+      "example": "庭;宫廷,朝"
+    },
+    {
+      "id": 419,
+      "word": "rather",
+      "phonetic": "[ˈrɑ:ðə(r)]",
+      "partOfSpeech": "ad.",
+      "definition": "相当,有",
+      "example": "一点儿;宁"
+    },
+    {
+      "id": 421,
+      "word": "decision",
+      "phonetic": "[dɪˈsɪʒn]",
+      "partOfSpeech": "n.",
+      "definition": "决定,决",
+      "example": "心;决议;决"
+    },
+    {
+      "id": 422,
+      "word": "decisive",
+      "phonetic": "[dɪˈsaɪsɪv]",
+      "partOfSpeech": "a.",
+      "definition": "决定性",
+      "example": "的"
+    },
+    {
+      "id": 423,
+      "word": "prior",
+      "phonetic": "[\nˈ\np\nraɪə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "/ad.优先",
+      "example": "的, 在前"
+    },
+    {
+      "id": 424,
+      "word": "priority",
+      "phonetic": "[praɪˈɒrəti]",
+      "partOfSpeech": "n.",
+      "definition": "先,前;优",
+      "example": "先,优先权"
+    },
+    {
+      "id": 425,
+      "word": "decide",
+      "phonetic": "[dɪˈsaɪd]",
+      "partOfSpeech": "v.",
+      "definition": "（",
+      "example": "+to）决"
+    },
+    {
+      "id": 426,
+      "word": "necessity",
+      "phonetic": "[nəˈsesəti]",
+      "partOfSpeech": "n.",
+      "definition": "必要性,",
+      "example": "需要;必然"
+    },
+    {
+      "id": 427,
+      "word": "necessarily",
+      "phonetic": "[ˌnesəˈserəli]",
+      "partOfSpeech": "ad.",
+      "definition": "必然,必",
+      "example": "要"
+    },
+    {
+      "id": 428,
+      "word": "threaten",
+      "phonetic": "[ˈθretn]",
+      "partOfSpeech": "v.",
+      "definition": "恐吓,威",
+      "example": "胁;有…危"
+    },
+    {
+      "id": 429,
+      "word": "threat",
+      "phonetic": "[θret]",
+      "partOfSpeech": "n.",
+      "definition": "恐吓,威",
+      "example": "胁;坏兆头,"
+    },
+    {
+      "id": 430,
+      "word": "machine",
+      "phonetic": "[məˈʃi:n]",
+      "partOfSpeech": "n.",
+      "definition": "机器,机",
+      "example": "械 v.用机"
+    },
+    {
+      "id": 431,
+      "word": "machinery",
+      "phonetic": "[məˈʃi:nəri]",
+      "partOfSpeech": "n.",
+      "definition": "(总称)机",
+      "example": "器,机械"
+    },
+    {
+      "id": 432,
+      "word": "highlight",
+      "phonetic": "[ˈhaɪlaɪt]",
+      "partOfSpeech": "v.",
+      "definition": "使显著,",
+      "example": "使突出;强"
+    },
+    {
+      "id": 433,
+      "word": "overturn",
+      "phonetic": "[ˌəʊvəˈtɜ:n]",
+      "partOfSpeech": "v",
+      "definition": "/n.倾覆,",
+      "example": "推翻"
+    },
+    {
+      "id": 434,
+      "word": "tender",
+      "phonetic": "[ˈtendə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "嫩的;敏",
+      "example": "感的;温柔"
+    },
+    {
+      "id": 436,
+      "word": "expectation",
+      "phonetic": "[ˌɛkspɛkˈteʃən]",
+      "partOfSpeech": "n.",
+      "definition": "预期,期",
+      "example": "望,指望"
+    },
+    {
+      "id": 437,
+      "word": "tend",
+      "phonetic": "[tend]",
+      "partOfSpeech": "v.",
+      "definition": "（",
+      "example": "+to）趋"
+    },
+    {
+      "id": 438,
+      "word": "tendency",
+      "phonetic": "[ˈtendənsi]",
+      "partOfSpeech": "n.",
+      "definition": "趋向,趋",
+      "example": "势"
+    },
+    {
+      "id": 439,
+      "word": "decline",
+      "phonetic": "[dɪˈklaɪn]",
+      "partOfSpeech": "v.",
+      "definition": "/n.下倾,",
+      "example": "下垂,衰落;"
+    },
+    {
+      "id": 440,
+      "word": "common",
+      "phonetic": "[ˈkɒmən]",
+      "partOfSpeech": "a.",
+      "definition": "普通的,",
+      "example": "平常"
+    },
+    {
+      "id": 441,
+      "word": "pleasure",
+      "phonetic": "[\nˈ\np\nleʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "愉快,快",
+      "example": "乐;乐事,乐"
+    },
+    {
+      "id": 444,
+      "word": "obligation",
+      "phonetic": "[ˌɒblɪˈgeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "义务,责",
+      "example": "任"
+    },
+    {
+      "id": 445,
+      "word": "overtime",
+      "phonetic": "[ˈəʊvətaɪm]",
+      "partOfSpeech": "n.",
+      "definition": "加班;加",
+      "example": "班费; 加"
+    },
+    {
+      "id": 446,
+      "word": "likely",
+      "phonetic": "[ˈlaɪkli]",
+      "partOfSpeech": "a.",
+      "definition": "（",
+      "example": "+to）很"
+    },
+    {
+      "id": 447,
+      "word": "unlikely",
+      "phonetic": "[ʌnˈlaɪkli]",
+      "partOfSpeech": "a.",
+      "definition": "不太可",
+      "example": "能的"
+    },
+    {
+      "id": 448,
+      "word": "domain",
+      "phonetic": "[dəˈmeɪn]",
+      "partOfSpeech": "n.",
+      "definition": "(活动,思",
+      "example": "想等)领域,"
+    },
+    {
+      "id": 449,
+      "word": "sacrifice",
+      "phonetic": "[ˈsækrɪfaɪs]",
+      "partOfSpeech": "n.",
+      "definition": "牺牲,牺",
+      "example": "牲品;祭品"
+    },
+    {
+      "id": 450,
+      "word": "overall",
+      "phonetic": "[ˌəʊvərˈɔ:l]",
+      "partOfSpeech": "a.",
+      "definition": "全面的,",
+      "example": "综合的"
+    },
+    {
+      "id": 451,
+      "word": "overcome",
+      "phonetic": "[ˌəʊvəˈkʌm]",
+      "partOfSpeech": "v.",
+      "definition": "战胜,克",
+      "example": "服"
+    },
+    {
+      "id": 452,
+      "word": "fund",
+      "phonetic": "[fʌnd]",
+      "partOfSpeech": "n.",
+      "definition": "资金,基",
+      "example": "金"
+    },
+    {
+      "id": 453,
+      "word": "overwhelm",
+      "phonetic": "[ˌəʊvəˈwelm]",
+      "partOfSpeech": "v.",
+      "definition": "压倒,制",
+      "example": "服"
+    },
+    {
+      "id": 454,
+      "word": "overwhelming",
+      "phonetic": "[ˌəʊvəˈwelmɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "势不可",
+      "example": "挡的,压倒"
+    },
+    {
+      "id": 455,
+      "word": "majority",
+      "phonetic": "[məˈdʒɒrəti]",
+      "partOfSpeech": "n.",
+      "definition": "多数,大",
+      "example": "多数"
+    },
+    {
+      "id": 456,
+      "word": "major",
+      "phonetic": "[ˈmeɪdʒə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "( 较) 重",
+      "example": "要 的 , 主"
+    },
+    {
+      "id": 458,
+      "word": "square",
+      "phonetic": "[skwer]",
+      "partOfSpeech": "n.",
+      "definition": "平方,正",
+      "example": "方形;广场"
+    },
+    {
+      "id": 459,
+      "word": "program",
+      "phonetic": "[\nˈ\np\nrəʊgræm]",
+      "partOfSpeech": "n.",
+      "definition": "(=progra",
+      "example": "mme)节目;"
+    },
+    {
+      "id": 460,
+      "word": "programmer",
+      "phonetic": "[\nˈ\np\nroʊgræmə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "[计] 程",
+      "example": "序设计者;"
+    },
+    {
+      "id": 461,
+      "word": "compete",
+      "phonetic": "[kəm\nˈ\np\ni:t]",
+      "partOfSpeech": "v.",
+      "definition": "比赛;竞",
+      "example": "争"
+    },
+    {
+      "id": 462,
+      "word": "worse",
+      "phonetic": "[wɜ:rs]",
+      "partOfSpeech": "a.",
+      "definition": "/ad.更坏,",
+      "example": "更差,更严"
+    },
+    {
+      "id": 463,
+      "word": "equal",
+      "phonetic": "[ˈi:kwəl]",
+      "partOfSpeech": "a.",
+      "definition": "(+to) 相",
+      "example": "等的"
+    },
+    {
+      "id": 464,
+      "word": "height",
+      "phonetic": "[haɪt]",
+      "partOfSpeech": "n.",
+      "definition": "高,高",
+      "example": "度;(常 pl.)"
+    },
+    {
+      "id": 465,
+      "word": "outside",
+      "phonetic": "[ˌaʊtˈsaɪd]",
+      "partOfSpeech": "ad.",
+      "definition": "向外面",
+      "example": "n.外部 a."
+    },
+    {
+      "id": 466,
+      "word": "serve",
+      "phonetic": "[sɜ:v]",
+      "partOfSpeech": "v.",
+      "definition": "服务,尽",
+      "example": "责;招待,侍"
+    },
+    {
+      "id": 467,
+      "word": "jury",
+      "phonetic": "[ˈdʒʊəri]",
+      "partOfSpeech": "n.",
+      "definition": "陪审团;",
+      "example": "全体评审"
+    },
+    {
+      "id": 468,
+      "word": "competent",
+      "phonetic": "[ˈkɒmpɪtənt]",
+      "partOfSpeech": "a.",
+      "definition": "有能力",
+      "example": "的,胜任的"
+    },
+    {
+      "id": 469,
+      "word": "regard",
+      "phonetic": "[rɪˈgɑ:d]",
+      "partOfSpeech": "v.",
+      "definition": "(+as)",
+      "example": "把… 看作"
+    },
+    {
+      "id": 470,
+      "word": "appear",
+      "phonetic": "[ə\nˈ\np\nɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "出现,显",
+      "example": "露;出场,问"
+    },
+    {
+      "id": 471,
+      "word": "appearance",
+      "phonetic": "[ə\nˈ\np\nɪrəns]",
+      "partOfSpeech": "n.",
+      "definition": "出现,出",
+      "example": "场,露面;外"
+    },
+    {
+      "id": 473,
+      "word": "power",
+      "phonetic": "[\nˈ\np\naʊə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "力,精力;",
+      "example": "功率,电力;"
+    },
+    {
+      "id": 474,
+      "word": "competition",
+      "phonetic": "[ˌkɒmpəˈtɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "比赛;竞",
+      "example": "争"
+    },
+    {
+      "id": 478,
+      "word": "decent",
+      "phonetic": "[ˈdi:snt]",
+      "partOfSpeech": "a.",
+      "definition": "体面的,",
+      "example": "像样的;正"
+    },
+    {
+      "id": 479,
+      "word": "enough",
+      "phonetic": "[ɪˈnʌf]",
+      "partOfSpeech": "a.",
+      "definition": "(+for) 足",
+      "example": "够的 n.足"
+    },
+    {
+      "id": 480,
+      "word": "competitive",
+      "phonetic": "[kəm\nˈ\np\netətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "竞争的,",
+      "example": "比赛的"
+    },
+    {
+      "id": 481,
+      "word": "condemn",
+      "phonetic": "[kənˈdɛm]",
+      "partOfSpeech": "v.",
+      "definition": "谴责,指",
+      "example": "责;判刑,宣"
+    },
+    {
+      "id": 482,
+      "word": "competitor",
+      "phonetic": "[kəm\nˈ\np\netɪtə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "竞争者,",
+      "example": "敌手"
+    },
+    {
+      "id": 483,
+      "word": "prefer",
+      "phonetic": "[prɪˈfɜ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)更",
+      "example": "喜欢,宁愿"
+    },
+    {
+      "id": 484,
+      "word": "opportunity",
+      "phonetic": "[ˌɒpəˈtju:nəti]",
+      "partOfSpeech": "n.",
+      "definition": "机会",
+      "example": "They prefer to come and go as opportunity calls"
+    },
+    {
+      "id": 485,
+      "word": "cause",
+      "phonetic": "[kɔz]",
+      "partOfSpeech": "n.",
+      "definition": "原因;事",
+      "example": "业,事件,奋"
+    },
+    {
+      "id": 486,
+      "word": "disappear",
+      "phonetic": "[ˌdɪsə\nˈ\np\nɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "不见,消",
+      "example": "失"
+    },
+    {
+      "id": 487,
+      "word": "powerful",
+      "phonetic": "[\nˈ\np\naʊəfl]",
+      "partOfSpeech": "a.",
+      "definition": "强大的,",
+      "example": "有力的,有"
+    },
+    {
+      "id": 488,
+      "word": "preferable",
+      "phonetic": "[\nˈ\np\nrefrəbl]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)更",
+      "example": "可取的,更"
+    },
+    {
+      "id": 489,
+      "word": "preference",
+      "phonetic": "[\nˈ\np\nrefrəns]",
+      "partOfSpeech": "n.",
+      "definition": "(+for,to)",
+      "example": "偏爱, 喜"
+    },
+    {
+      "id": 490,
+      "word": "despite",
+      "phonetic": "[dɪˈspaɪt]",
+      "partOfSpeech": "prep.",
+      "definition": "尽管；Despite the appeals court’s decision, big",
+      "example": "questions remain unanswered.（12,T3）"
+    },
+    {
+      "id": 491,
+      "word": "disease",
+      "phonetic": "[dɪˈzi:z]",
+      "partOfSpeech": "n.",
+      "definition": "疾病",
+      "example": "People are in fact at higher risk of some diseases."
+    },
+    {
+      "id": 492,
+      "word": "speed",
+      "phonetic": "[spi:d]",
+      "partOfSpeech": "n.",
+      "definition": "速度,快",
+      "example": "v.迅速,前"
+    },
+    {
+      "id": 493,
+      "word": "determine",
+      "phonetic": "[dɪˈtɜ:mɪn]",
+      "partOfSpeech": "v.",
+      "definition": "决心,决",
+      "example": "定;确定,限"
+    },
+    {
+      "id": 494,
+      "word": "determined",
+      "phonetic": "[dɪˈtɜ:mɪnd]",
+      "partOfSpeech": "a.",
+      "definition": "确定的;",
+      "example": "坚定的;毅"
+    },
+    {
+      "id": 495,
+      "word": "focus",
+      "phonetic": "[ˈfoʊkəs]",
+      "partOfSpeech": "n.",
+      "definition": "焦点,(活",
+      "example": "动,兴趣等"
+    },
+    {
+      "id": 496,
+      "word": "length",
+      "phonetic": "[leŋθ]",
+      "partOfSpeech": "n.",
+      "definition": "长,长度;",
+      "example": "一段,一节,"
+    },
+    {
+      "id": 497,
+      "word": "blood",
+      "phonetic": "[blʌd]",
+      "partOfSpeech": "n.",
+      "definition": "血(液);",
+      "example": "血统,宗族,"
+    },
+    {
+      "id": 498,
+      "word": "flow",
+      "phonetic": "[floʊ]",
+      "partOfSpeech": "v.",
+      "definition": "流,流动",
+      "example": "n.流量,流"
+    },
+    {
+      "id": 499,
+      "word": "drive",
+      "phonetic": "[draɪv]",
+      "partOfSpeech": "v.",
+      "definition": "开(车);",
+      "example": "驱;驱动,把"
+    },
+    {
+      "id": 500,
+      "word": "key",
+      "phonetic": "[ki:]",
+      "partOfSpeech": "n.",
+      "definition": "钥",
+      "example": "匙;(+to)答"
+    },
+    {
+      "id": 501,
+      "word": "determination",
+      "phonetic": "[dɪˌtɜ:rmɪˈneɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "决心,决定,",
+      "example": "确定"
+    },
+    {
+      "id": 503,
+      "word": "little",
+      "phonetic": "[ˈlɪtl]",
+      "partOfSpeech": "ad.",
+      "definition": "毫不,几",
+      "example": "乎没有"
+    },
+    {
+      "id": 504,
+      "word": "interact",
+      "phonetic": "[ˌɪntərˈækt]",
+      "partOfSpeech": "v.",
+      "definition": "互相作用,",
+      "example": "互相影响,互"
+    },
+    {
+      "id": 505,
+      "word": "demand",
+      "phonetic": "[dɪˈmænd]",
+      "partOfSpeech": "n.",
+      "definition": "/v.要求,请",
+      "example": "求,需要(量)"
+    },
+    {
+      "id": 506,
+      "word": "secret",
+      "phonetic": "[ˈsi:krət]",
+      "partOfSpeech": "a.",
+      "definition": "秘密的,机",
+      "example": "密的 n.秘密"
+    },
+    {
+      "id": 507,
+      "word": "secretary",
+      "phonetic": "[ˈsekrətri]",
+      "partOfSpeech": "n.",
+      "definition": "秘书,书记;",
+      "example": "部长,大臣"
+    },
+    {
+      "id": 508,
+      "word": "comment",
+      "phonetic": "[ˈkɒment]",
+      "partOfSpeech": "n.",
+      "definition": "注释,评论,",
+      "example": "意见 v.(+on)"
+    },
+    {
+      "id": 509,
+      "word": "less",
+      "phonetic": "[les]",
+      "partOfSpeech": "a.",
+      "definition": "/ad.更少的",
+      "example": "(地),更小的"
+    },
+    {
+      "id": 510,
+      "word": "frequent",
+      "phonetic": "[ˈfri:kwənt]",
+      "partOfSpeech": "a.",
+      "definition": "时常发生",
+      "example": "的,频繁的"
+    },
+    {
+      "id": 511,
+      "word": "complain",
+      "phonetic": "[kəm\nˈ\np\nleɪn]",
+      "partOfSpeech": "v.",
+      "definition": "(+about,of)",
+      "example": "抱怨;申诉"
+    },
+    {
+      "id": 512,
+      "word": "candidate",
+      "phonetic": "[ˈkændɪdət]",
+      "partOfSpeech": "n.",
+      "definition": "候选人,候",
+      "example": "补者;报考者"
+    },
+    {
+      "id": 513,
+      "word": "voice",
+      "phonetic": "[vɔɪs]",
+      "partOfSpeech": "v.",
+      "definition": "说出,表达",
+      "example": "n.声音,噪音;"
+    },
+    {
+      "id": 514,
+      "word": "complaint",
+      "phonetic": "[kəm\nˈ\np\nleɪnt]",
+      "partOfSpeech": "n.",
+      "definition": "抱怨,诉苦;",
+      "example": "申诉;疾病"
+    },
+    {
+      "id": 515,
+      "word": "certain",
+      "phonetic": "[ˈsɜ:tn]",
+      "partOfSpeech": "a.",
+      "definition": "某,某一,某",
+      "example": "些;(+of)一定"
+    },
+    {
+      "id": 517,
+      "word": "certainty",
+      "phonetic": "[ˈsɜ:tnti]",
+      "partOfSpeech": "n.",
+      "definition": "必然,肯定;",
+      "example": "必然的事"
+    },
+    {
+      "id": 518,
+      "word": "modest",
+      "phonetic": "[ˈmɒdɪst]",
+      "partOfSpeech": "a.",
+      "definition": "谦虚的,谦",
+      "example": "让的,朴质的"
+    },
+    {
+      "id": 519,
+      "word": "modesty",
+      "phonetic": "[ˈmɒdəsti]",
+      "partOfSpeech": "n.",
+      "definition": "端庄;谦",
+      "example": "虚,谦逊;稳"
+    },
+    {
+      "id": 520,
+      "word": "pride",
+      "phonetic": "[praɪd]",
+      "partOfSpeech": "n.",
+      "definition": "自豪;自满;",
+      "example": "引以自豪的"
+    },
+    {
+      "id": 521,
+      "word": "hurt",
+      "phonetic": "[hɜ:t]",
+      "partOfSpeech": "n.",
+      "definition": "伤痛,伤害",
+      "example": "v.刺痛, 伤"
+    },
+    {
+      "id": 522,
+      "word": "puzzle",
+      "phonetic": "[\nˈ\np\nʌzl]",
+      "partOfSpeech": "n.",
+      "definition": "难题,谜,迷",
+      "example": "惑 v.( 使)"
+    },
+    {
+      "id": 523,
+      "word": "policy",
+      "phonetic": "[\nˈ\np\nɒləsi]",
+      "partOfSpeech": "n.",
+      "definition": "政策,方针 Not everyone will agree with the authors’",
+      "example": "policy idea.（14,T1）"
+    },
+    {
+      "id": 524,
+      "word": "strict",
+      "phonetic": "[strɪkt]",
+      "partOfSpeech": "a.",
+      "definition": "(+with) 严",
+      "example": "格的, 严厉"
+    },
+    {
+      "id": 525,
+      "word": "monetary",
+      "phonetic": "[ˈmʌnɪtri]",
+      "partOfSpeech": "a.",
+      "definition": "金融的,货",
+      "example": "币的"
+    },
+    {
+      "id": 526,
+      "word": "politician",
+      "phonetic": "[ˌpɒləˈtɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "政治家,政",
+      "example": "客"
+    },
+    {
+      "id": 527,
+      "word": "intervene",
+      "phonetic": "[ˌɪntəˈvi:n]",
+      "partOfSpeech": "v.",
+      "definition": "(+in)干涉,",
+      "example": "干预;插入,介"
+    },
+    {
+      "id": 528,
+      "word": "impact",
+      "phonetic": "[ˈ\nɪmpækt]",
+      "partOfSpeech": "n.",
+      "definition": "/v.冲击,碰",
+      "example": "撞;效果,影响"
+    },
+    {
+      "id": 529,
+      "word": "relative",
+      "phonetic": "[ˈrelətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)相对",
+      "example": "的,比较的;有"
+    },
+    {
+      "id": 530,
+      "word": "relatively",
+      "phonetic": "[ˈrelətɪvli]",
+      "partOfSpeech": "ad.",
+      "definition": "相对地;",
+      "example": "关系上地;"
+    },
+    {
+      "id": 531,
+      "word": "vision",
+      "phonetic": "[ˈvɪʒn]",
+      "partOfSpeech": "n.",
+      "definition": "视觉,视力;",
+      "example": "眼力,想象力,"
+    },
+    {
+      "id": 532,
+      "word": "fantasy",
+      "phonetic": "[ˈfæntəsi]",
+      "partOfSpeech": "n.",
+      "definition": "幻想,白日",
+      "example": "梦"
+    },
+    {
+      "id": 533,
+      "word": "entitle",
+      "phonetic": "[ɪnˈtaɪtl]",
+      "partOfSpeech": "v.",
+      "definition": "给以权利",
+      "example": "(或资格);"
+    },
+    {
+      "id": 534,
+      "word": "privilege",
+      "phonetic": "[\nˈ\np\nrɪvəlɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "特权,优惠,",
+      "example": "特许 v.给予"
+    },
+    {
+      "id": 535,
+      "word": "peer",
+      "phonetic": "[pɪə(r)]",
+      "partOfSpeech": "vi.",
+      "definition": "凝视;若隐",
+      "example": "若现;同等"
+    },
+    {
+      "id": 536,
+      "word": "defend",
+      "phonetic": "[dɪˈfend]",
+      "partOfSpeech": "v.",
+      "definition": "防守,保卫;",
+      "example": "为…辩护,"
+    },
+    {
+      "id": 537,
+      "word": "defendant",
+      "phonetic": "[dɪˈfendənt]",
+      "partOfSpeech": "n.",
+      "definition": "[法]被告",
+      "example": "人; a.[法]被"
+    },
+    {
+      "id": 538,
+      "word": "trial",
+      "phonetic": "[ˈtraɪəl]",
+      "partOfSpeech": "n.",
+      "definition": "审讯,审判;",
+      "example": "试验,考验"
+    },
+    {
+      "id": 539,
+      "word": "but",
+      "phonetic": "[bʌt]",
+      "partOfSpeech": "conj.",
+      "definition": "但是;而",
+      "example": "是; 除;只因"
+    },
+    {
+      "id": 540,
+      "word": "explore",
+      "phonetic": "[ɪkˈsplɔ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "勘探,探测;",
+      "example": "探究,探索"
+    },
+    {
+      "id": 541,
+      "word": "system",
+      "phonetic": "[ˈsɪstəm]",
+      "partOfSpeech": "n.",
+      "definition": "系统,体系;",
+      "example": "制度,体制"
+    },
+    {
+      "id": 542,
+      "word": "mechanism",
+      "phonetic": "[ˈmekənɪzəm]",
+      "partOfSpeech": "n.",
+      "definition": "机械装置,",
+      "example": "机构;机制"
+    },
+    {
+      "id": 543,
+      "word": "snap",
+      "phonetic": "[snæp]",
+      "partOfSpeech": "vt.",
+      "definition": "猛咬;突然",
+      "example": "折断 a.突然"
+    },
+    {
+      "id": 544,
+      "word": "defense",
+      "phonetic": "[dɪˈfɛns]",
+      "partOfSpeech": "",
+      "definition": "(=defence)n.",
+      "example": "防御,保"
+    },
+    {
+      "id": 545,
+      "word": "confuse",
+      "phonetic": "[kənˈfju:z]",
+      "partOfSpeech": "v.",
+      "definition": "使混乱,混",
+      "example": "淆"
+    },
+    {
+      "id": 546,
+      "word": "endless",
+      "phonetic": "[ˈendləs]",
+      "partOfSpeech": "a.",
+      "definition": "无止境的 The war was endless.",
+      "example": "那是场无休止的战争。www.zkedu.com.cn"
+    },
+    {
+      "id": 547,
+      "word": "string",
+      "phonetic": "[strɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "弦,线,细",
+      "example": "绳;(一串),(一"
+    },
+    {
+      "id": 548,
+      "word": "profit",
+      "phonetic": "[\n'\np\nrɒfɪt]",
+      "partOfSpeech": "n.",
+      "definition": "利润,收益",
+      "example": "v.(+by,from)"
+    },
+    {
+      "id": 549,
+      "word": "profitable",
+      "phonetic": "[\n'\np\nrɒfɪtəb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "有利可图",
+      "example": "的,有益的"
+    },
+    {
+      "id": 551,
+      "word": "establish",
+      "phonetic": "[ɪˈstæblɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "建立,设立;",
+      "example": "安置,使定居"
+    },
+    {
+      "id": 552,
+      "word": "establishment",
+      "phonetic": "[ɪ'stæblɪʃmənt]",
+      "partOfSpeech": "n.",
+      "definition": "建立,设立,",
+      "example": "建立的机构"
+    },
+    {
+      "id": 554,
+      "word": "gallery",
+      "phonetic": "[ˈgæləri]",
+      "partOfSpeech": "n.",
+      "definition": "长廊,画廊,",
+      "example": "美术馆"
+    },
+    {
+      "id": 555,
+      "word": "random",
+      "phonetic": "[ˈrændəm]",
+      "partOfSpeech": "a.",
+      "definition": "随机的,随",
+      "example": "意的 n.随机,"
+    },
+    {
+      "id": 556,
+      "word": "complete",
+      "phonetic": "[kəm\nˈ\np\nlit]",
+      "partOfSpeech": "a.",
+      "definition": "完全的,圆",
+      "example": "满的 v.完成,"
+    },
+    {
+      "id": 557,
+      "word": "creative",
+      "phonetic": "[kriˈeɪtɪv]",
+      "partOfSpeech": "a.",
+      "definition": "有创造力",
+      "example": "的,创造性的"
+    },
+    {
+      "id": 558,
+      "word": "productive",
+      "phonetic": "[prəˈdʌktɪv]",
+      "partOfSpeech": "a.",
+      "definition": "生产(性)的,",
+      "example": "能产的,多产"
+    },
+    {
+      "id": 559,
+      "word": "commit",
+      "phonetic": "[kəˈmɪt]",
+      "partOfSpeech": "v.",
+      "definition": "把…交托",
+      "example": "给,提交;犯"
+    },
+    {
+      "id": 561,
+      "word": "productivity",
+      "phonetic": "[ˌprɒdʌkˈtɪvəti]",
+      "partOfSpeech": "n.",
+      "definition": "生产率",
+      "example": "to increase productivity using fewer workers"
+    },
+    {
+      "id": 562,
+      "word": "operate",
+      "phonetic": "[ˈɒpəreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "运转,开",
+      "example": "动;(+on) 动"
+    },
+    {
+      "id": 563,
+      "word": "count",
+      "phonetic": "[kaʊnt]",
+      "partOfSpeech": "v.",
+      "definition": "数,计算;算",
+      "example": "入;看作,认为"
+    },
+    {
+      "id": 564,
+      "word": "counter",
+      "phonetic": "[ˈkaʊntə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "柜台;计数",
+      "example": "器 a./ad.相反"
+    },
+    {
+      "id": 565,
+      "word": "equality",
+      "phonetic": "[iˈkwɒləti]",
+      "partOfSpeech": "n.",
+      "definition": "同等,平等 open the way to equality and they break",
+      "example": "through the glass ceiling（13,T4）"
+    },
+    {
+      "id": 566,
+      "word": "gender",
+      "phonetic": "[ˈdʒendə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "性别",
+      "example": "Europe is not a gender-equality heaven."
+    },
+    {
+      "id": 567,
+      "word": "significant",
+      "phonetic": "[sɪgˈnɪfɪkənt]",
+      "partOfSpeech": "a.",
+      "definition": "有意义的;",
+      "example": "重大的,重要"
+    },
+    {
+      "id": 568,
+      "word": "significance",
+      "phonetic": "[sɪgˈnɪfɪkəns]",
+      "partOfSpeech": "n.",
+      "definition": "意义,含义;",
+      "example": "重要性"
+    },
+    {
+      "id": 569,
+      "word": "proportion",
+      "phonetic": "[prə\nˈ\np\nɔ:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "比例;部分,",
+      "example": "份儿;均衡,相"
+    },
+    {
+      "id": 570,
+      "word": "portion",
+      "phonetic": "[\nˈ\np\nɔ:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "一部分,一",
+      "example": "份"
+    },
+    {
+      "id": 571,
+      "word": "account",
+      "phonetic": "[əˈkaʊnt]",
+      "partOfSpeech": "n.",
+      "definition": "叙述,说明,",
+      "example": "帐目,帐户 v."
+    },
+    {
+      "id": 572,
+      "word": "accountant",
+      "phonetic": "[əˈkaʊntənt]",
+      "partOfSpeech": "n.",
+      "definition": "会计（员）,",
+      "example": "会计师"
+    },
+    {
+      "id": 573,
+      "word": "region",
+      "phonetic": "[ˈri:dʒən]",
+      "partOfSpeech": "n.",
+      "definition": "地区,区域,",
+      "example": "范围"
+    },
+    {
+      "id": 574,
+      "word": "freeze",
+      "phonetic": "[friz]",
+      "partOfSpeech": "v.",
+      "definition": "使结冰,使",
+      "example": "凝固"
+    },
+    {
+      "id": 575,
+      "word": "freezer",
+      "phonetic": "[ˈfri:zə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "冰箱;冷藏",
+      "example": "库"
+    },
+    {
+      "id": 576,
+      "word": "proud",
+      "phonetic": "[praʊd]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)自豪",
+      "example": "的;引以自豪"
+    },
+    {
+      "id": 577,
+      "word": "awkward",
+      "phonetic": "[ˈɔ:kwəd]",
+      "partOfSpeech": "a.",
+      "definition": "笨拙的,不",
+      "example": "灵活的;尴尬"
+    },
+    {
+      "id": 578,
+      "word": "undergraduate",
+      "phonetic": "[ˌʌndəˈgrædʒuət]",
+      "partOfSpeech": "n.",
+      "definition": "大学生,大",
+      "example": "学肆业生"
+    },
+    {
+      "id": 579,
+      "word": "financial",
+      "phonetic": "[faɪˈnænʃl]",
+      "partOfSpeech": "a.",
+      "definition": "财政的,金",
+      "example": "融的"
+    },
+    {
+      "id": 580,
+      "word": "grant",
+      "phonetic": "[grɑ:nt]",
+      "partOfSpeech": "v.",
+      "definition": "同意,准予;",
+      "example": "给予,授予"
+    },
+    {
+      "id": 581,
+      "word": "era",
+      "phonetic": "[ˈ\nɪrə]",
+      "partOfSpeech": "n.",
+      "definition": "时代,年代,",
+      "example": "阶段,纪元"
+    },
+    {
+      "id": 582,
+      "word": "accept",
+      "phonetic": "[ækˈsɛpt]",
+      "partOfSpeech": "v.",
+      "definition": "接受,承认;",
+      "example": "认可;承兑"
+    },
+    {
+      "id": 583,
+      "word": "wisdom",
+      "phonetic": "[ˈwɪzdəm]",
+      "partOfSpeech": "n.",
+      "definition": "智慧,明智;",
+      "example": "名言,格言;常"
+    },
+    {
+      "id": 584,
+      "word": "coach",
+      "phonetic": "[kəʊtʃ]",
+      "partOfSpeech": "n.",
+      "definition": "(铁路)客车,",
+      "example": "长途汽车;辅"
+    },
+    {
+      "id": 585,
+      "word": "session",
+      "phonetic": "[ˈseʃn]",
+      "partOfSpeech": "n.",
+      "definition": "会议,一届",
+      "example": "会议"
+    },
+    {
+      "id": 586,
+      "word": "convention",
+      "phonetic": "[kənˈvenʃn]",
+      "partOfSpeech": "n.",
+      "definition": "大会,会议;",
+      "example": "惯例,常规,习"
+    },
+    {
+      "id": 587,
+      "word": "attend",
+      "phonetic": "[əˈtend]",
+      "partOfSpeech": "v.",
+      "definition": "出席,",
+      "example": "加;(+to)照顾,"
+    },
+    {
+      "id": 588,
+      "word": "keen",
+      "phonetic": "[ki:n]",
+      "partOfSpeech": "a.",
+      "definition": "锋利的;敏",
+      "example": "锐的;敏捷的;"
+    },
+    {
+      "id": 590,
+      "word": "conventional",
+      "phonetic": "[kənˈvenʃənl]",
+      "partOfSpeech": "a.",
+      "definition": "惯例的,常",
+      "example": "规的"
+    },
+    {
+      "id": 591,
+      "word": "contradict",
+      "phonetic": "[ˌkɒntrəˈdɪkt]",
+      "partOfSpeech": "vt.",
+      "definition": "反驳,驳斥;",
+      "example": "否认;与…矛"
+    },
+    {
+      "id": 592,
+      "word": "further",
+      "phonetic": "[ˈfɜ:ðə(r)]",
+      "partOfSpeech": "ad.",
+      "definition": "/a.更远,更",
+      "example": "往前;进一步"
+    },
+    {
+      "id": 593,
+      "word": "cultivate",
+      "phonetic": "[ˈkʌltɪveɪt]",
+      "partOfSpeech": "v.",
+      "definition": "耕作,栽培,",
+      "example": "养殖;培养,教"
+    },
+    {
+      "id": 595,
+      "word": "devote",
+      "phonetic": "[dɪˈvəʊt]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)奉献,",
+      "example": "致力"
+    },
+    {
+      "id": 596,
+      "word": "devotion",
+      "phonetic": "[dɪˈvəʊʃn]",
+      "partOfSpeech": "n.",
+      "definition": "献身,忠诚 At first she was flattered by his devotion.",
+      "example": "刚开始他的爱慕让她感到荣幸。"
+    },
+    {
+      "id": 597,
+      "word": "importance",
+      "phonetic": "[ɪm\nˈ\np\nɔːt(ə)ns]",
+      "partOfSpeech": "n.",
+      "definition": "重要,重要",
+      "example": "性"
+    },
+    {
+      "id": 598,
+      "word": "attach",
+      "phonetic": "[əˈtætʃ]",
+      "partOfSpeech": "v.",
+      "definition": "(+to) 缚上,",
+      "example": "系上;使依附,"
+    },
+    {
+      "id": 599,
+      "word": "couple",
+      "phonetic": "[ˈkʌp(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "(一)对,双;",
+      "example": "夫妇;力偶,电"
+    },
+    {
+      "id": 600,
+      "word": "insurance",
+      "phonetic": "[ɪnˈʃʊrəns]",
+      "partOfSpeech": "n.",
+      "definition": "保险,保险",
+      "example": "费,保险业"
+    },
+    {
+      "id": 601,
+      "word": "thrive",
+      "phonetic": "[θraɪv]",
+      "partOfSpeech": "v.",
+      "definition": "兴旺,繁荣 A leader who thrives in one environment may",
+      "example": "struggle in another.（"
+    },
+    {
+      "id": 602,
+      "word": "condition",
+      "phonetic": "[kənˈdɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "状况,状",
+      "example": "态;(pl.)环境,"
+    },
+    {
+      "id": 604,
+      "word": "marital",
+      "phonetic": "[ˈmarɪt(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "婚姻的",
+      "example": "pre-marital"
+    },
+    {
+      "id": 605,
+      "word": "finance",
+      "phonetic": "[ˈfʌɪnans]",
+      "partOfSpeech": "n.",
+      "definition": "财政,金融",
+      "example": "v.为…提供资"
+    },
+    {
+      "id": 606,
+      "word": "investment",
+      "phonetic": "[ɪnˈvestmənt]",
+      "partOfSpeech": "n.",
+      "definition": "投资,投资额making investments for the future",
+      "example": "（16,完型）为未来投资"
+    },
+    {
+      "id": 607,
+      "word": "ban",
+      "phonetic": "[bæn]",
+      "partOfSpeech": "v.",
+      "definition": "取",
+      "example": "缔;(+from) 禁"
+    },
+    {
+      "id": 608,
+      "word": "facility",
+      "phonetic": "[fəˈsɪləti]",
+      "partOfSpeech": "n.",
+      "definition": "灵巧,熟",
+      "example": "练;(pl.))设备,"
+    },
+    {
+      "id": 609,
+      "word": "invest",
+      "phonetic": "[ɪnˈvest]",
+      "partOfSpeech": "v.",
+      "definition": "投资",
+      "example": "invest in public sports facilities"
+    },
+    {
+      "id": 610,
+      "word": "massive",
+      "phonetic": "[ˈmæsɪv]",
+      "partOfSpeech": "a.",
+      "definition": "大而重的,厚",
+      "example": "实的,粗大的;"
+    },
+    {
+      "id": 611,
+      "word": "behave",
+      "phonetic": "[bɪˈheɪv]",
+      "partOfSpeech": "v.",
+      "definition": "举止,举动,",
+      "example": "表现;运转,开"
+    },
+    {
+      "id": 612,
+      "word": "automatic",
+      "phonetic": "[ˌɔ:təˈmætɪk]",
+      "partOfSpeech": "a.",
+      "definition": "自动的,无意",
+      "example": "识的,机械的"
+    },
+    {
+      "id": 613,
+      "word": "investor",
+      "phonetic": "[ɪnˈvestə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "投资者",
+      "example": "You can automatically become investor in"
+    },
+    {
+      "id": 614,
+      "word": "investigate",
+      "phonetic": "[ɪnˈvestɪgeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "调查,调查研",
+      "example": "究"
+    },
+    {
+      "id": 615,
+      "word": "progress",
+      "phonetic": "[\nˈ\np\nrəʊgres]",
+      "partOfSpeech": "v.",
+      "definition": "/n.前进,进",
+      "example": "步,进展"
+    },
+    {
+      "id": 616,
+      "word": "monitor",
+      "phonetic": "[ˈmɒnɪtə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "班长;监听",
+      "example": "器,监视器"
+    },
+    {
+      "id": 617,
+      "word": "variety",
+      "phonetic": "[vəˈraɪəti]",
+      "partOfSpeech": "n.",
+      "definition": "种种,多种多",
+      "example": "样;种类,品种"
+    },
+    {
+      "id": 618,
+      "word": "poll",
+      "phonetic": "[pəʊl]",
+      "partOfSpeech": "n.",
+      "definition": "民意测",
+      "example": "验;(pl.)政治选"
+    },
+    {
+      "id": 619,
+      "word": "conflict",
+      "phonetic": "[ˈkɒnflɪkt]",
+      "partOfSpeech": "n.",
+      "definition": "战斗,斗争;",
+      "example": "抵触,冲突"
+    },
+    {
+      "id": 620,
+      "word": "society",
+      "phonetic": "[səˈsaɪəti]",
+      "partOfSpeech": "n.",
+      "definition": "社会;社团,",
+      "example": "社交界,上流"
+    },
+    {
+      "id": 621,
+      "word": "class",
+      "phonetic": "[klɑ:s]",
+      "partOfSpeech": "n.",
+      "definition": "班级;课;阶",
+      "example": "级;等级,类别"
+    },
+    {
+      "id": 622,
+      "word": "race",
+      "phonetic": "[reɪs]",
+      "partOfSpeech": "n.",
+      "definition": "(速度上的)",
+      "example": "比赛;人种"
+    },
+    {
+      "id": 623,
+      "word": "discriminate",
+      "phonetic": "[dɪˈskrɪməˌnet]",
+      "partOfSpeech": "v.",
+      "definition": "区别,辨",
+      "example": "别;(against)有"
+    },
+    {
+      "id": 624,
+      "word": "discrimination",
+      "phonetic": "[dɪˌskrɪmɪˈneɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "歧视;辨别,",
+      "example": "不公平的待遇"
+    },
+    {
+      "id": 625,
+      "word": "prohibit",
+      "phonetic": "[proˈhɪbɪt]",
+      "partOfSpeech": "v.",
+      "definition": "禁止,不准;",
+      "example": "阻止"
+    },
+    {
+      "id": 626,
+      "word": "prevalent",
+      "phonetic": "[\nˈ\np\nrevələnt]",
+      "partOfSpeech": "a.",
+      "definition": "流行的,普遍",
+      "example": "的"
+    },
+    {
+      "id": 627,
+      "word": "uncertain",
+      "phonetic": "[ʌnˈsɜ:tn]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)不定",
+      "example": "的,不确知的;"
+    },
+    {
+      "id": 628,
+      "word": "uncertainty",
+      "phonetic": "[ʌnˈsɜ:tnti]",
+      "partOfSpeech": "n.",
+      "definition": "易变,靠不",
+      "example": "住;不确知,不"
+    },
+    {
+      "id": 629,
+      "word": "universal",
+      "phonetic": "[ˌ\nju:nɪˈvɜ:sl]",
+      "partOfSpeech": "a.",
+      "definition": "普遍的,全体",
+      "example": "的,通用的;宇"
+    },
+    {
+      "id": 630,
+      "word": "frame",
+      "phonetic": "[freɪm]",
+      "partOfSpeech": "n.",
+      "definition": "框架,骨架",
+      "example": "v.装框子"
+    },
+    {
+      "id": 631,
+      "word": "prize",
+      "phonetic": "[praɪz]",
+      "partOfSpeech": "n.",
+      "definition": "奖赏,奖金,",
+      "example": "奖品"
+    },
+    {
+      "id": 632,
+      "word": "traditional",
+      "phonetic": "[trəˈdɪʃənl]",
+      "partOfSpeech": "a.",
+      "definition": "传统的",
+      "example": "define their traditional lifestyles"
+    },
+    {
+      "id": 633,
+      "word": "milestone",
+      "phonetic": "[ˈmaɪlstəʊn]",
+      "partOfSpeech": "n.",
+      "definition": "里程碑;划",
+      "example": "时代事件"
+    },
+    {
+      "id": 634,
+      "word": "continue",
+      "phonetic": "[kənˈtɪnju:]",
+      "partOfSpeech": "v.",
+      "definition": "继续,连续,",
+      "example": "延伸"
+    },
+    {
+      "id": 635,
+      "word": "dozen",
+      "phonetic": "[ˈdʌzn]",
+      "partOfSpeech": "n.",
+      "definition": "一打,十二个The Parkrun Phenomenon began with a dozen",
+      "example": "friends and has inspired 400 events in the UK"
+    },
+    {
+      "id": 636,
+      "word": "phenomenon",
+      "phonetic": "[fəˈnɒmɪnən]",
+      "partOfSpeech": "n.",
+      "definition": "现象",
+      "example": "The Parkrun Phenomenon began with a"
+    },
+    {
+      "id": 637,
+      "word": "downturn",
+      "phonetic": "[ˈdaʊntɜ:n]",
+      "partOfSpeech": "n.",
+      "definition": "（价格或活",
+      "example": "动）开始下降;"
+    },
+    {
+      "id": 638,
+      "word": "worst",
+      "phonetic": "[wɜ:st]",
+      "partOfSpeech": "a.",
+      "definition": "/ad.最坏,最",
+      "example": "差,最糟"
+    },
+    {
+      "id": 639,
+      "word": "current",
+      "phonetic": "[ˈkʌrənt]",
+      "partOfSpeech": "n.",
+      "definition": "电流,水流;",
+      "example": "潮流,趋势"
+    },
+    {
+      "id": 640,
+      "word": "structure",
+      "phonetic": "[ˈstrʌktʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "结构,构造;",
+      "example": "建筑物 v.构"
+    },
+    {
+      "id": 641,
+      "word": "immediate",
+      "phonetic": "[ɪˈmi:diət]",
+      "partOfSpeech": "a.",
+      "definition": "立即的,即时",
+      "example": "的;直接的,最"
+    },
+    {
+      "id": 642,
+      "word": "decade",
+      "phonetic": "[ˈdekeɪd]",
+      "partOfSpeech": "n.",
+      "definition": "十年",
+      "example": "We tend to think of the decades"
+    },
+    {
+      "id": 643,
+      "word": "immigrant",
+      "phonetic": "[ˈ\nɪmɪgrənt]",
+      "partOfSpeech": "a.",
+      "definition": "(从国外)移",
+      "example": "来的,移民的"
+    },
+    {
+      "id": 644,
+      "word": "immigration",
+      "phonetic": "[ˌɪmɪˈgreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "移居,移民,",
+      "example": "移民人数"
+    },
+    {
+      "id": 645,
+      "word": "might",
+      "phonetic": "[maɪt]",
+      "partOfSpeech": "v.",
+      "definition": "may 的过",
+      "example": "去式;可能"
+    },
+    {
+      "id": 646,
+      "word": "mighty",
+      "phonetic": "[ˈmaɪti]",
+      "partOfSpeech": "a.",
+      "definition": "强有力的;",
+      "example": "趾高气扬;巨"
+    },
+    {
+      "id": 647,
+      "word": "framework",
+      "phonetic": "[ˈfreɪmwɜ:k]",
+      "partOfSpeech": "n.",
+      "definition": "构架,框架,",
+      "example": "结构"
+    },
+    {
+      "id": 648,
+      "word": "treasure",
+      "phonetic": "[ˈtreʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "财宝,财富;",
+      "example": "珍品 v.珍爱,"
+    },
+    {
+      "id": 649,
+      "word": "stalk",
+      "phonetic": "[stɔ:k]",
+      "partOfSpeech": "n.",
+      "definition": "[植] 茎,秆;;",
+      "example": "高视阔步;偷"
+    },
+    {
+      "id": 650,
+      "word": "stuff",
+      "phonetic": "[stʌf]",
+      "partOfSpeech": "n.",
+      "definition": "原料,材料,",
+      "example": "东西"
+    },
+    {
+      "id": 651,
+      "word": "awful",
+      "phonetic": "[ˈɔ:fl]",
+      "partOfSpeech": "a.",
+      "definition": "极度的,极坏",
+      "example": "的;威严的,可"
+    },
+    {
+      "id": 652,
+      "word": "insight",
+      "phonetic": "[ˈ\nɪnsaɪt]",
+      "partOfSpeech": "n.",
+      "definition": "洞察力,见识Many first-generation students lack insight",
+      "example": "about why they are struggling.（15,T2）"
+    },
+    {
+      "id": 653,
+      "word": "knowledge",
+      "phonetic": "[ˈnɒlɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "知识,学识;",
+      "example": "消息"
+    },
+    {
+      "id": 654,
+      "word": "offer",
+      "phonetic": "[ˈɒfə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "提供,提出,",
+      "example": "呈现,出现"
+    },
+    {
+      "id": 655,
+      "word": "leave",
+      "phonetic": "[li:v]",
+      "partOfSpeech": "v.",
+      "definition": "离开;留下,",
+      "example": "忘带;让,听任;"
+    },
+    {
+      "id": 656,
+      "word": "instead",
+      "phonetic": "[ɪnˈsted]",
+      "partOfSpeech": "ad.",
+      "definition": "代替,顶替 It's also a good idea to shop daily instead of",
+      "example": "weekly.（13,T5）每天购物代替每周购物也"
+    },
+    {
+      "id": 657,
+      "word": "medical",
+      "phonetic": "[ˈmedɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "医学的,医疗",
+      "example": "的,医药的;内"
+    },
+    {
+      "id": 658,
+      "word": "switch",
+      "phonetic": "[swɪtʃ]",
+      "partOfSpeech": "n.",
+      "definition": "开关;转换;",
+      "example": "鞭子"
+    },
+    {
+      "id": 659,
+      "word": "electrical",
+      "phonetic": "[ɪˈlektrɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "电的,电学的electrical appliances",
+      "example": "电器"
+    },
+    {
+      "id": 660,
+      "word": "engineering",
+      "phonetic": "[ˌendʒɪˈnɪərɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "工程学",
+      "example": "He considered medical school before"
+    },
+    {
+      "id": 661,
+      "word": "electronic",
+      "phonetic": "[ɪˌlekˈtrɒnɪk]",
+      "partOfSpeech": "a.",
+      "definition": "电子的",
+      "example": "He switched to electronic engineering"
+    },
+    {
+      "id": 662,
+      "word": "payment",
+      "phonetic": "[\nˈ\np\neɪmənt]",
+      "partOfSpeech": "n.",
+      "definition": "支付,付款 society in which all payments are",
+      "example": "made electronically（13,完型）"
+    },
+    {
+      "id": 663,
+      "word": "afford",
+      "phonetic": "[əˈfɔ:d]",
+      "partOfSpeech": "v.",
+      "definition": "担负得起,买",
+      "example": "得起,花得起"
+    },
+    {
+      "id": 664,
+      "word": "affordable",
+      "phonetic": "[ə\n'\nf\nɔ:dəbl]",
+      "partOfSpeech": "a.",
+      "definition": "付得起的,买",
+      "example": "得起的"
+    },
+    {
+      "id": 665,
+      "word": "mortgage",
+      "phonetic": "[ˈmɔ:gɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "/v.抵押(借",
+      "example": "款)"
+    },
+    {
+      "id": 666,
+      "word": "situation",
+      "phonetic": "[ˌsɪtʃuˈeʃən]",
+      "partOfSpeech": "n.",
+      "definition": "形势,处境,",
+      "example": "状况;位置,场"
+    },
+    {
+      "id": 667,
+      "word": "nevertheless",
+      "phonetic": "[ˌnevəðəˈles]",
+      "partOfSpeech": "conj.",
+      "definition": "(=noneth",
+      "example": "eless) 然而,"
+    },
+    {
+      "id": 668,
+      "word": "apartment",
+      "phonetic": "[ə\nˈ\np\nɑ:tmənt]",
+      "partOfSpeech": "n.",
+      "definition": "(英)房间,套",
+      "example": "间;(美)公寓"
+    },
+    {
+      "id": 669,
+      "word": "elegant",
+      "phonetic": "[ˈelɪgənt]",
+      "partOfSpeech": "a.",
+      "definition": "优雅的,优美",
+      "example": "的,精致的"
+    },
+    {
+      "id": 670,
+      "word": "downtime",
+      "phonetic": "[ˈdaʊntaɪm]",
+      "partOfSpeech": "n.",
+      "definition": "（工厂等由",
+      "example": "于检修,待料"
+    },
+    {
+      "id": 671,
+      "word": "embrace",
+      "phonetic": "[ɪmˈbreɪs]",
+      "partOfSpeech": "v.",
+      "definition": "拥抱,包含,",
+      "example": "接受"
+    },
+    {
+      "id": 672,
+      "word": "concept",
+      "phonetic": "[ˈkɒnsept]",
+      "partOfSpeech": "n.",
+      "definition": "概念,观念,",
+      "example": "思想"
+    },
+    {
+      "id": 673,
+      "word": "design",
+      "phonetic": "[dɪˈzaɪn]",
+      "partOfSpeech": "v.",
+      "definition": "设计,构思,",
+      "example": "绘制 n.设计,"
+    },
+    {
+      "id": 674,
+      "word": "architecture",
+      "phonetic": "[ˈɑ:kɪtektʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "建筑(式样,",
+      "example": "风格);建筑学"
+    },
+    {
+      "id": 675,
+      "word": "exert",
+      "phonetic": "[ɪgˈzɜ:t]",
+      "partOfSpeech": "v.",
+      "definition": "尽(力),施加",
+      "example": "(影响、压力"
+    },
+    {
+      "id": 676,
+      "word": "enormous",
+      "phonetic": "[ɪˈnɔ:məs]",
+      "partOfSpeech": "a.",
+      "definition": "巨大的,庞大",
+      "example": "的"
+    },
+    {
+      "id": 677,
+      "word": "innocent",
+      "phonetic": "[ˈ\nɪnəsnt]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)清白",
+      "example": "的,无罪的;无"
+    },
+    {
+      "id": 678,
+      "word": "innocence",
+      "phonetic": "[ˈ\nɪnəsns]",
+      "partOfSpeech": "n.",
+      "definition": "清白; 天真",
+      "example": "无邪"
+    },
+    {
+      "id": 679,
+      "word": "associate",
+      "phonetic": "[əˈsəʊʃieɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(+with)使联",
+      "example": "系;交往"
+    },
+    {
+      "id": 680,
+      "word": "strength",
+      "phonetic": "[streŋθ]",
+      "partOfSpeech": "n.",
+      "definition": "实力,力量 Pink is used to be associated with strength.",
+      "example": "（12,T2）粉色过去常常与力量有关。"
+    },
+    {
+      "id": 681,
+      "word": "creativity",
+      "phonetic": "[ˌkri:eɪ'tɪvətɪ]",
+      "partOfSpeech": "n.",
+      "definition": "创造性,创造",
+      "example": "力,创作能力"
+    },
+    {
+      "id": 682,
+      "word": "initiative",
+      "phonetic": "[ɪˈnɪʃətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "创始的,起始",
+      "example": "的"
+    },
+    {
+      "id": 683,
+      "word": "scheme",
+      "phonetic": "[ski:m]",
+      "partOfSpeech": "n.",
+      "definition": "计划,方案;",
+      "example": "阴谋;配置"
+    },
+    {
+      "id": 684,
+      "word": "association",
+      "phonetic": "[əˌsəʊʃiˈeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "协会,团体;",
+      "example": "联合,联系,交"
+    },
+    {
+      "id": 685,
+      "word": "sponsor",
+      "phonetic": "[ˈspɒnsə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "发起人,主力",
+      "example": "者, 保证人"
+    },
+    {
+      "id": 686,
+      "word": "weight",
+      "phonetic": "[weɪt]",
+      "partOfSpeech": "n.",
+      "definition": "重量;负荷,",
+      "example": "重担;重要性,"
+    },
+    {
+      "id": 687,
+      "word": "compare",
+      "phonetic": "[kəm\nˈ\np\neə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(+with,to)比",
+      "example": "较,相比,对比;"
+    },
+    {
+      "id": 688,
+      "word": "digital",
+      "phonetic": "[ˈdɪdʒɪtl]",
+      "partOfSpeech": "a.",
+      "definition": "数字的,数据",
+      "example": "的"
+    },
+    {
+      "id": 689,
+      "word": "corporate",
+      "phonetic": "[ˈkɔ:pərət]",
+      "partOfSpeech": "adj.",
+      "definition": "法人的,团",
+      "example": "体的,社团的;"
+    },
+    {
+      "id": 690,
+      "word": "model",
+      "phonetic": "[ˈmɒdl]",
+      "partOfSpeech": "n.",
+      "definition": "样式, 型;",
+      "example": "模范; 模型,"
+    },
+    {
+      "id": 691,
+      "word": "rhetoric",
+      "phonetic": "[ˈretərɪk]",
+      "partOfSpeech": "n.",
+      "definition": "修辞学,说",
+      "example": "法,花言巧语,"
+    },
+    {
+      "id": 692,
+      "word": "buy",
+      "phonetic": "[baɪ]",
+      "partOfSpeech": "v.",
+      "definition": "(购)买;相信",
+      "example": "n.购买,买卖"
+    },
+    {
+      "id": 693,
+      "word": "win-win",
+      "phonetic": "[wɪn wɪn]",
+      "partOfSpeech": "a.",
+      "definition": "双赢的;互",
+      "example": "利互惠的"
+    },
+    {
+      "id": 694,
+      "word": "target",
+      "phonetic": "[ˈtɑ:gɪt]",
+      "partOfSpeech": "n.",
+      "definition": "目标,对象,",
+      "example": "靶子"
+    },
+    {
+      "id": 695,
+      "word": "giant",
+      "phonetic": "[ˈdʒaɪənt]",
+      "partOfSpeech": "n.",
+      "definition": "巨人",
+      "example": "a.巨大的"
+    },
+    {
+      "id": 696,
+      "word": "business",
+      "phonetic": "[ˈbɪznəs]",
+      "partOfSpeech": "n.",
+      "definition": "生意;商业,",
+      "example": "交易; 事务,"
+    },
+    {
+      "id": 697,
+      "word": "strengthen",
+      "phonetic": "[ˈstreŋθn]",
+      "partOfSpeech": "v.",
+      "definition": "加强,巩固 The government should strengthen the sense",
+      "example": "of responsibility among businesses.（11,T5）"
+    },
+    {
+      "id": 698,
+      "word": "surface",
+      "phonetic": "['sɜːfɪs]",
+      "partOfSpeech": "n.",
+      "definition": "表面,面,外",
+      "example": "表 a.表面的,"
+    },
+    {
+      "id": 700,
+      "word": "temporary",
+      "phonetic": "[ˈtɛmp(ə)rəri]",
+      "partOfSpeech": "a.",
+      "definition": "暂时的,临时",
+      "example": "的"
+    },
+    {
+      "id": 701,
+      "word": "foreign",
+      "phonetic": "[\n'\nf\nɒrɪn]",
+      "partOfSpeech": "a.",
+      "definition": "外国的,(+to)无",
+      "example": "关的;外来的;异"
+    },
+    {
+      "id": 702,
+      "word": "desirable",
+      "phonetic": "[dɪ'zaɪərəb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "称心的,期望得",
+      "example": "到的"
+    },
+    {
+      "id": 703,
+      "word": "mental",
+      "phonetic": "['ment(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "精神的,智力的 a desirable mental state for busy people",
+      "example": "（18,T4）忙碌人群的理想心理状态"
+    },
+    {
+      "id": 704,
+      "word": "hostel",
+      "phonetic": "['hɒst(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "旅社,招待所",
+      "example": "a hostel for the homeless"
+    },
+    {
+      "id": 705,
+      "word": "community",
+      "phonetic": "[kəˈmjunətɪ]",
+      "partOfSpeech": "n.",
+      "definition": "同一地区的全",
+      "example": "体居民,社会,社"
+    },
+    {
+      "id": 706,
+      "word": "estate",
+      "phonetic": "[ɪ'steɪt]",
+      "partOfSpeech": "n.",
+      "definition": "地产,房地产",
+      "example": "real estate"
+    },
+    {
+      "id": 707,
+      "word": "agent",
+      "phonetic": "['edʒənt]",
+      "partOfSpeech": "n.",
+      "definition": "代理商(人),代",
+      "example": "表,经纪人"
+    },
+    {
+      "id": 708,
+      "word": "representative",
+      "phonetic": "[reprɪ'zentətɪv]",
+      "partOfSpeech": "n.",
+      "definition": "代表,代理人",
+      "example": "a.(+of)典型的,有"
+    },
+    {
+      "id": 709,
+      "word": "both",
+      "phonetic": "[boθ]",
+      "partOfSpeech": "a.",
+      "definition": "两个的;两者的",
+      "example": "ad.并;又;两者皆"
+    },
+    {
+      "id": 710,
+      "word": "ought",
+      "phonetic": "[ɔːt]",
+      "partOfSpeech": "aux.",
+      "definition": "(+to) 应当,应",
+      "example": "该,本应,本当"
+    },
+    {
+      "id": 711,
+      "word": "entire",
+      "phonetic": "[ɪn'taɪɚ]",
+      "partOfSpeech": "a.",
+      "definition": "完全的,全部的,",
+      "example": "完整的~+ly:"
+    },
+    {
+      "id": 712,
+      "word": "trend",
+      "phonetic": "[trend]",
+      "partOfSpeech": "n.",
+      "definition": "倾向,趋势",
+      "example": "v.伸向,倾向"
+    },
+    {
+      "id": 713,
+      "word": "graduate",
+      "phonetic": "[ˈɡradʒʊeɪt]",
+      "partOfSpeech": "n.",
+      "definition": "毕业生,研究生",
+      "example": "v.(使)(大学)毕业"
+    },
+    {
+      "id": 714,
+      "word": "security",
+      "phonetic": "[sɪ'kjʊərətɪ]",
+      "partOfSpeech": "n.",
+      "definition": "安全,保障;保",
+      "example": "证;证券"
+    },
+    {
+      "id": 717,
+      "word": "profound",
+      "phonetic": "[prə\n'\nf\naʊnd]",
+      "partOfSpeech": "a.",
+      "definition": "深刻的,意义深",
+      "example": "远的;渊博的,造"
+    },
+    {
+      "id": 718,
+      "word": "perception",
+      "phonetic": "[pə'sepʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "知觉,感知;[生",
+      "example": "理] 感觉; 看法;"
+    },
+    {
+      "id": 719,
+      "word": "dictate",
+      "phonetic": "[dɪk'teɪt]",
+      "partOfSpeech": "vt.",
+      "definition": "命令;口述;控",
+      "example": "制,支配"
+    },
+    {
+      "id": 720,
+      "word": "manageable",
+      "phonetic": "['mænɪdʒəb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "易管理的;易控",
+      "example": "制的;易办的"
+    },
+    {
+      "id": 721,
+      "word": "control",
+      "phonetic": "[kən'trəʊl]",
+      "partOfSpeech": "n.",
+      "definition": "(+over)控制,支",
+      "example": "配"
+    },
+    {
+      "id": 722,
+      "word": "wholly",
+      "phonetic": "['holli]",
+      "partOfSpeech": "ad.",
+      "definition": "完全地,全部,",
+      "example": "一概"
+    },
+    {
+      "id": 723,
+      "word": "treat",
+      "phonetic": "[trit]",
+      "partOfSpeech": "v.",
+      "definition": "对待;治疗;论",
+      "example": "述;款待,请客"
+    },
+    {
+      "id": 724,
+      "word": "represent",
+      "phonetic": "[reprɪ'zent]",
+      "partOfSpeech": "vt.",
+      "definition": "描绘;代表,象",
+      "example": "征"
+    },
+    {
+      "id": 725,
+      "word": "online",
+      "phonetic": "[ɒn'laɪn]",
+      "partOfSpeech": "adj.",
+      "definition": "联机的;在线",
+      "example": "的 adv.在线地"
+    },
+    {
+      "id": 726,
+      "word": "develop",
+      "phonetic": "[dɪ'vɛləp]",
+      "partOfSpeech": "v.",
+      "definition": "发展,开发,研制;",
+      "example": "显现,显影;发育,"
+    },
+    {
+      "id": 727,
+      "word": "ritual",
+      "phonetic": "['rɪtʃʊəl]",
+      "partOfSpeech": "n.",
+      "definition": "仪式;惯例;礼",
+      "example": "制;习惯 a.仪式的;"
+    },
+    {
+      "id": 728,
+      "word": "advertise",
+      "phonetic": "['ædvətaɪz]",
+      "partOfSpeech": "vt.",
+      "definition": "通知;为…做广",
+      "example": "告;使突出 vi.做广"
+    },
+    {
+      "id": 730,
+      "word": "shrewd",
+      "phonetic": "[ʃrud]",
+      "partOfSpeech": "a.",
+      "definition": "机灵的,敏锐的;",
+      "example": "精明的"
+    },
+    {
+      "id": 731,
+      "word": "campaign",
+      "phonetic": "[kæm\n'\np\nen]",
+      "partOfSpeech": "vi.",
+      "definition": "作战;参加竞",
+      "example": "选;参加活动"
+    },
+    {
+      "id": 732,
+      "word": "visible",
+      "phonetic": "[ˈvɪzəbl]",
+      "partOfSpeech": "a.",
+      "definition": "明显的;看得见",
+      "example": "的;现有的可得到"
+    },
+    {
+      "id": 733,
+      "word": "visibility",
+      "phonetic": "['vɪzə'bɪləti]",
+      "partOfSpeech": "n.",
+      "definition": "能见度,可见性;",
+      "example": "能见距离;明显性"
+    },
+    {
+      "id": 734,
+      "word": "launch",
+      "phonetic": "[lɔːntʃ]",
+      "partOfSpeech": "v.",
+      "definition": "发射;使(船)下",
+      "example": "水,发动,开展"
+    },
+    {
+      "id": 735,
+      "word": "mislead",
+      "phonetic": "[mɪs'liːd]",
+      "partOfSpeech": "v.",
+      "definition": "把…带错路,使",
+      "example": "误入岐途"
+    },
+    {
+      "id": 736,
+      "word": "Europe",
+      "phonetic": "[\n'\nj\nʊrəp]",
+      "partOfSpeech": "n.",
+      "definition": "欧洲",
+      "example": "He is one of the most wanted criminals in"
+    },
+    {
+      "id": 737,
+      "word": "European",
+      "phonetic": "[\n'\nj\nʊrə\n'\np\niən]",
+      "partOfSpeech": "a.",
+      "definition": "欧洲的,欧洲人",
+      "example": "的 n.欧洲人"
+    },
+    {
+      "id": 738,
+      "word": "commission",
+      "phonetic": "[kə'mɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "委员会;委任,委",
+      "example": "托(书),代办;佣金,"
+    },
+    {
+      "id": 739,
+      "word": "trade",
+      "phonetic": "[treɪd]",
+      "partOfSpeech": "n.",
+      "definition": "贸易,商业;职",
+      "example": "业,行业 v.经商,"
+    },
+    {
+      "id": 740,
+      "word": "shortage",
+      "phonetic": "[\n'\nʃ\nɔːtɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "不足,缺少",
+      "example": "Worker shortages first appeared in the"
+    },
+    {
+      "id": 741,
+      "word": "supply",
+      "phonetic": "[sə\n'\np\nlaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "(+with,to)供给,",
+      "example": "供应,补足"
+    },
+    {
+      "id": 742,
+      "word": "level",
+      "phonetic": "['lɛvl]",
+      "partOfSpeech": "n.",
+      "definition": "水平,水准;等级",
+      "example": "a.水平的,平的 v."
+    },
+    {
+      "id": 743,
+      "word": "last",
+      "phonetic": "[lɑːst]",
+      "partOfSpeech": "v.",
+      "definition": "持续 a.最后的;",
+      "example": "上一个的 ad.最"
+    },
+    {
+      "id": 744,
+      "word": "reality",
+      "phonetic": "[rɪ'ælɪtɪ]",
+      "partOfSpeech": "n.",
+      "definition": "现实,实际;真实 But the reality is these things have very little",
+      "example": "lasting impact on our happiness levels."
+    },
+    {
+      "id": 745,
+      "word": "continuous",
+      "phonetic": "[kən'tɪnjʊəs]",
+      "partOfSpeech": "a.",
+      "definition": "连续的,持续的 Its continuous supply is becoming a reality.",
+      "example": "（16,T4)"
+    },
+    {
+      "id": 746,
+      "word": "field",
+      "phonetic": "[fi:ld]",
+      "partOfSpeech": "n.",
+      "definition": "田, 田野; 运动",
+      "example": "场; 领域, 方"
+    },
+    {
+      "id": 747,
+      "word": "train",
+      "phonetic": "[treɪn]",
+      "partOfSpeech": "n.",
+      "definition": "列车;行列,系",
+      "example": "列,一串"
+    },
+    {
+      "id": 748,
+      "word": "percent",
+      "phonetic": "[pə'sent]",
+      "partOfSpeech": "n.",
+      "definition": "百分之…",
+      "example": "We aim to increase sales by 10 per cent."
+    },
+    {
+      "id": 749,
+      "word": "adequate",
+      "phonetic": "[ˈædɪkwət]",
+      "partOfSpeech": "a.",
+      "definition": "足够的,适当的;",
+      "example": "+ly: ad.足够地,适"
+    },
+    {
+      "id": 750,
+      "word": "reward",
+      "phonetic": "[rɪˈwɔ:d]",
+      "partOfSpeech": "n.",
+      "definition": "(+for)报酬,赏",
+      "example": "金,奖励"
+    },
+    {
+      "id": 751,
+      "word": "labor",
+      "phonetic": "['leɪbə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "(=labour)工作,",
+      "example": "劳动;劳力,劳方"
+    },
+    {
+      "id": 752,
+      "word": "survey",
+      "phonetic": "[ˈsɜ:veɪ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.俯瞰,眺望;全",
+      "example": "面审视,调查;测"
+    },
+    {
+      "id": 753,
+      "word": "full-time",
+      "phonetic": "[ˈfʊlˈtaɪm]",
+      "partOfSpeech": "a.",
+      "definition": "全日制的; 全",
+      "example": "部时间的; 专职"
+    },
+    {
+      "id": 754,
+      "word": "part-time",
+      "phonetic": "[pɑ:t taɪm]",
+      "partOfSpeech": "a.",
+      "definition": "兼职的; 部分",
+      "example": "时间的;ad.兼职"
+    },
+    {
+      "id": 755,
+      "word": "actual",
+      "phonetic": "[ˈæktʃuəl]",
+      "partOfSpeech": "a.",
+      "definition": "实际的,现实的,",
+      "example": "事实上的+ly：ad."
+    },
+    {
+      "id": 756,
+      "word": "contrary",
+      "phonetic": "[ˈkɒntrəri]",
+      "partOfSpeech": "a.",
+      "definition": "(to)相反的,矛盾",
+      "example": "的 n.反对,矛盾;"
+    },
+    {
+      "id": 757,
+      "word": "suspect",
+      "phonetic": "[səˈspekt]",
+      "partOfSpeech": "v.",
+      "definition": "疑心,怀疑 n.嫌",
+      "example": "疑犯,可疑分子"
+    },
+    {
+      "id": 758,
+      "word": "suspicion",
+      "phonetic": "[səˈspɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "猜疑,怀疑",
+      "example": "I have a sneaking suspicion that they are"
+    },
+    {
+      "id": 759,
+      "word": "poison",
+      "phonetic": "[\nˈ\np\nɔɪzn]",
+      "partOfSpeech": "n.",
+      "definition": "毒物,毒药",
+      "example": "v.放毒,毒害"
+    },
+    {
+      "id": 761,
+      "word": "position",
+      "phonetic": "[pəˈzɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "位置;职位;姿",
+      "example": "势,姿态;见解,立"
+    },
+    {
+      "id": 762,
+      "word": "division",
+      "phonetic": "[dɪˈvɪʒn]",
+      "partOfSpeech": "n.",
+      "definition": "分,分割;部门,",
+      "example": "科,处;除法"
+    },
+    {
+      "id": 763,
+      "word": "seldom",
+      "phonetic": "[ˈseldəm]",
+      "partOfSpeech": "ad.",
+      "definition": "很少,不常",
+      "example": "Division of labor at home is seldom"
+    },
+    {
+      "id": 764,
+      "word": "mention",
+      "phonetic": "[ˈmenʃn]",
+      "partOfSpeech": "v.",
+      "definition": "/n.提及,说起",
+      "example": "Housing is seldom mentioned."
+    },
+    {
+      "id": 765,
+      "word": "figure",
+      "phonetic": "[ˈfɪgə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "体形;数字;图形",
+      "example": "v.(+out)算出，解"
+    },
+    {
+      "id": 766,
+      "word": "imitate",
+      "phonetic": "[ˈ\nɪmɪteɪt]",
+      "partOfSpeech": "v.",
+      "definition": "模仿,仿效;仿造,",
+      "example": "伪造"
+    },
+    {
+      "id": 768,
+      "word": "firm",
+      "phonetic": "[fɜ:m]",
+      "partOfSpeech": "a.",
+      "definition": "坚固的;坚决的,",
+      "example": "坚定的"
+    },
+    {
+      "id": 769,
+      "word": "repeat",
+      "phonetic": "[rɪ\nˈ\np\ni:t]",
+      "partOfSpeech": "v.",
+      "definition": "重复,重说,重做",
+      "example": "n.重复"
+    },
+    {
+      "id": 770,
+      "word": "repeatedly",
+      "phonetic": "[rɪ\n'\np\ni:tɪdlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "反复地,重复",
+      "example": "地;再三地;屡次"
+    },
+    {
+      "id": 771,
+      "word": "fuse",
+      "phonetic": "[fjuz]",
+      "partOfSpeech": "n.",
+      "definition": "保险丝,导火线,",
+      "example": "引信 v.熔化,熔合"
+    },
+    {
+      "id": 772,
+      "word": "identity",
+      "phonetic": "[aɪˈdentəti]",
+      "partOfSpeech": "n.",
+      "definition": "身分,相同",
+      "example": "vt.确定身份"
+    },
+    {
+      "id": 773,
+      "word": "hurricane",
+      "phonetic": "[ˈhʌrɪkən]",
+      "partOfSpeech": "n.",
+      "definition": "飓风",
+      "example": "Hurricane Betty is now approaching the"
+    },
+    {
+      "id": 774,
+      "word": "presentation",
+      "phonetic": "[ˌpreznˈteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "提交;演出;陈",
+      "example": "述,报告;颁奖仪"
+    },
+    {
+      "id": 775,
+      "word": "mask",
+      "phonetic": "[mɑ:sk]",
+      "partOfSpeech": "n.",
+      "definition": "面具;假面具;护",
+      "example": "肤膜 vt.掩饰;戴面"
+    },
+    {
+      "id": 776,
+      "word": "sophisticated",
+      "phonetic": "[səˈfɪstɪkeɪtɪd]",
+      "partOfSpeech": "a.",
+      "definition": "尖端的,复杂的,",
+      "example": "先进的;老练的,"
+    },
+    {
+      "id": 777,
+      "word": "century",
+      "phonetic": "[ˈsentʃəri]",
+      "partOfSpeech": "n.",
+      "definition": "世纪,(一)百年 Americans are drawing a new 21st-century",
+      "example": "road map to success.（16,T4）"
+    },
+    {
+      "id": 778,
+      "word": "speculate",
+      "phonetic": "[ˈspekjuleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "推测,推断;投机 People have speculated for centuries about a",
+      "example": "future without work.（17,完型）"
+    },
+    {
+      "id": 779,
+      "word": "product",
+      "phonetic": "[\nˈ\np\nrɒdʌkt]",
+      "partOfSpeech": "n.",
+      "definition": "产品,产物;乘积 The product they’re selling is data.",
+      "example": "（18,T3）他们销售的产品是数据。"
+    },
+    {
+      "id": 780,
+      "word": "viable",
+      "phonetic": "[ˈvaɪəbl]",
+      "partOfSpeech": "a.",
+      "definition": "切实可行的;",
+      "example": "能养活的; 有望"
+    },
+    {
+      "id": 781,
+      "word": "essential",
+      "phonetic": "[ɪˈsenʃl]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)必要的,必",
+      "example": "不可少的;本质"
+    },
+    {
+      "id": 782,
+      "word": "accomplish",
+      "phonetic": "[əˈkʌmplɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "完成,实现",
+      "example": "an essential factor in accomplishing any"
+    },
+    {
+      "id": 783,
+      "word": "exist",
+      "phonetic": "[ɪgˈzɪst]",
+      "partOfSpeech": "v.",
+      "definition": "存在;生活",
+      "example": "I would have to learn, little by little, to exist"
+    },
+    {
+      "id": 784,
+      "word": "previous",
+      "phonetic": "[\nˈ\np\nri:viəs]",
+      "partOfSpeech": "a.",
+      "definition": "先,前,以前",
+      "example": "的;(+to)在…之前"
+    },
+    {
+      "id": 785,
+      "word": "erase",
+      "phonetic": "[ɪˈreɪz]",
+      "partOfSpeech": "v.",
+      "definition": "擦掉;删去",
+      "example": "They erased almost all the gains of the"
+    },
+    {
+      "id": 786,
+      "word": "technology",
+      "phonetic": "[tekˈnɒlədʒi]",
+      "partOfSpeech": "n.",
+      "definition": "工艺,技术",
+      "example": "Gains of technology have been erased."
+    },
+    {
+      "id": 787,
+      "word": "vulnerable",
+      "phonetic": "[ˈvʌlnərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "（地方）易受攻",
+      "example": "击的; 易受伤的;"
+    },
+    {
+      "id": 788,
+      "word": "diminish",
+      "phonetic": "[dɪˈmɪnɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "缩小,减少,递减 Technology is diminishing man’s job",
+      "example": "opportunities.（14,T3）"
+    },
+    {
+      "id": 789,
+      "word": "performance",
+      "phonetic": "[pəˈfɔ:məns]",
+      "partOfSpeech": "n.",
+      "definition": "履行,执行;表",
+      "example": "演,演出;性能,特"
+    },
+    {
+      "id": 790,
+      "word": "experiment",
+      "phonetic": "[ɪkˈsperɪmənt]",
+      "partOfSpeech": "n.",
+      "definition": "试验",
+      "example": "v.(+on)进行实验"
+    },
+    {
+      "id": 791,
+      "word": "process",
+      "phonetic": "[\nˈ\np\nrəʊses]",
+      "partOfSpeech": "n.",
+      "definition": "过程,进程;工",
+      "example": "序,制作法;工艺"
+    },
+    {
+      "id": 792,
+      "word": "suppress",
+      "phonetic": "[sə\nˈ\np\nres]",
+      "partOfSpeech": "v.",
+      "definition": "镇压,压制;抑",
+      "example": "制,忍住;查禁"
+    },
+    {
+      "id": 793,
+      "word": "gene",
+      "phonetic": "[dʒi:n]",
+      "partOfSpeech": "n.",
+      "definition": "基因",
+      "example": "Firms are now studying how genes interact."
+    },
+    {
+      "id": 794,
+      "word": "innovation",
+      "phonetic": "[ˌɪnəˈveɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "革新,改革",
+      "example": "Gene patents suppress innovation rather than"
+    },
+    {
+      "id": 795,
+      "word": "stimulate",
+      "phonetic": "[ˈstɪmjuleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "刺激,使兴奋;激",
+      "example": "励,鼓舞"
+    },
+    {
+      "id": 796,
+      "word": "stimulus",
+      "phonetic": "[ˈstɪmjələs]",
+      "partOfSpeech": "n.",
+      "definition": "刺激物;刺激因",
+      "example": "素;激法物 pl."
+    },
+    {
+      "id": 797,
+      "word": "subsequent",
+      "phonetic": "[ˈsʌbsɪkwənt]",
+      "partOfSpeech": "a.",
+      "definition": "随后的,后来的 Subsequent experiments reproduced this",
+      "example": "effect with other stimuli.（18,完型）"
+    },
+    {
+      "id": 798,
+      "word": "suggestive",
+      "phonetic": "[səˈdʒestɪv]",
+      "partOfSpeech": "a.",
+      "definition": "提示的;暗示的,",
+      "example": "提醒的;引起联想"
+    },
+    {
+      "id": 799,
+      "word": "reliable",
+      "phonetic": "[rɪˈlaɪəbl]",
+      "partOfSpeech": "a.",
+      "definition": "可靠的;可信赖",
+      "example": "的;真实可信的"
+    },
+    {
+      "id": 800,
+      "word": "genetic",
+      "phonetic": "[dʒəˈnetɪk]",
+      "partOfSpeech": "a.",
+      "definition": "基因的; 遗传",
+      "example": "的; 起源的;"
+    },
+    {
+      "id": 801,
+      "word": "psychological",
+      "phonetic": "[ˌsaɪkəˈlɒdʒɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "心理的;精",
+      "example": "神上的,精神"
+    },
+    {
+      "id": 802,
+      "word": "prospect",
+      "phonetic": "[\nˈ\np\nrɒspekt]",
+      "partOfSpeech": "n.",
+      "definition": "景色;前景,",
+      "example": "可能性，前途,"
+    },
+    {
+      "id": 803,
+      "word": "prosecute",
+      "phonetic": "[\nˈ\np\nrɒsɪkju:t]",
+      "partOfSpeech": "vt.",
+      "definition": "告发,起诉 It would not prosecute landowners or",
+      "example": "businesses.（16 ,T2）它不会起诉土地所有"
+    },
+    {
+      "id": 804,
+      "word": "depart",
+      "phonetic": "[dɪ\nˈ\np\nɑ:t]",
+      "partOfSpeech": "v.",
+      "definition": "离开,出发;",
+      "example": "去世;离职;脱"
+    },
+    {
+      "id": 805,
+      "word": "Jet",
+      "phonetic": "[dʒet]",
+      "partOfSpeech": "n.",
+      "definition": "喷气发动",
+      "example": "机,喷气式飞"
+    },
+    {
+      "id": 806,
+      "word": "passenger",
+      "phonetic": "[\nˈ\np\næsɪndʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "乘客,旅客 What would happen if three passenger jets",
+      "example": "departing from Los Angeles？"
+    },
+    {
+      "id": 807,
+      "word": "comfortable",
+      "phonetic": "[ˈkʌmftəbl]",
+      "partOfSpeech": "a.",
+      "definition": "舒适的,自",
+      "example": "在的"
+    },
+    {
+      "id": 808,
+      "word": "companion",
+      "phonetic": "[kəm\nˈ\np\næniən]",
+      "partOfSpeech": "n.",
+      "definition": "同伴,共事",
+      "example": "者;伴侣"
+    },
+    {
+      "id": 809,
+      "word": "genius",
+      "phonetic": "[ˈdʒi:niəs]",
+      "partOfSpeech": "n.",
+      "definition": "天才",
+      "example": "Employers have so much more access to so"
+    },
+    {
+      "id": 810,
+      "word": "girlhood",
+      "phonetic": "[ˈgɜ:lhʊd]",
+      "partOfSpeech": "n.",
+      "definition": "少女时代,",
+      "example": "少女时期（; 总"
+    },
+    {
+      "id": 811,
+      "word": "celebrate",
+      "phonetic": "[ˈselɪbreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "庆祝",
+      "example": "It may celebrate girlhood in one way."
+    },
+    {
+      "id": 812,
+      "word": "conquer",
+      "phonetic": "[ˈkɒŋkə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "征服,战胜,",
+      "example": "占领;克服,破"
+    },
+    {
+      "id": 813,
+      "word": "fortune",
+      "phonetic": "[ˈfɔ:tʃu:n]",
+      "partOfSpeech": "n.",
+      "definition": "命运,运气;",
+      "example": "财产"
+    },
+    {
+      "id": 814,
+      "word": "parachute",
+      "phonetic": "[\nˈ\np\nærəʃu:t]",
+      "partOfSpeech": "n.",
+      "definition": "降落伞 v.",
+      "example": "跳伞,降落到"
+    },
+    {
+      "id": 815,
+      "word": "infrastructure",
+      "phonetic": "[ˈ\nɪnfrəstrʌktʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "基础设施;",
+      "example": "基础建设"
+    },
+    {
+      "id": 816,
+      "word": "expenditure",
+      "phonetic": "[ɪkˈspendɪtʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "花费;(时间,",
+      "example": "金钱等的)支"
+    },
+    {
+      "id": 817,
+      "word": "perspective",
+      "phonetic": "[pəˈspektɪv]",
+      "partOfSpeech": "n.",
+      "definition": "",
+      "example": "观点,看法，角"
+    },
+    {
+      "id": 818,
+      "word": "cancer",
+      "phonetic": "[ˈkænsə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "癌",
+      "example": "She was diagnosed with a rare form of"
+    },
+    {
+      "id": 819,
+      "word": "confront",
+      "phonetic": "[kənˈfrʌnt]",
+      "partOfSpeech": "v.",
+      "definition": "使面临,使",
+      "example": "遭遇;面对(危"
+    },
+    {
+      "id": 820,
+      "word": "bear",
+      "phonetic": "[beə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "熊",
+      "example": "v.忍受;负担;"
+    },
+    {
+      "id": 821,
+      "word": "swallow",
+      "phonetic": "[ˈswɒləʊ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.吞,咽",
+      "example": "n.燕子"
+    },
+    {
+      "id": 822,
+      "word": "pretty",
+      "phonetic": "[\nˈ\np\nrɪti]",
+      "partOfSpeech": "a.",
+      "definition": "漂亮的,秀",
+      "example": "丽的 ad.相当"
+    },
+    {
+      "id": 823,
+      "word": "bottom",
+      "phonetic": "[ˈbɒtəm]",
+      "partOfSpeech": "n.",
+      "definition": "底(部);基",
+      "example": "础,根基;海底,"
+    },
+    {
+      "id": 824,
+      "word": "confident",
+      "phonetic": "[ˈkɒnfɪdənt]",
+      "partOfSpeech": "a.",
+      "definition": "确信的,深",
+      "example": "信的;有信心"
+    },
+    {
+      "id": 825,
+      "word": "especially",
+      "phonetic": "[ɪˈspeʃəli]",
+      "partOfSpeech": "ad.",
+      "definition": "尤其地;",
+      "example": "主要地,格外"
+    },
+    {
+      "id": 826,
+      "word": "serious",
+      "phonetic": "[ˈsɪəriəs]",
+      "partOfSpeech": "a.",
+      "definition": "严肃的;主",
+      "example": "要的;严重的,"
+    },
+    {
+      "id": 827,
+      "word": "abandon",
+      "phonetic": "[əˈbændən]",
+      "partOfSpeech": "vt.",
+      "definition": "放弃;抛弃 Some of its member countries plan to",
+      "example": "abandon euro.（11,T4）"
+    },
+    {
+      "id": 829,
+      "word": "housewife",
+      "phonetic": "[ˈhaʊswaɪf]",
+      "partOfSpeech": "n.",
+      "definition": "家庭主妇 A pretty, helpless housewife abandons her",
+      "example": "husband and children to seek a more serious"
+    },
+    {
+      "id": 830,
+      "word": "hopeless",
+      "phonetic": "[ˈhəʊpləs]",
+      "partOfSpeech": "a.",
+      "definition": "没有希望",
+      "example": "的,绝望的"
+    },
+    {
+      "id": 831,
+      "word": "validation",
+      "phonetic": "[ˌvælɪ'deɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "确认,肯定,",
+      "example": "认可"
+    },
+    {
+      "id": 832,
+      "word": "confidence",
+      "phonetic": "[ˈkɒnfɪdəns]",
+      "partOfSpeech": "n.",
+      "definition": "信任;信心,",
+      "example": "自信;秘密,机"
+    },
+    {
+      "id": 833,
+      "word": "confidential",
+      "phonetic": "[ˌkɒnfɪˈdenʃl]",
+      "partOfSpeech": "a.",
+      "definition": "秘密的,机",
+      "example": "密的;亲信的"
+    },
+    {
+      "id": 834,
+      "word": "festival",
+      "phonetic": "[ˈfestɪvl]",
+      "partOfSpeech": "n.",
+      "definition": "节日;音乐",
+      "example": "节;戏剧节;贺"
+    },
+    {
+      "id": 835,
+      "word": "official",
+      "phonetic": "[əˈfɪʃl]",
+      "partOfSpeech": "n.",
+      "definition": "官员,行政",
+      "example": "官员"
+    },
+    {
+      "id": 836,
+      "word": "diamond",
+      "phonetic": "[ˈdaɪəmənd]",
+      "partOfSpeech": "n.",
+      "definition": "菱形;钻石,",
+      "example": "金刚石;方块"
+    },
+    {
+      "id": 837,
+      "word": "order",
+      "phonetic": "[ˈɔ:də(r)]",
+      "partOfSpeech": "n.",
+      "definition": "命令;次序;",
+      "example": "整齐;等级,秩"
+    },
+    {
+      "id": 839,
+      "word": "escape",
+      "phonetic": "[ɪˈskeɪp]",
+      "partOfSpeech": "n.",
+      "definition": "逃跑,逃脱",
+      "example": "v.逃跑;避开,"
+    },
+    {
+      "id": 840,
+      "word": "status",
+      "phonetic": "[ˈsteɪtəs]",
+      "partOfSpeech": "n.",
+      "definition": "地位,身份;",
+      "example": "情形,状况"
+    },
+    {
+      "id": 841,
+      "word": "regulatory",
+      "phonetic": "[ˈregjələtəri]",
+      "partOfSpeech": "a.",
+      "definition": "调整的;具",
+      "example": "有监管权的,"
+    },
+    {
+      "id": 842,
+      "word": "crack",
+      "phonetic": "[kræk]",
+      "partOfSpeech": "n.",
+      "definition": "裂纹,缝隙;",
+      "example": "破裂声"
+    },
+    {
+      "id": 843,
+      "word": "bureau",
+      "phonetic": "[ˈbjʊərəʊ]",
+      "partOfSpeech": "n.",
+      "definition": "署,局,司,处 FBI（",
+      "example": "Federal Bureau of Investigation）"
+    },
+    {
+      "id": 844,
+      "word": "crucial",
+      "phonetic": "[ˈkru:ʃl]",
+      "partOfSpeech": "a.",
+      "definition": "至关重要",
+      "example": "的,决定性的"
+    },
+    {
+      "id": 845,
+      "word": "revolution",
+      "phonetic": "[ˌrevəˈlu:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "革命;旋转,",
+      "example": "转数"
+    },
+    {
+      "id": 846,
+      "word": "versus",
+      "phonetic": "[ˈvɜ:səs]",
+      "partOfSpeech": "prep.",
+      "definition": "与…相",
+      "example": "对,与…相比;"
+    },
+    {
+      "id": 847,
+      "word": "industrial",
+      "phonetic": "[ɪnˈdʌstriəl]",
+      "partOfSpeech": "a.",
+      "definition": "工业的,产",
+      "example": "业的"
+    },
+    {
+      "id": 848,
+      "word": "industrious",
+      "phonetic": "[ɪnˈdʌstriəs]",
+      "partOfSpeech": "a.",
+      "definition": "勤勉的,勤",
+      "example": "奋的"
+    },
+    {
+      "id": 849,
+      "word": "provoke",
+      "phonetic": "[prəˈvəʊk]",
+      "partOfSpeech": "v.",
+      "definition": "挑动;激发;",
+      "example": "招惹,激起"
+    },
+    {
+      "id": 850,
+      "word": "mechanical",
+      "phonetic": "[məˈkænɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "机械的,由",
+      "example": "机构制成的;"
+    },
+    {
+      "id": 851,
+      "word": "magnify",
+      "phonetic": "[ˈmægnɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "放大,扩大 One of the easiest ways to segment a market",
+      "example": "is to magnify gender differences.（12,T2）"
+    },
+    {
+      "id": 852,
+      "word": "maintain",
+      "phonetic": "[meɪnˈteɪn]",
+      "partOfSpeech": "v.",
+      "definition": "维修,保养;",
+      "example": "维持,保持;坚"
+    },
+    {
+      "id": 853,
+      "word": "maintenance",
+      "phonetic": "[ˈmeɪntənəns]",
+      "partOfSpeech": "n.",
+      "definition": "维修,保养;",
+      "example": "维持,保持"
+    },
+    {
+      "id": 854,
+      "word": "historical",
+      "phonetic": "[hɪˈstɒrɪk(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "历史的;有",
+      "example": "关历史的"
+    },
+    {
+      "id": 855,
+      "word": "incident",
+      "phonetic": "[ˈ\nɪnsɪd(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "事件,事变 Historical incidents",
+      "example": "（15,T3）历史事件"
+    },
+    {
+      "id": 856,
+      "word": "infinite",
+      "phonetic": "[ˈ\nɪnfɪnɪt]",
+      "partOfSpeech": "a.",
+      "definition": "无限的,无",
+      "example": "穷的 n.无限"
+    },
+    {
+      "id": 857,
+      "word": "narrow",
+      "phonetic": "[ˈnarəʊ]",
+      "partOfSpeech": "a.",
+      "definition": "狭窄的,狭",
+      "example": "的,狭隘的"
+    },
+    {
+      "id": 858,
+      "word": "observe",
+      "phonetic": "[əbˈzəːv]",
+      "partOfSpeech": "v.",
+      "definition": "遵守,奉行;",
+      "example": "观察,注意到,"
+    },
+    {
+      "id": 859,
+      "word": "observation",
+      "phonetic": "[ɒbzəˈveɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "观察,观测",
+      "example": "(pl.)观察资料"
+    },
+    {
+      "id": 860,
+      "word": "relieve",
+      "phonetic": "[rɪˈliːv]",
+      "partOfSpeech": "v.",
+      "definition": "减轻,减缓,",
+      "example": "解除,减少;换"
+    },
+    {
+      "id": 861,
+      "word": "tension",
+      "phonetic": "[ˈtɛnʃən]",
+      "partOfSpeech": "n.",
+      "definition": "张力,拉力;",
+      "example": "紧张"
+    },
+    {
+      "id": 862,
+      "word": "separate",
+      "phonetic": "[ˈsɛp(ə)rət]",
+      "partOfSpeech": "",
+      "definition": "分离的,分开",
+      "example": "的"
+    },
+    {
+      "id": 863,
+      "word": "wake",
+      "phonetic": "[weɪk]",
+      "partOfSpeech": "v.",
+      "definition": "醒来,唤醒,",
+      "example": "挑动;激发;招"
+    },
+    {
+      "id": 864,
+      "word": "decay",
+      "phonetic": "[dɪˈkeɪ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.腐朽,腐",
+      "example": "烂;衰减,衰退"
+    },
+    {
+      "id": 865,
+      "word": "deserve",
+      "phonetic": "[dɪˈzəːv]",
+      "partOfSpeech": "v.",
+      "definition": "应受,值得 The moral decaying deserves more research",
+      "example": "by sociologists.（10,T2）"
+    },
+    {
+      "id": 866,
+      "word": "stock",
+      "phonetic": "[stɒk]",
+      "partOfSpeech": "n.",
+      "definition": "备料,库存,",
+      "example": "现货;股票,公"
+    },
+    {
+      "id": 867,
+      "word": "negative",
+      "phonetic": "[ˈnɛɡətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "否定的,消",
+      "example": "极的,阴性的"
+    },
+    {
+      "id": 868,
+      "word": "reduce",
+      "phonetic": "[rɪˈdjuːs]",
+      "partOfSpeech": "v.",
+      "definition": "减少,缩小;",
+      "example": "简化,还原"
+    },
+    {
+      "id": 869,
+      "word": "prepare",
+      "phonetic": "[prə\nˈ\np\nɛr]",
+      "partOfSpeech": "v.",
+      "definition": "准备,预备 Students who take a gap year are generally",
+      "example": "better prepared for and perform better in"
+    },
+    {
+      "id": 870,
+      "word": "positive",
+      "phonetic": "[\nˈ\np\nɒzɪtɪv]",
+      "partOfSpeech": "a.",
+      "definition": "确实的;积",
+      "example": "极的;正的;完"
+    },
+    {
+      "id": 871,
+      "word": "hormone",
+      "phonetic": "[ˈhɔːməʊn]",
+      "partOfSpeech": "n.",
+      "definition": "[生理] 激",
+      "example": "素,荷尔蒙"
+    },
+    {
+      "id": 872,
+      "word": "assign",
+      "phonetic": "[ə'saɪn]",
+      "partOfSpeech": "v.",
+      "definition": "分配,委派;",
+      "example": "指定(时间,地"
+    },
+    {
+      "id": 873,
+      "word": "assignment",
+      "phonetic": "[ə'saɪnm(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "分配,委派;",
+      "example": "任务,(课外)"
+    },
+    {
+      "id": 874,
+      "word": "prevent",
+      "phonetic": "[prɪ'vent]",
+      "partOfSpeech": "",
+      "definition": "预防,防止",
+      "example": "It can help prevent stress and save money"
+    },
+    {
+      "id": 875,
+      "word": "shift",
+      "phonetic": "[ʃɪft]",
+      "partOfSpeech": "v.",
+      "definition": "替换,转移",
+      "example": "n.转换,转"
+    },
+    {
+      "id": 876,
+      "word": "remarkable",
+      "phonetic": "[rɪ'mɑːkəb(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "值得注意",
+      "example": "的;显著的,异"
+    },
+    {
+      "id": 877,
+      "word": "possibility",
+      "phonetic": "[ˌpɒsəˈbɪləti]",
+      "partOfSpeech": "n.",
+      "definition": "可能,可能",
+      "example": "性;可能的事,"
+    },
+    {
+      "id": 878,
+      "word": "infuse",
+      "phonetic": "[ɪnˈfju:z]",
+      "partOfSpeech": "vt.",
+      "definition": "灌输,加入",
+      "example": "（一种特性）"
+    },
+    {
+      "id": 879,
+      "word": "intend",
+      "phonetic": "[ɪnˈtend]",
+      "partOfSpeech": "v.",
+      "definition": "（+to）想要,",
+      "example": "打算,企图"
+    },
+    {
+      "id": 880,
+      "word": "devaluation",
+      "phonetic": "[ˌdi:ˌvæljʊ'eɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "（货币）贬",
+      "example": "值"
+    },
+    {
+      "id": 881,
+      "word": "deny",
+      "phonetic": "[dɪˈnaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "否认,否定;",
+      "example": "拒绝"
+    },
+    {
+      "id": 882,
+      "word": "outdoor",
+      "phonetic": "[ˈaʊtdɔ:(r)]",
+      "partOfSpeech": "a.",
+      "definition": "室外; 户外",
+      "example": "的,露天的;"
+    },
+    {
+      "id": 883,
+      "word": "outdoors",
+      "phonetic": "[ˌaʊtˈdɔ:z]",
+      "partOfSpeech": "ad.",
+      "definition": "户外,野外",
+      "example": "n.户外; 野外;"
+    },
+    {
+      "id": 884,
+      "word": "origin",
+      "phonetic": "[ˈɒrɪdʒɪn]",
+      "partOfSpeech": "n.",
+      "definition": "起源,由来;",
+      "example": "出身,来历"
+    },
+    {
+      "id": 885,
+      "word": "religion",
+      "phonetic": "[rɪˈlɪdʒən]",
+      "partOfSpeech": "n.",
+      "definition": "宗教,信仰;",
+      "example": "信念,信条"
+    },
+    {
+      "id": 887,
+      "word": "religious",
+      "phonetic": "[rɪˈlɪdʒəs]",
+      "partOfSpeech": "a.",
+      "definition": "宗教的,信",
+      "example": "教的,虔诚的"
+    },
+    {
+      "id": 888,
+      "word": "nonsense",
+      "phonetic": "[ˈnɒnsns]",
+      "partOfSpeech": "n.",
+      "definition": "胡闹;胡说,",
+      "example": "废话; 荒谬的"
+    },
+    {
+      "id": 889,
+      "word": "original",
+      "phonetic": "[əˈrɪdʒənl]",
+      "partOfSpeech": "a.",
+      "definition": "最初的,原",
+      "example": "始的,原文的;"
+    },
+    {
+      "id": 891,
+      "word": "photograph",
+      "phonetic": "[ˈfəʊtəgrɑ:f]",
+      "partOfSpeech": "n.",
+      "definition": "(=photo)照",
+      "example": "片"
+    },
+    {
+      "id": 892,
+      "word": "originate",
+      "phonetic": "[əˈrɪdʒɪneɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(+in,from)",
+      "example": "起源, 发生;"
+    },
+    {
+      "id": 893,
+      "word": "flu",
+      "phonetic": "[flu:]",
+      "partOfSpeech": "n.",
+      "definition": "流行性感",
+      "example": "冒,流感"
+    },
+    {
+      "id": 894,
+      "word": "detect",
+      "phonetic": "[dɪˈtekt]",
+      "partOfSpeech": "v.",
+      "definition": "察觉,发觉,",
+      "example": "侦察,探测"
+    },
+    {
+      "id": 895,
+      "word": "outbreak",
+      "phonetic": "[ˈaʊtbreɪk]",
+      "partOfSpeech": "n.",
+      "definition": "（战争,瘟",
+      "example": "疫）爆发"
+    },
+    {
+      "id": 896,
+      "word": "urgent",
+      "phonetic": "[ˈɜ:dʒənt]",
+      "partOfSpeech": "a.",
+      "definition": "急迫的,紧",
+      "example": "迫的"
+    },
+    {
+      "id": 897,
+      "word": "bitter",
+      "phonetic": "[ˈbɪtə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "(有)苦(味)",
+      "example": "的;痛苦的,厉"
+    },
+    {
+      "id": 898,
+      "word": "aggressive",
+      "phonetic": "[əˈgresɪv]",
+      "partOfSpeech": "a.",
+      "definition": "侵略的,好",
+      "example": "斗的;敢作敢"
+    },
+    {
+      "id": 899,
+      "word": "ambitious",
+      "phonetic": "[æmˈbɪʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "有雄心的,",
+      "example": "野心勃勃的"
+    },
+    {
+      "id": 900,
+      "word": "sharp",
+      "phonetic": "[ʃɑ:p]",
+      "partOfSpeech": "a.",
+      "definition": "锋利的;尖",
+      "example": "锐的; 敏锐"
+    },
+    {
+      "id": 901,
+      "word": "blunt",
+      "phonetic": "[blʌnt]",
+      "partOfSpeech": "a.",
+      "definition": "直率的;迟",
+      "example": "钝的; 钝的,"
+    },
+    {
+      "id": 902,
+      "word": "edge",
+      "phonetic": "[edʒ]",
+      "partOfSpeech": "n.",
+      "definition": "边,棱;刀口,",
+      "example": "刃"
+    },
+    {
+      "id": 903,
+      "word": "attempt",
+      "phonetic": "[əˈtempt]",
+      "partOfSpeech": "v.",
+      "definition": "尝试,试图",
+      "example": "n.(+at)企图,"
+    },
+    {
+      "id": 904,
+      "word": "medicine",
+      "phonetic": "[ˈmedsn]",
+      "partOfSpeech": "n.",
+      "definition": "内服药,医",
+      "example": "药;医术;医学,"
+    },
+    {
+      "id": 905,
+      "word": "ease",
+      "phonetic": "[i:z]",
+      "partOfSpeech": "v.",
+      "definition": "减轻;使舒",
+      "example": "适,使安心"
+    },
+    {
+      "id": 906,
+      "word": "connection",
+      "phonetic": "[kəˈnekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "联系,连接 Human beings thrive off of social",
+      "example": "connections. （15,完型）人类是从社会关"
+    },
+    {
+      "id": 907,
+      "word": "tease",
+      "phonetic": "[ti:z]",
+      "partOfSpeech": "vt.",
+      "definition": "取笑;戏弄;",
+      "example": "梳理;欺负;强"
+    },
+    {
+      "id": 908,
+      "word": "character",
+      "phonetic": "[əˈrɪdʒɪneɪt]",
+      "partOfSpeech": "n.",
+      "definition": "性格,品质,",
+      "example": "特性;人物,角"
+    },
+    {
+      "id": 909,
+      "word": "abstract",
+      "phonetic": "[ˈæbstrækt]",
+      "partOfSpeech": "a.",
+      "definition": "抽象的",
+      "example": "n.摘要,提要,"
+    },
+    {
+      "id": 910,
+      "word": "characteristic",
+      "phonetic": "[ˌkærəktəˈrɪstɪk]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)特有",
+      "example": "的,独特的"
+    },
+    {
+      "id": 911,
+      "word": "characterize",
+      "phonetic": "[ˈkærəktəraɪz]",
+      "partOfSpeech": "",
+      "definition": "(=characterise",
+      "example": ")v.表示…的"
+    },
+    {
+      "id": 912,
+      "word": "charge",
+      "phonetic": "[tʃɑ:dʒ]",
+      "partOfSpeech": "n.",
+      "definition": "费用;电荷;",
+      "example": "掌管;控告;命"
+    },
+    {
+      "id": 913,
+      "word": "silence",
+      "phonetic": "['saɪləns]",
+      "partOfSpeech": "n.",
+      "definition": "寂静,沉默",
+      "example": "v.使沉默,使安"
+    },
+    {
+      "id": 914,
+      "word": "silent",
+      "phonetic": "['saɪlənt]",
+      "partOfSpeech": "a.",
+      "definition": "寂静的,沉默",
+      "example": "的,无声的"
+    },
+    {
+      "id": 915,
+      "word": "couch",
+      "phonetic": "[kaʊtʃ]",
+      "partOfSpeech": "n.",
+      "definition": "睡椅,长沙发",
+      "example": "椅"
+    },
+    {
+      "id": 916,
+      "word": "succeed",
+      "phonetic": "[sək'siː d]",
+      "partOfSpeech": "v.",
+      "definition": "(+in)成功;",
+      "example": "继承,接替"
+    },
+    {
+      "id": 917,
+      "word": "legacy",
+      "phonetic": "['legəsɪ]",
+      "partOfSpeech": "n.",
+      "definition": "遗产,遗留之",
+      "example": "物"
+    },
+    {
+      "id": 918,
+      "word": "lever",
+      "phonetic": "['liː və]",
+      "partOfSpeech": "n.",
+      "definition": "杠杆;控制",
+      "example": "杆"
+    },
+    {
+      "id": 919,
+      "word": "document",
+      "phonetic": "['dɒkjʊm(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "公文,文献 Planning documents pledged that the great",
+      "example": "legacy of the Games would be to lever a"
+    },
+    {
+      "id": 920,
+      "word": "documentary",
+      "phonetic": "[dɒkjʊ'ment(ə)rɪ]",
+      "partOfSpeech": "a.",
+      "definition": "文献的",
+      "example": "n.记录片"
+    },
+    {
+      "id": 921,
+      "word": "channel",
+      "phonetic": "['tʃæn(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "海峡,水道;",
+      "example": "频道,信道,波"
+    },
+    {
+      "id": 922,
+      "word": "induce",
+      "phonetic": "[ɪn'djuː s]",
+      "partOfSpeech": "v.",
+      "definition": "引诱,劝使;",
+      "example": "引起,导致;感"
+    },
+    {
+      "id": 923,
+      "word": "inducement",
+      "phonetic": "[ɪn'djuːsm(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "诱因,刺激物He hasn't much inducement to study",
+      "example": "English."
+    },
+    {
+      "id": 924,
+      "word": "chain",
+      "phonetic": "[tʃeɪn]",
+      "partOfSpeech": "n.",
+      "definition": "链(条);(pl.)",
+      "example": "镣铐;一连串"
+    },
+    {
+      "id": 925,
+      "word": "grocery",
+      "phonetic": "['grəʊs(ə)rɪ]",
+      "partOfSpeech": "n.",
+      "definition": "杂货店,杂货You meet new people every day: the",
+      "example": "grocery worker, the cab driver.（18,T5）"
+    },
+    {
+      "id": 926,
+      "word": "upmarket",
+      "phonetic": "['ʌp,mɑ:kit]",
+      "partOfSpeech": "adj.",
+      "definition": "质优价高",
+      "example": "的;高级的"
+    },
+    {
+      "id": 927,
+      "word": "purchase",
+      "phonetic": "[\n'\np\nɜ:tʃəs]",
+      "partOfSpeech": "v.",
+      "definition": "买,购买",
+      "example": "n.购买的物品"
+    },
+    {
+      "id": 928,
+      "word": "tide",
+      "phonetic": "[taɪd]",
+      "partOfSpeech": "n.",
+      "definition": "趋势,潮流;",
+      "example": "潮汐"
+    },
+    {
+      "id": 929,
+      "word": "profile",
+      "phonetic": "[\n'\np\nrəʊfaɪl]",
+      "partOfSpeech": "n.",
+      "definition": "侧面;轮廓;",
+      "example": "外形;剖面;简"
+    },
+    {
+      "id": 930,
+      "word": "high-profile",
+      "phonetic": "[hai\n'\np\nrəufail]",
+      "partOfSpeech": "a.",
+      "definition": "高调的;备",
+      "example": "受瞩目的;知"
+    },
+    {
+      "id": 931,
+      "word": "chef",
+      "phonetic": "[ʃef]",
+      "partOfSpeech": "n.",
+      "definition": "厨师,大师傅James works as assistant chef at a fast food",
+      "example": "restaurant."
+    },
+    {
+      "id": 932,
+      "word": "celebrity",
+      "phonetic": "[sɪ'lebrɪtɪ]",
+      "partOfSpeech": "n.",
+      "definition": "名人;名声 He was more than a footballing superstar,",
+      "example": "he was a celebrity."
+    },
+    {
+      "id": 933,
+      "word": "criticize",
+      "phonetic": "['krɪtɪsaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "(=criticise)",
+      "example": "批评,评论"
+    },
+    {
+      "id": 934,
+      "word": "critical",
+      "phonetic": "['krɪtɪk(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "临界的;批",
+      "example": "评的,爱挑剔"
+    },
+    {
+      "id": 935,
+      "word": "rest",
+      "phonetic": "[rest]",
+      "partOfSpeech": "n.",
+      "definition": "休息,停止;",
+      "example": "剩余部分"
+    },
+    {
+      "id": 936,
+      "word": "criticism",
+      "phonetic": "['krɪtɪsɪz(ə)m]",
+      "partOfSpeech": "n.",
+      "definition": "批评,评论 For the rest of the decade she apparently",
+      "example": "managed both roles without attracting much"
+    },
+    {
+      "id": 937,
+      "word": "retire",
+      "phonetic": "[rɪ'taɪə]",
+      "partOfSpeech": "v.",
+      "definition": "退休,引退;",
+      "example": "退却,撤退;就"
+    },
+    {
+      "id": 938,
+      "word": "retirement",
+      "phonetic": "[rɪ'taɪəm(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "退休,退役 He spent the last fourteen years of his life in",
+      "example": "retirement."
+    },
+    {
+      "id": 939,
+      "word": "beyond",
+      "phonetic": "[bɪ\n'\nj\nɒnd]",
+      "partOfSpeech": "prep.",
+      "definition": "超过;越",
+      "example": "过;那一边;"
+    },
+    {
+      "id": 940,
+      "word": "definition",
+      "phonetic": "[defɪ'nɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "定义,解释 We need to look beyond strict definitions",
+      "example": "of legal and illegal.（13,T2）"
+    },
+    {
+      "id": 941,
+      "word": "inhabit",
+      "phonetic": "[ɪn'hæbɪt]",
+      "partOfSpeech": "v.",
+      "definition": "居住,栖息,",
+      "example": "占据"
+    },
+    {
+      "id": 942,
+      "word": "quantity",
+      "phonetic": "['kwɒntɪtɪ]",
+      "partOfSpeech": "n.",
+      "definition": "量,数量;大",
+      "example": "量"
+    },
+    {
+      "id": 943,
+      "word": "ingredient",
+      "phonetic": "[ɪn'griː dɪənt]",
+      "partOfSpeech": "n.",
+      "definition": "原料;要素;",
+      "example": "组成部分"
+    },
+    {
+      "id": 944,
+      "word": "indicate",
+      "phonetic": "['ɪndɪkeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "指出,指示;",
+      "example": "表明,暗示"
+    },
+    {
+      "id": 945,
+      "word": "beg",
+      "phonetic": "[beg]",
+      "partOfSpeech": "v.",
+      "definition": "乞求,乞讨;",
+      "example": "请求,恳求"
+    },
+    {
+      "id": 946,
+      "word": "beggar",
+      "phonetic": "['begə]",
+      "partOfSpeech": "n.",
+      "definition": "乞丐,穷人 He's a sly old beggar if ever there was one.",
+      "example": "他确确实实是个老奸巨猾的家伙。"
+    },
+    {
+      "id": 947,
+      "word": "issue",
+      "phonetic": "['ɪʃu]",
+      "partOfSpeech": "v.",
+      "definition": "流出;发行,",
+      "example": "颁布"
+    },
+    {
+      "id": 948,
+      "word": "president",
+      "phonetic": "[\n'\np\nrezɪd(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "总统,校长,",
+      "example": "会长,主席"
+    },
+    {
+      "id": 949,
+      "word": "vice",
+      "phonetic": "[vaɪs]",
+      "partOfSpeech": "n.",
+      "definition": "邪恶;恶",
+      "example": "习;(pl.)台钳,"
+    },
+    {
+      "id": 950,
+      "word": "vacation",
+      "phonetic": "[vəˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "假期,休假,",
+      "example": "（房屋）搬出"
+    },
+    {
+      "id": 952,
+      "word": "idleness",
+      "phonetic": "['aɪdlnəs]",
+      "partOfSpeech": "a.",
+      "definition": "空闲的,闲置",
+      "example": "的;"
+    },
+    {
+      "id": 953,
+      "word": "weak",
+      "phonetic": "[wiː k]",
+      "partOfSpeech": "a.",
+      "definition": "[经]疲软的,",
+      "example": "虚弱的,软弱"
+    },
+    {
+      "id": 954,
+      "word": "indicative",
+      "phonetic": "[ɪn'dɪkətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "指示的,暗示",
+      "example": "的"
+    },
+    {
+      "id": 955,
+      "word": "indication",
+      "phonetic": "[ɪndɪ'keɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "指示,指出;",
+      "example": "迹象;象征,暗"
+    },
+    {
+      "id": 956,
+      "word": "indicator",
+      "phonetic": "['ɪndɪkeɪtə]",
+      "partOfSpeech": "n.",
+      "definition": "指标,标志,",
+      "example": "迹象; 指示器"
+    },
+    {
+      "id": 957,
+      "word": "somewhat",
+      "phonetic": "['sʌmwɒt]",
+      "partOfSpeech": "ad.",
+      "definition": "/n.稍微,有",
+      "example": "点"
+    },
+    {
+      "id": 958,
+      "word": "elder",
+      "phonetic": "['eldə]",
+      "partOfSpeech": "a.",
+      "definition": "年长的,资格",
+      "example": "老的 n.长辈,"
+    },
+    {
+      "id": 959,
+      "word": "optimistic",
+      "phonetic": "[ɒptɪ'mɪstɪk]",
+      "partOfSpeech": "a.",
+      "definition": "乐观的;乐",
+      "example": "观主义的"
+    },
+    {
+      "id": 960,
+      "word": "article",
+      "phonetic": "['ɑː tɪk(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "文章,论文;",
+      "example": "物品,商品;项"
+    },
+    {
+      "id": 961,
+      "word": "quite",
+      "phonetic": "[kwaɪt]",
+      "partOfSpeech": "ad.",
+      "definition": "十分,完全;",
+      "example": "相当,颇;的确,"
+    },
+    {
+      "id": 962,
+      "word": "strike",
+      "phonetic": "[straɪk]",
+      "partOfSpeech": "v.",
+      "definition": "打,打击;罢",
+      "example": "工;敲,敲击;"
+    },
+    {
+      "id": 963,
+      "word": "striking",
+      "phonetic": "['straɪkɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "显著的,突出",
+      "example": "的,惊人的;打"
+    },
+    {
+      "id": 964,
+      "word": "male",
+      "phonetic": "[meɪl]",
+      "partOfSpeech": "a.",
+      "definition": "男性的;雄",
+      "example": "性的;有力的"
+    },
+    {
+      "id": 965,
+      "word": "dominate",
+      "phonetic": "['dɒmɪneɪt]",
+      "partOfSpeech": "v.",
+      "definition": "支配,统治,",
+      "example": "控制;占优势"
+    },
+    {
+      "id": 966,
+      "word": "spouse",
+      "phonetic": "[spaʊs]",
+      "partOfSpeech": "n.",
+      "definition": "配偶,夫妻",
+      "example": "vt.和…结婚"
+    },
+    {
+      "id": 967,
+      "word": "talkative",
+      "phonetic": "['tɔːkətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "话多的,健谈",
+      "example": "的"
+    },
+    {
+      "id": 968,
+      "word": "female",
+      "phonetic": "[\n'\nf\niːmeɪl]",
+      "partOfSpeech": "a.",
+      "definition": "女性的;雌",
+      "example": "性的;柔弱的,"
+    },
+    {
+      "id": 969,
+      "word": "dominant",
+      "phonetic": "['dɒmɪnənt]",
+      "partOfSpeech": "a.",
+      "definition": "支配的,统治",
+      "example": "的,占优势的"
+    },
+    {
+      "id": 970,
+      "word": "amplify",
+      "phonetic": "['æmplɪfaɪ]",
+      "partOfSpeech": "vt.",
+      "definition": "放大,扩大;",
+      "example": "增强;详述"
+    },
+    {
+      "id": 971,
+      "word": "strategy",
+      "phonetic": "[ˈstrætədʒɪ]",
+      "partOfSpeech": "n.",
+      "definition": "战略,策略 Amplifying age and sex differences became",
+      "example": "a dominant children’s marketing strategy."
+    },
+    {
+      "id": 973,
+      "word": "virtual",
+      "phonetic": "[ˈvɜ:tʃuəl]",
+      "partOfSpeech": "a.",
+      "definition": "实质上的,事",
+      "example": "实上的;（计算"
+    },
+    {
+      "id": 974,
+      "word": "advise",
+      "phonetic": "[ədˈvaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "劝告,建议;",
+      "example": "告知"
+    },
+    {
+      "id": 975,
+      "word": "ambition",
+      "phonetic": "[æmˈbɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "雄心,野心,",
+      "example": "抱负"
+    },
+    {
+      "id": 976,
+      "word": "balance",
+      "phonetic": "[ˈbæləns]",
+      "partOfSpeech": "v.",
+      "definition": "称,( 使) 平",
+      "example": "衡"
+    },
+    {
+      "id": 977,
+      "word": "aim",
+      "phonetic": "[eɪm]",
+      "partOfSpeech": "v.",
+      "definition": "(+at)目的在",
+      "example": "于,旨在;瞄准,"
+    },
+    {
+      "id": 978,
+      "word": "employee",
+      "phonetic": "[ɪm\nˈ\np\nlɔɪi:]",
+      "partOfSpeech": "n.",
+      "definition": "雇工,雇员 Employee puts in hours of physical or",
+      "example": "mental labor.（15,T1）员工投入数小时的"
+    },
+    {
+      "id": 979,
+      "word": "single",
+      "phonetic": "[ˈsɪŋgl]",
+      "partOfSpeech": "a.",
+      "definition": "单人的;单",
+      "example": "一的,单个的;"
+    },
+    {
+      "id": 980,
+      "word": "currency",
+      "phonetic": "[ˈkʌrənsi]",
+      "partOfSpeech": "n.",
+      "definition": "通货,货币,",
+      "example": "流通"
+    },
+    {
+      "id": 981,
+      "word": "debate",
+      "phonetic": "[dɪˈbeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.争论,辩论 The debate over the EU’s single currency is",
+      "example": "stuck.（11,T4）"
+    },
+    {
+      "id": 982,
+      "word": "trigger",
+      "phonetic": "[ˈtrɪgə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "（枪）扳机",
+      "example": "vt.触发,引起"
+    },
+    {
+      "id": 983,
+      "word": "settle",
+      "phonetic": "[ˈsetl]",
+      "partOfSpeech": "v.",
+      "definition": "安定,安顿;",
+      "example": "停息;定居;解"
+    },
+    {
+      "id": 984,
+      "word": "amid",
+      "phonetic": "[əˈmɪd]",
+      "partOfSpeech": "prep.",
+      "definition": "（表位",
+      "example": "置）在…中间;"
+    },
+    {
+      "id": 985,
+      "word": "enthusiasm",
+      "phonetic": "[ɪnˈθju:ziæzəm]",
+      "partOfSpeech": "n.",
+      "definition": "热情,热心 Their skill, enthusiasm and running has got",
+      "example": "them in the team."
+    },
+    {
+      "id": 986,
+      "word": "gather",
+      "phonetic": "[ˈgæðə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "聚集,聚拢,",
+      "example": "收集"
+    },
+    {
+      "id": 987,
+      "word": "suburb",
+      "phonetic": "[ˈsʌbɜ:b]",
+      "partOfSpeech": "n.",
+      "definition": "市郊,郊区 A suburb of London",
+      "example": "伦敦郊区"
+    },
+    {
+      "id": 988,
+      "word": "ruin",
+      "phonetic": "[ˈru:ɪn]",
+      "partOfSpeech": "v.",
+      "definition": "毁灭;(使)破",
+      "example": "产"
+    },
+    {
+      "id": 989,
+      "word": "refuse",
+      "phonetic": "[rɪˈfju:z]",
+      "partOfSpeech": "v.",
+      "definition": "拒绝,谢绝",
+      "example": "n.废物,垃圾"
+    },
+    {
+      "id": 990,
+      "word": "distant",
+      "phonetic": "[ˈdɪstənt]",
+      "partOfSpeech": "a.",
+      "definition": "远的,久远",
+      "example": "的,遥远的"
+    },
+    {
+      "id": 991,
+      "word": "delivery",
+      "phonetic": "[dɪˈlɪvəri]",
+      "partOfSpeech": "n.",
+      "definition": "分娩;传送,",
+      "example": "投递; [法]（正"
+    },
+    {
+      "id": 992,
+      "word": "deliver",
+      "phonetic": "[dɪˈlɪvə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "交付,递送;",
+      "example": "发表,表达;释"
+    },
+    {
+      "id": 993,
+      "word": "implement",
+      "phonetic": "[ˈ\nɪmplɪment]",
+      "partOfSpeech": "n.",
+      "definition": "（常 pl.）工",
+      "example": "具,器具"
+    },
+    {
+      "id": 994,
+      "word": "indeed",
+      "phonetic": "[ɪnˈdi:d]",
+      "partOfSpeech": "ad.",
+      "definition": "的确,确实,",
+      "example": "实在; 实际"
+    },
+    {
+      "id": 995,
+      "word": "absurd",
+      "phonetic": "[əbˈsɜ:d]",
+      "partOfSpeech": "a.",
+      "definition": "荒谬的;荒",
+      "example": "唐的; 无理性"
+    },
+    {
+      "id": 996,
+      "word": "period",
+      "phonetic": "[\nˈ\np\nɪəriəd]",
+      "partOfSpeech": "n.",
+      "definition": "时期,时代;",
+      "example": "学时;周期,一"
+    },
+    {
+      "id": 997,
+      "word": "perfect",
+      "phonetic": "[\nˈ\np\nɜ:fɪkt]",
+      "partOfSpeech": "a.",
+      "definition": "完美的;完",
+      "example": "善的; 优秀的"
+    },
+    {
+      "id": 998,
+      "word": "perhaps",
+      "phonetic": "[pəˈhæps]",
+      "partOfSpeech": "ad.",
+      "definition": "也许,或许,",
+      "example": "大概,恐怕"
+    },
+    {
+      "id": 999,
+      "word": "series",
+      "phonetic": "[ˈsɪəri:z]",
+      "partOfSpeech": "n.",
+      "definition": "一系列,连",
+      "example": "续;丛书"
+    },
+    {
+      "id": 1000,
+      "word": "standard",
+      "phonetic": "[ˈstændəd]",
+      "partOfSpeech": "n.",
+      "definition": "标准,规则",
+      "example": "a.标准的"
+    },
+    {
+      "id": 1001,
+      "word": "lower",
+      "phonetic": "[ˈləʊə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "较低的,下级",
+      "example": "的,下游的"
+    },
+    {
+      "id": 1002,
+      "word": "masterpiece",
+      "phonetic": "[ˈmɑ:stəpi:s]",
+      "partOfSpeech": "n.",
+      "definition": "杰作,名著",
+      "example": "Her work is a masterpiece of simplicity."
+    },
+    {
+      "id": 1003,
+      "word": "popular",
+      "phonetic": "[\nˈ\np\nɒpjələ(r)]",
+      "partOfSpeech": "a.",
+      "definition": "流行的,通俗",
+      "example": "的,大众的;广"
+    },
+    {
+      "id": 1004,
+      "word": "material",
+      "phonetic": "[məˈtɪəriəl]",
+      "partOfSpeech": "n.",
+      "definition": "材料,原料,资",
+      "example": "料"
+    },
+    {
+      "id": 1005,
+      "word": "popularity",
+      "phonetic": "[ˌpɒpjuˈlærəti]",
+      "partOfSpeech": "n.",
+      "definition": "普及;流行;名",
+      "example": "气,名望,通俗"
+    },
+    {
+      "id": 1006,
+      "word": "version",
+      "phonetic": "[ˈvɜ:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "型,版本;译",
+      "example": "本,译文;说法,"
+    },
+    {
+      "id": 1007,
+      "word": "portray",
+      "phonetic": "[pɔ:ˈtreɪ]",
+      "partOfSpeech": "vt.",
+      "definition": "描绘,描写 They portray an idealized version of",
+      "example": "themselves.（14,T2）他们描绘出一个理"
+    },
+    {
+      "id": 1008,
+      "word": "venture",
+      "phonetic": "[ˈventʃə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "冒险,拼;大胆",
+      "example": "表示"
+    },
+    {
+      "id": 1009,
+      "word": "course",
+      "phonetic": "[kɔ:s]",
+      "partOfSpeech": "n.",
+      "definition": "课程;历程;航",
+      "example": "线; 行动方向"
+    },
+    {
+      "id": 1010,
+      "word": "reluctant",
+      "phonetic": "[rɪˈlʌktənt]",
+      "partOfSpeech": "a.",
+      "definition": "不愿的,勉强",
+      "example": "的"
+    },
+    {
+      "id": 1011,
+      "word": "frustration",
+      "phonetic": "[frʌˈstreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "挫折;挫败;沮",
+      "example": "丧;失意;失败"
+    },
+    {
+      "id": 1012,
+      "word": "propose",
+      "phonetic": "[prə\nˈ\np\nəʊz]",
+      "partOfSpeech": "v.",
+      "definition": "提议,建议;提",
+      "example": "名,推荐;求婚"
+    },
+    {
+      "id": 1013,
+      "word": "mandate",
+      "phonetic": "[ˈmændeɪt]",
+      "partOfSpeech": "n.",
+      "definition": "授权;命令;委",
+      "example": "任; 任期"
+    },
+    {
+      "id": 1014,
+      "word": "exception",
+      "phonetic": "[ɪkˈsepʃn]",
+      "partOfSpeech": "n.",
+      "definition": "例外,除外",
+      "example": "Everything he achieved in life was earned"
+    },
+    {
+      "id": 1015,
+      "word": "discern",
+      "phonetic": "[dɪˈsɜ:n]",
+      "partOfSpeech": "v.",
+      "definition": "认出,发现;辨",
+      "example": "别,识别"
+    },
+    {
+      "id": 1016,
+      "word": "lean",
+      "phonetic": "[li:n]",
+      "partOfSpeech": "vt.",
+      "definition": "倚;依赖;使",
+      "example": "斜靠; 使变瘦"
+    },
+    {
+      "id": 1017,
+      "word": "precise",
+      "phonetic": "[prɪˈsaɪs]",
+      "partOfSpeech": "a.",
+      "definition": "精确的,准确",
+      "example": "的"
+    },
+    {
+      "id": 1018,
+      "word": "praise",
+      "phonetic": "[preɪz]",
+      "partOfSpeech": "v.",
+      "definition": "赞扬,歌颂;表",
+      "example": "扬"
+    },
+    {
+      "id": 1019,
+      "word": "predict",
+      "phonetic": "[prɪˈdɪkt]",
+      "partOfSpeech": "v.",
+      "definition": "预言,预测,预",
+      "example": "告"
+    },
+    {
+      "id": 1020,
+      "word": "reject",
+      "phonetic": "[rɪˈdʒekt]",
+      "partOfSpeech": "v.",
+      "definition": "拒绝,抵制,驳",
+      "example": "回;丢弃;排斥,"
+    },
+    {
+      "id": 1021,
+      "word": "render",
+      "phonetic": "[ˈrendə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "使得,致使;提",
+      "example": "出,提供,呈报"
+    },
+    {
+      "id": 1022,
+      "word": "script",
+      "phonetic": "[skrɪpt]",
+      "partOfSpeech": "n.",
+      "definition": "脚本,手迹;剧",
+      "example": "本"
+    },
+    {
+      "id": 1023,
+      "word": "pour",
+      "phonetic": "[pɔ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "灌,倒,注;倾",
+      "example": "泻,流出"
+    },
+    {
+      "id": 1024,
+      "word": "bargain",
+      "phonetic": "[ˈbɑ:gən]",
+      "partOfSpeech": "n.",
+      "definition": "廉价货;交易,",
+      "example": "契约,合同"
+    },
+    {
+      "id": 1025,
+      "word": "pure",
+      "phonetic": "[pjʊə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "纯的,纯洁的,",
+      "example": "单纯的;干净的"
+    },
+    {
+      "id": 1026,
+      "word": "manly",
+      "phonetic": "[ˈmænli]",
+      "partOfSpeech": "a.",
+      "definition": "有男子气概",
+      "example": "的; 强壮的"
+    },
+    {
+      "id": 1027,
+      "word": "noble",
+      "phonetic": "[ˈnəʊbl]",
+      "partOfSpeech": "a.",
+      "definition": "高尚的;贵族",
+      "example": "的,高贵的"
+    },
+    {
+      "id": 1028,
+      "word": "formation",
+      "phonetic": "[fɔ:ˈmeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "形成;构成,结",
+      "example": "构; 形成物;编"
+    },
+    {
+      "id": 1029,
+      "word": "expend",
+      "phonetic": "[ɪkˈspend]",
+      "partOfSpeech": "v.",
+      "definition": "消费,花费,耗",
+      "example": "光"
+    },
+    {
+      "id": 1030,
+      "word": "shape",
+      "phonetic": "[ʃeɪp]",
+      "partOfSpeech": "n.",
+      "definition": "形状;模型;状",
+      "example": "态;身材 vt.塑"
+    },
+    {
+      "id": 1031,
+      "word": "fabric",
+      "phonetic": "[ˈfæbrɪk]",
+      "partOfSpeech": "n.",
+      "definition": "织物;布;构",
+      "example": "造;结构;（如"
+    },
+    {
+      "id": 1032,
+      "word": "exact",
+      "phonetic": "[ɪgˈzækt]",
+      "partOfSpeech": "a.",
+      "definition": "确切的,正确",
+      "example": "的,精确的"
+    },
+    {
+      "id": 1033,
+      "word": "publish",
+      "phonetic": "[\nˈ\np\nʌblɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "出版,刊印;公",
+      "example": "布,发布"
+    },
+    {
+      "id": 1034,
+      "word": "materialistic",
+      "phonetic": "[məˌtɪəriəˈlɪstɪk]",
+      "partOfSpeech": "a.",
+      "definition": "物质的,唯物",
+      "example": "论的,唯物主义"
+    },
+    {
+      "id": 1035,
+      "word": "prudent",
+      "phonetic": "[\nˈ\np\nru:dnt]",
+      "partOfSpeech": "a.",
+      "definition": "小心的,慎重",
+      "example": "的; 精明的,节"
+    },
+    {
+      "id": 1036,
+      "word": "tell",
+      "phonetic": "[tel]",
+      "partOfSpeech": "v.",
+      "definition": "(+from)辨别,",
+      "example": "分析判断;告"
+    },
+    {
+      "id": 1037,
+      "word": "accurate",
+      "phonetic": "[ˈækjərət]",
+      "partOfSpeech": "a.",
+      "definition": "准确的,精确",
+      "example": "的"
+    },
+    {
+      "id": 1038,
+      "word": "sociable",
+      "phonetic": "[ˈsəʊʃəbl]",
+      "partOfSpeech": "a.",
+      "definition": "友好的,喜好",
+      "example": "交际的"
+    },
+    {
+      "id": 1039,
+      "word": "software",
+      "phonetic": "[ˈsɒftweə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "软件",
+      "example": "There is a bug in the software."
+    },
+    {
+      "id": 1040,
+      "word": "critic",
+      "phonetic": "[ˈkrɪtɪk]",
+      "partOfSpeech": "n.",
+      "definition": "批评家,评论",
+      "example": "家"
+    },
+    {
+      "id": 1041,
+      "word": "against",
+      "phonetic": "[əˈgenst]",
+      "partOfSpeech": "prep.",
+      "definition": "对(着),逆;",
+      "example": "反对;违反;靠"
+    },
+    {
+      "id": 1042,
+      "word": "undermine",
+      "phonetic": "[ˌʌndəˈmaɪn]",
+      "partOfSpeech": "v.",
+      "definition": "暗中破坏,逐",
+      "example": "渐削弱;侵蚀…"
+    },
+    {
+      "id": 1043,
+      "word": "authority",
+      "phonetic": "[ɔ:ˈθɒrəti]",
+      "partOfSpeech": "n.",
+      "definition": "权力,威信;权",
+      "example": "威者;(pl.)当局"
+    },
+    {
+      "id": 1044,
+      "word": "borrow",
+      "phonetic": "[ˈbɒrəʊ]",
+      "partOfSpeech": "vt.",
+      "definition": "借入;借钱,",
+      "example": "借用"
+    },
+    {
+      "id": 1045,
+      "word": "core",
+      "phonetic": "[kɔ:(r)]",
+      "partOfSpeech": "n.",
+      "definition": "果核;中心,核",
+      "example": "心,精髓"
+    },
+    {
+      "id": 1046,
+      "word": "acute",
+      "phonetic": "[əˈkju:t]",
+      "partOfSpeech": "a.",
+      "definition": "尖的,锐的;敏",
+      "example": "锐的,敏感的;"
+    },
+    {
+      "id": 1047,
+      "word": "chronic",
+      "phonetic": "[ˈkrɒnɪk]",
+      "partOfSpeech": "a.",
+      "definition": "(疾病)慢性",
+      "example": "的,长期的;积"
+    },
+    {
+      "id": 1048,
+      "word": "cite",
+      "phonetic": "[saɪt]",
+      "partOfSpeech": "v.",
+      "definition": "引用,引证,举",
+      "example": "(例)"
+    },
+    {
+      "id": 1049,
+      "word": "patriotism",
+      "phonetic": "[\nˈ\np\neɪtriətɪzəm]",
+      "partOfSpeech": "n.",
+      "definition": "爱国主义;爱",
+      "example": "国心,爱国精神"
+    },
+    {
+      "id": 1050,
+      "word": "patriotic",
+      "phonetic": "[ˌpeɪtriˈɒtɪk]",
+      "partOfSpeech": "a.",
+      "definition": "爱国的,爱国",
+      "example": "主义的,有爱国"
+    },
+    {
+      "id": 1051,
+      "word": "household",
+      "phonetic": "[ˈhaʊshəʊld]",
+      "partOfSpeech": "n.",
+      "definition": "家庭;户;全家",
+      "example": "人,家属"
+    },
+    {
+      "id": 1052,
+      "word": "rare",
+      "phonetic": "[reə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "稀有的,难得",
+      "example": "的,罕见的,珍"
+    },
+    {
+      "id": 1053,
+      "word": "diagnose",
+      "phonetic": "[ˈdaɪəgnəʊz]",
+      "partOfSpeech": "v.",
+      "definition": "诊断",
+      "example": "Ms. Carr was 31 when she was diagnosed"
+    },
+    {
+      "id": 1054,
+      "word": "diagnosis",
+      "phonetic": "[ˌdaɪəgˈnəʊsɪs]",
+      "partOfSpeech": "n.",
+      "definition": "诊断;诊断结",
+      "example": "论; 判断;结论"
+    },
+    {
+      "id": 1055,
+      "word": "patient",
+      "phonetic": "[\nˈ\np\neɪʃnt]",
+      "partOfSpeech": "a.",
+      "definition": "有耐心的,能",
+      "example": "忍耐的"
+    },
+    {
+      "id": 1056,
+      "word": "mild",
+      "phonetic": "[maɪld]",
+      "partOfSpeech": "a.",
+      "definition": "温暖的;温和",
+      "example": "的;轻微的;(烟,"
+    },
+    {
+      "id": 1057,
+      "word": "symptom",
+      "phonetic": "[ˈsɪmptəm]",
+      "partOfSpeech": "n.",
+      "definition": "症状;征候,征",
+      "example": "兆"
+    },
+    {
+      "id": 1058,
+      "word": "reverse",
+      "phonetic": "[rɪˈvɜ:s]",
+      "partOfSpeech": "n.",
+      "definition": "相反;背面；",
+      "example": "挫折"
+    },
+    {
+      "id": 1059,
+      "word": "term",
+      "phonetic": "[tɜ:m]",
+      "partOfSpeech": "n.",
+      "definition": "学期;期限,期",
+      "example": "间;(pl.) 条件,"
+    },
+    {
+      "id": 1060,
+      "word": "measure",
+      "phonetic": "[ˈmeʒə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "量,测量",
+      "example": "n.尺寸,大"
+    },
+    {
+      "id": 1061,
+      "word": "boundary",
+      "phonetic": "[ˈbaʊndri]",
+      "partOfSpeech": "n.",
+      "definition": "分界线,边界 A river forms the boundary between the",
+      "example": "two countries."
+    },
+    {
+      "id": 1062,
+      "word": "capacity",
+      "phonetic": "[kə\nˈ\np\næsəti]",
+      "partOfSpeech": "n.",
+      "definition": "容量,容积;能",
+      "example": "量,能力;接受"
+    },
+    {
+      "id": 1063,
+      "word": "tempt",
+      "phonetic": "[tempt]",
+      "partOfSpeech": "v.",
+      "definition": "诱惑,引诱;吸",
+      "example": "引,使感兴趣"
+    },
+    {
+      "id": 1064,
+      "word": "temptation",
+      "phonetic": "[tempˈteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "诱惑,引诱",
+      "example": "We still have the imaginative capacity to"
+    },
+    {
+      "id": 1065,
+      "word": "imaginative",
+      "phonetic": "[ɪˈmædʒɪnətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "富有想象力",
+      "example": "的,爱想象的"
+    },
+    {
+      "id": 1066,
+      "word": "imaginary",
+      "phonetic": "[ɪˈmædʒɪnəri]",
+      "partOfSpeech": "a.",
+      "definition": "想象的,虚构",
+      "example": "的"
+    },
+    {
+      "id": 1067,
+      "word": "light",
+      "phonetic": "[laɪt]",
+      "partOfSpeech": "n.",
+      "definition": "光;灯,灯光",
+      "example": "v.点(火),点燃"
+    },
+    {
+      "id": 1068,
+      "word": "dilemma",
+      "phonetic": "[dɪˈlemə]",
+      "partOfSpeech": "n.",
+      "definition": "(进退两难的)",
+      "example": "窘境,困境"
+    },
+    {
+      "id": 1069,
+      "word": "depict",
+      "phonetic": "[dɪ\nˈ\np\nɪkt]",
+      "partOfSpeech": "v.",
+      "definition": "描绘;描写,描",
+      "example": "述"
+    },
+    {
+      "id": 1070,
+      "word": "ordinary",
+      "phonetic": "[ˈɔ:dnri]",
+      "partOfSpeech": "a.",
+      "definition": "普通的,平凡",
+      "example": "的,平常的;平"
+    },
+    {
+      "id": 1071,
+      "word": "extraordinary",
+      "phonetic": "[ɪkˈstrɔ:dnri]",
+      "partOfSpeech": "a.",
+      "definition": "非常的,格外",
+      "example": "的"
+    },
+    {
+      "id": 1072,
+      "word": "fancy",
+      "phonetic": "[ˈfænsi]",
+      "partOfSpeech": "n.",
+      "definition": "爱好,迷恋,怪",
+      "example": "想 v.想象,幻"
+    },
+    {
+      "id": 1073,
+      "word": "leadership",
+      "phonetic": "[ˈli:dəʃɪp]",
+      "partOfSpeech": "n.",
+      "definition": "领导;领导的",
+      "example": "才能或能力;一"
+    },
+    {
+      "id": 1074,
+      "word": "extravagant",
+      "phonetic": "[ɪkˈstrævəgənt]",
+      "partOfSpeech": "a.",
+      "definition": "过度的,过分",
+      "example": "的; 奢侈的,浪"
+    },
+    {
+      "id": 1075,
+      "word": "marriage",
+      "phonetic": "[ˈmærɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "结婚,婚姻;结",
+      "example": "婚仪式"
+    },
+    {
+      "id": 1076,
+      "word": "fail",
+      "phonetic": "[feɪl]",
+      "partOfSpeech": "v.",
+      "definition": "失败,不及格;",
+      "example": "衰退,减弱,使"
+    },
+    {
+      "id": 1077,
+      "word": "expose",
+      "phonetic": "[ɪk'spəʊz]",
+      "partOfSpeech": "vt.",
+      "definition": "揭露,揭发,",
+      "example": "接触,使暴露;"
+    },
+    {
+      "id": 1078,
+      "word": "spree",
+      "phonetic": "[spri:]",
+      "partOfSpeech": "n.",
+      "definition": "狂欢;欢闹;无",
+      "example": "节制的狂热行"
+    },
+    {
+      "id": 1079,
+      "word": "wild",
+      "phonetic": "[waɪld]",
+      "partOfSpeech": "a.",
+      "definition": "野性的,野生",
+      "example": "的;野蛮的;狂"
+    },
+    {
+      "id": 1080,
+      "word": "exposure",
+      "phonetic": "[ɪkˈspəʊʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "暴露,揭",
+      "example": "露;(+to)受到"
+    },
+    {
+      "id": 1081,
+      "word": "fulfill",
+      "phonetic": "[fʊl'fɪl]",
+      "partOfSpeech": "vt.",
+      "definition": "履行（诺言",
+      "example": "等）"
+    },
+    {
+      "id": 1082,
+      "word": "crown",
+      "phonetic": "[kraʊn]",
+      "partOfSpeech": "n.",
+      "definition": "王冠,冕;君",
+      "example": "权,君王"
+    },
+    {
+      "id": 1083,
+      "word": "epidemic",
+      "phonetic": "[ˌepɪˈdemɪk]",
+      "partOfSpeech": "a.",
+      "definition": "流行性的;传",
+      "example": "染的 n.流行"
+    },
+    {
+      "id": 1084,
+      "word": "nearly",
+      "phonetic": "[ˈnɪəli]",
+      "partOfSpeech": "ad.",
+      "definition": "差不多,几",
+      "example": "乎"
+    },
+    {
+      "id": 1085,
+      "word": "divorce",
+      "phonetic": "[dɪ'vɔ:s]",
+      "partOfSpeech": "n.",
+      "definition": "离婚;分离",
+      "example": "vt.与…离婚;分"
+    },
+    {
+      "id": 1086,
+      "word": "failure",
+      "phonetic": "[ˈfeɪljə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "失败,不及格;",
+      "example": "失败者;故障,"
+    },
+    {
+      "id": 1087,
+      "word": "blame",
+      "phonetic": "[bleɪm]",
+      "partOfSpeech": "v.",
+      "definition": "责备;怪,把…",
+      "example": "归咎于"
+    },
+    {
+      "id": 1088,
+      "word": "harmony",
+      "phonetic": "[ˈhɑ:məni]",
+      "partOfSpeech": "n.",
+      "definition": "协调,和谐;融",
+      "example": "洽"
+    },
+    {
+      "id": 1089,
+      "word": "harmonization",
+      "phonetic": "[ˌhɑ:mənaɪ'zeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "和谐,协调,相",
+      "example": "称; 配和声"
+    },
+    {
+      "id": 1090,
+      "word": "halve",
+      "phonetic": "[hɑ:v]",
+      "partOfSpeech": "vt.",
+      "definition": "对分;把…分",
+      "example": "成两半;把…"
+    },
+    {
+      "id": 1091,
+      "word": "massacre",
+      "phonetic": "[ˈmæsəkə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "大屠杀,残杀;",
+      "example": "成批屠宰"
+    },
+    {
+      "id": 1092,
+      "word": "greed",
+      "phonetic": "[gri:d]",
+      "partOfSpeech": "n.",
+      "definition": "贪婪;贪心",
+      "example": "I get fed up with other people's greed."
+    },
+    {
+      "id": 1093,
+      "word": "greedy",
+      "phonetic": "[ˈgri:di]",
+      "partOfSpeech": "a.",
+      "definition": "贪吃的,贪婪",
+      "example": "的,渴望的"
+    },
+    {
+      "id": 1094,
+      "word": "controversy",
+      "phonetic": "[ˈkɒntrəvɜ:si]",
+      "partOfSpeech": "n.",
+      "definition": "争论,辩论,争",
+      "example": "议"
+    },
+    {
+      "id": 1095,
+      "word": "match",
+      "phonetic": "[mætʃ]",
+      "partOfSpeech": "n.",
+      "definition": "火柴;比赛,竞",
+      "example": "赛;对手"
+    },
+    {
+      "id": 1096,
+      "word": "convenient",
+      "phonetic": "[kənˈvi:niənt]",
+      "partOfSpeech": "a.",
+      "definition": "便利的,方便",
+      "example": "的"
+    },
+    {
+      "id": 1097,
+      "word": "insist",
+      "phonetic": "[ɪnˈsɪst]",
+      "partOfSpeech": "v.",
+      "definition": "(+on)坚持要",
+      "example": "求,坚决主张,"
+    },
+    {
+      "id": 1098,
+      "word": "suggest",
+      "phonetic": "[səˈdʒest]",
+      "partOfSpeech": "vt.",
+      "definition": "暗示;建议,",
+      "example": "表明,提议;使"
+    },
+    {
+      "id": 1099,
+      "word": "mood",
+      "phonetic": "[mu:d]",
+      "partOfSpeech": "n.",
+      "definition": "心情,情绪;语",
+      "example": "气"
+    },
+    {
+      "id": 1100,
+      "word": "instance",
+      "phonetic": "[ˈ\nɪnstəns]",
+      "partOfSpeech": "n.",
+      "definition": "情况;例,实",
+      "example": "例;要求,建议;"
+    },
+    {
+      "id": 1101,
+      "word": "accompany",
+      "phonetic": "[əˈkʌmpəni]",
+      "partOfSpeech": "v.",
+      "definition": "陪同,伴随;",
+      "example": "为…伴奏"
+    },
+    {
+      "id": 1102,
+      "word": "accustomed",
+      "phonetic": "[əˈkʌstəmd]",
+      "partOfSpeech": "a.",
+      "definition": "（",
+      "example": "+to）惯常"
+    },
+    {
+      "id": 1103,
+      "word": "recession",
+      "phonetic": "[rɪˈseʃn]",
+      "partOfSpeech": "n.",
+      "definition": "经济衰退,",
+      "example": "不景气; 后"
+    },
+    {
+      "id": 1104,
+      "word": "bright",
+      "phonetic": "[braɪt]",
+      "partOfSpeech": "a.",
+      "definition": "明亮的,光",
+      "example": "明的,辉煌的;"
+    },
+    {
+      "id": 1105,
+      "word": "depression",
+      "phonetic": "[dɪ\nˈ\np\nreʃn]",
+      "partOfSpeech": "n.",
+      "definition": "消沉,萧条",
+      "example": "期,衰弱; 减"
+    },
+    {
+      "id": 1106,
+      "word": "depress",
+      "phonetic": "[dɪ\nˈ\np\nres]",
+      "partOfSpeech": "v.",
+      "definition": "压抑,降低;",
+      "example": "使沮丧,抑郁,"
+    },
+    {
+      "id": 1107,
+      "word": "agency",
+      "phonetic": "[ˈeɪdʒənsi]",
+      "partOfSpeech": "n.",
+      "definition": "代理(处),代",
+      "example": "办处,机构"
+    },
+    {
+      "id": 1108,
+      "word": "endanger",
+      "phonetic": "[ɪnˈdeɪndʒə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "危及,危害 The debate could endanger the proposed",
+      "example": "peace talks."
+    },
+    {
+      "id": 1109,
+      "word": "designate",
+      "phonetic": "[ˈdezɪgneɪt]",
+      "partOfSpeech": "vt.",
+      "definition": "指派; 指",
+      "example": "明,指出; 表"
+    },
+    {
+      "id": 1110,
+      "word": "consist",
+      "phonetic": "[kənˈsɪst]",
+      "partOfSpeech": "v.",
+      "definition": "(+in)在于,",
+      "example": "存在于;(+of)"
+    },
+    {
+      "id": 1111,
+      "word": "exhibition",
+      "phonetic": "[ˌeksɪˈbɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "展览会;陈",
+      "example": "列,展览"
+    },
+    {
+      "id": 1112,
+      "word": "record",
+      "phonetic": "[ˈrekɔ:d]",
+      "partOfSpeech": "n.",
+      "definition": "记录;最高",
+      "example": "记录;履历;唱"
+    },
+    {
+      "id": 1113,
+      "word": "mess",
+      "phonetic": "[mes]",
+      "partOfSpeech": "n.",
+      "definition": "混乱,混杂,",
+      "example": "脏乱"
+    },
+    {
+      "id": 1114,
+      "word": "neighbor",
+      "phonetic": "['neɪbə]",
+      "partOfSpeech": "n.",
+      "definition": "(=neighbou",
+      "example": "r)邻居,邻国"
+    },
+    {
+      "id": 1115,
+      "word": "spacious",
+      "phonetic": "[ˈspeɪʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "广阔的,广",
+      "example": "大的,宽广的"
+    },
+    {
+      "id": 1116,
+      "word": "various",
+      "phonetic": "[ˈveəriəs]",
+      "partOfSpeech": "a.",
+      "definition": "各种各样",
+      "example": "的;不同的"
+    },
+    {
+      "id": 1117,
+      "word": "grieve",
+      "phonetic": "[gri:v]",
+      "partOfSpeech": "v.",
+      "definition": "使悲伤,使",
+      "example": "伤心"
+    },
+    {
+      "id": 1118,
+      "word": "grief",
+      "phonetic": "[gri:f]",
+      "partOfSpeech": "n.",
+      "definition": "悲哀,悲痛 Their grief soon gave way to anger.",
+      "example": "他们的悲痛迅速转化为愤怒。"
+    },
+    {
+      "id": 1119,
+      "word": "romantic",
+      "phonetic": "[rəʊˈmæntɪk]",
+      "partOfSpeech": "a.",
+      "definition": "浪漫（主",
+      "example": "义）的,传奇"
+    },
+    {
+      "id": 1120,
+      "word": "permeate",
+      "phonetic": "[\nˈ\np\nɜ:mieɪt]",
+      "partOfSpeech": "vt.",
+      "definition": "弥漫,渗透,",
+      "example": "贯穿; 感染"
+    },
+    {
+      "id": 1121,
+      "word": "spirit",
+      "phonetic": "[ˈspɪrɪt]",
+      "partOfSpeech": "n.",
+      "definition": "精神;志",
+      "example": "气;(pl.)情绪,"
+    },
+    {
+      "id": 1122,
+      "word": "spiritual",
+      "phonetic": "[ˈspɪrɪtʃuəl]",
+      "partOfSpeech": "a.",
+      "definition": "精神(上)的,",
+      "example": "心灵的"
+    },
+    {
+      "id": 1123,
+      "word": "stable",
+      "phonetic": "[ˈsteɪbl]",
+      "partOfSpeech": "a.",
+      "definition": "稳定的,安",
+      "example": "定的"
+    },
+    {
+      "id": 1124,
+      "word": "once",
+      "phonetic": "[wʌns]",
+      "partOfSpeech": "ad.",
+      "definition": "一次;曾经",
+      "example": "conj.一"
+    },
+    {
+      "id": 1125,
+      "word": "stability",
+      "phonetic": "[stəˈbɪləti]",
+      "partOfSpeech": "n.",
+      "definition": "稳定,安定 The situation is tending towards stability.",
+      "example": "局势趋于稳定。"
+    },
+    {
+      "id": 1126,
+      "word": "survive",
+      "phonetic": "[səˈvaɪv]",
+      "partOfSpeech": "v.",
+      "definition": "幸免于,幸",
+      "example": "存;比…长命"
+    },
+    {
+      "id": 1127,
+      "word": "survival",
+      "phonetic": "[səˈvaɪvl]",
+      "partOfSpeech": "n.",
+      "definition": "幸存,生存;",
+      "example": "幸存者,残存"
+    },
+    {
+      "id": 1128,
+      "word": "courage",
+      "phonetic": "[ˈkʌrɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "勇气;胆量;",
+      "example": "魄力;肝胆"
+    },
+    {
+      "id": 1129,
+      "word": "fraud",
+      "phonetic": "[frɔ:d]",
+      "partOfSpeech": "n.",
+      "definition": "骗子,欺骗,",
+      "example": "欺诈,诡计"
+    },
+    {
+      "id": 1130,
+      "word": "generous",
+      "phonetic": "[ˈdʒenərəs]",
+      "partOfSpeech": "a.",
+      "definition": "宽宏大量",
+      "example": "的,慷慨的,大"
+    },
+    {
+      "id": 1131,
+      "word": "gear",
+      "phonetic": "[gɪə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "齿轮,传动",
+      "example": "装置 v.(+to)"
+    },
+    {
+      "id": 1132,
+      "word": "genuine",
+      "phonetic": "[ˈdʒenjuɪn]",
+      "partOfSpeech": "a.",
+      "definition": "真正的; 坦",
+      "example": "率的,真诚的;"
+    },
+    {
+      "id": 1133,
+      "word": "halt",
+      "phonetic": "[hɔ:lt]",
+      "partOfSpeech": "n.",
+      "definition": "止步,停步,",
+      "example": "停止前进"
+    },
+    {
+      "id": 1134,
+      "word": "scale",
+      "phonetic": "[skeɪl]",
+      "partOfSpeech": "n.",
+      "definition": "刻度;天平,",
+      "example": "磅秤;比例尺;"
+    },
+    {
+      "id": 1135,
+      "word": "typical",
+      "phonetic": "[ˈtɪpɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)典型",
+      "example": "的,有代表性"
+    },
+    {
+      "id": 1136,
+      "word": "among",
+      "phonetic": "[əˈmʌŋ]",
+      "partOfSpeech": "prep.",
+      "definition": "在…之",
+      "example": "中,在…中间"
+    },
+    {
+      "id": 1137,
+      "word": "adult",
+      "phonetic": "[ˈædʌlt]",
+      "partOfSpeech": "a.",
+      "definition": "成年的;成",
+      "example": "年人的;（智"
+    },
+    {
+      "id": 1138,
+      "word": "obesity",
+      "phonetic": "[əʊ'bi:sətɪ]",
+      "partOfSpeech": "n.",
+      "definition": "肥胖症; 肥",
+      "example": "胖,过胖"
+    },
+    {
+      "id": 1139,
+      "word": "spiral",
+      "phonetic": "[ˈspaɪrəl]",
+      "partOfSpeech": "n.",
+      "definition": "旋涡; 螺旋",
+      "example": "（线）"
+    },
+    {
+      "id": 1140,
+      "word": "carry",
+      "phonetic": "[ˈkæri]",
+      "partOfSpeech": "v.",
+      "definition": "携带,运送,",
+      "example": "搬运;传送,传"
+    },
+    {
+      "id": 1141,
+      "word": "collect",
+      "phonetic": "[kəˈlekt]",
+      "partOfSpeech": "v.",
+      "definition": "收集,搜集;",
+      "example": "领取,接走;收"
+    },
+    {
+      "id": 1142,
+      "word": "extent",
+      "phonetic": "[ɪkˈstent]",
+      "partOfSpeech": "n.",
+      "definition": "程度,宽度,",
+      "example": "长度;广度,限"
+    },
+    {
+      "id": 1143,
+      "word": "gold",
+      "phonetic": "[gəʊld]",
+      "partOfSpeech": "n.",
+      "definition": "黄金,金币",
+      "example": "a.金的,金制"
+    },
+    {
+      "id": 1144,
+      "word": "glitter",
+      "phonetic": "[ˈglɪtə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "光辉,灿烂",
+      "example": "v.闪耀"
+    },
+    {
+      "id": 1145,
+      "word": "collection",
+      "phonetic": "[kəˈlekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "征收;收集,",
+      "example": "采集;收藏品;"
+    },
+    {
+      "id": 1146,
+      "word": "loan",
+      "phonetic": "[ləʊn]",
+      "partOfSpeech": "n.",
+      "definition": "贷款;出借,",
+      "example": "借出"
+    },
+    {
+      "id": 1147,
+      "word": "obtain",
+      "phonetic": "[əbˈteɪn]",
+      "partOfSpeech": "vt.",
+      "definition": "获得,得",
+      "example": "到;流行; 买"
+    },
+    {
+      "id": 1148,
+      "word": "occasion",
+      "phonetic": "[əˈkeɪʒn]",
+      "partOfSpeech": "n.",
+      "definition": "场合,时节,",
+      "example": "时刻;时机,机"
+    },
+    {
+      "id": 1149,
+      "word": "occasional",
+      "phonetic": "[əˈkeɪʒənl]",
+      "partOfSpeech": "a.",
+      "definition": "偶然的,不",
+      "example": "经常的,特殊"
+    },
+    {
+      "id": 1150,
+      "word": "favourable",
+      "phonetic": "[ˈfeɪvərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "有利的;顺",
+      "example": "利的,良好的;"
+    },
+    {
+      "id": 1151,
+      "word": "occur",
+      "phonetic": "[əˈkɜ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "发生,出现;",
+      "example": "想起,想到"
+    },
+    {
+      "id": 1152,
+      "word": "occurrence",
+      "phonetic": "[əˈkʌrəns]",
+      "partOfSpeech": "n.",
+      "definition": "发生,出现;",
+      "example": "遭遇,事件,事"
+    },
+    {
+      "id": 1153,
+      "word": "obvious",
+      "phonetic": "[ˈɒbviəs]",
+      "partOfSpeech": "a.",
+      "definition": "明显的,显",
+      "example": "而易见的"
+    },
+    {
+      "id": 1154,
+      "word": "stare",
+      "phonetic": "[steə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(+at)盯,凝",
+      "example": "视"
+    },
+    {
+      "id": 1155,
+      "word": "statistics",
+      "phonetic": "[stə'tɪstɪks]",
+      "partOfSpeech": "n.",
+      "definition": "统计数字;",
+      "example": "统计,统计学,"
+    },
+    {
+      "id": 1156,
+      "word": "stiff",
+      "phonetic": "[stɪf]",
+      "partOfSpeech": "a.",
+      "definition": "硬的,僵直",
+      "example": "的;拘谨的;呆"
+    },
+    {
+      "id": 1157,
+      "word": "still",
+      "phonetic": "[stɪl]",
+      "partOfSpeech": "ad.",
+      "definition": "还;仍然,",
+      "example": "更;静止地"
+    },
+    {
+      "id": 1158,
+      "word": "rarity",
+      "phonetic": "[ˈreərəti]",
+      "partOfSpeech": "n.",
+      "definition": "稀有,罕见;",
+      "example": "稀薄,稀少;珍"
+    },
+    {
+      "id": 1159,
+      "word": "although",
+      "phonetic": "[ɔ:lˈðəu]",
+      "partOfSpeech": "conj.",
+      "definition": "尽管,虽",
+      "example": "然,即使"
+    },
+    {
+      "id": 1160,
+      "word": "electric",
+      "phonetic": "[ɪˈlektrɪk]",
+      "partOfSpeech": "a.",
+      "definition": "电的,导电",
+      "example": "的,电动的"
+    },
+    {
+      "id": 1161,
+      "word": "notion",
+      "phonetic": "[ˈnəʊʃn]",
+      "partOfSpeech": "n.",
+      "definition": "概念,想法,",
+      "example": "意念,看法,观"
+    },
+    {
+      "id": 1162,
+      "word": "rely",
+      "phonetic": "[rɪˈlaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "(+on)依赖,",
+      "example": "依靠;信赖,信"
+    },
+    {
+      "id": 1163,
+      "word": "lift",
+      "phonetic": "[lɪft]",
+      "partOfSpeech": "v.",
+      "definition": "(使)升起,举",
+      "example": "起;消散"
+    },
+    {
+      "id": 1164,
+      "word": "breast",
+      "phonetic": "[brest]",
+      "partOfSpeech": "n.",
+      "definition": "胸膛,乳房,",
+      "example": "乳腺"
+    },
+    {
+      "id": 1165,
+      "word": "forecast",
+      "phonetic": "[ˈfɔ:kɑ:st]",
+      "partOfSpeech": "v.",
+      "definition": "/n.预测,预",
+      "example": "报"
+    },
+    {
+      "id": 1166,
+      "word": "release",
+      "phonetic": "[rɪˈli:s]",
+      "partOfSpeech": "v.",
+      "definition": "释放,解放;",
+      "example": "发表,发行"
+    },
+    {
+      "id": 1167,
+      "word": "revenue",
+      "phonetic": "[ˈrevənju:]",
+      "partOfSpeech": "n.",
+      "definition": "财政收入,",
+      "example": "税收"
+    },
+    {
+      "id": 1168,
+      "word": "register",
+      "phonetic": "[ˈredʒɪstə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "记录;登记",
+      "example": "簿;登记,注册"
+    },
+    {
+      "id": 1169,
+      "word": "blow",
+      "phonetic": "[bləʊ]",
+      "partOfSpeech": "n.",
+      "definition": "殴打,打击;",
+      "example": "吹风,一阵风;"
+    },
+    {
+      "id": 1170,
+      "word": "reputation",
+      "phonetic": "[ˌrepjuˈteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "名气,名声;",
+      "example": "好名声; 信"
+    },
+    {
+      "id": 1171,
+      "word": "coalition",
+      "phonetic": "[ˌkəʊəˈlɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "联合;同盟;",
+      "example": "结合体;（两"
+    },
+    {
+      "id": 1172,
+      "word": "retain",
+      "phonetic": "[rɪˈteɪn]",
+      "partOfSpeech": "v.",
+      "definition": "保持,保留 The Labour party has recently announced",
+      "example": "that it will retain a large part of the"
+    },
+    {
+      "id": 1173,
+      "word": "evaluation",
+      "phonetic": "[ɪˌvæljʊ'eɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "估价;评估;",
+      "example": "<数>赋值;估"
+    },
+    {
+      "id": 1174,
+      "word": "retreat",
+      "phonetic": "[rɪˈtri:t]",
+      "partOfSpeech": "vi.",
+      "definition": "撤退,后退;",
+      "example": "撤销,作罢;"
+    },
+    {
+      "id": 1175,
+      "word": "ideology",
+      "phonetic": "[ˌaɪdiˈɒlədʒi]",
+      "partOfSpeech": "n.",
+      "definition": "意识形态,",
+      "example": "思想体系"
+    },
+    {
+      "id": 1176,
+      "word": "oppressive",
+      "phonetic": "[ə\nˈ\np\nresɪv]",
+      "partOfSpeech": "a.",
+      "definition": "压迫的;压",
+      "example": "抑的; 沉重"
+    },
+    {
+      "id": 1177,
+      "word": "oppress",
+      "phonetic": "[ə\nˈ\np\nres]",
+      "partOfSpeech": "v.",
+      "definition": "压迫,压制 A good ruler will not oppress the poor.",
+      "example": "好的统治者不会压迫贫民。"
+    },
+    {
+      "id": 1178,
+      "word": "oppression",
+      "phonetic": "[ə\n'\np\nreʃn]",
+      "partOfSpeech": "n.",
+      "definition": "压迫;被压",
+      "example": "迫的状态;压"
+    },
+    {
+      "id": 1179,
+      "word": "resist",
+      "phonetic": "[rɪˈzɪst]",
+      "partOfSpeech": "v.",
+      "definition": "抵抗,反抗;",
+      "example": "抗,忍得住,抵"
+    },
+    {
+      "id": 1180,
+      "word": "resistance",
+      "phonetic": "[rɪˈzɪstəns]",
+      "partOfSpeech": "n.",
+      "definition": "(+to)抵抗,",
+      "example": "反抗;抵抗力,"
+    },
+    {
+      "id": 1181,
+      "word": "rigid",
+      "phonetic": "[ˈrɪdʒɪd]",
+      "partOfSpeech": "a.",
+      "definition": "僵硬的;严",
+      "example": "格的;（规则"
+    },
+    {
+      "id": 1182,
+      "word": "rigorous",
+      "phonetic": "[ˈrɪgərəs]",
+      "partOfSpeech": "a.",
+      "definition": "严厉的;彻",
+      "example": "底的"
+    },
+    {
+      "id": 1183,
+      "word": "signal",
+      "phonetic": "[ˈsɪgnəl]",
+      "partOfSpeech": "n.",
+      "definition": "信号,暗号",
+      "example": "v.发信号,用"
+    },
+    {
+      "id": 1184,
+      "word": "soul",
+      "phonetic": "[səʊl]",
+      "partOfSpeech": "n.",
+      "definition": "灵魂,心灵;",
+      "example": "精神,精力"
+    },
+    {
+      "id": 1185,
+      "word": "sphere",
+      "phonetic": "[sfɪə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "球,球体;范",
+      "example": "围,领域"
+    },
+    {
+      "id": 1186,
+      "word": "promise",
+      "phonetic": "[\nˈ\np\nrɒmɪs]",
+      "partOfSpeech": "v.",
+      "definition": "允许,答应;",
+      "example": "承诺;有…可"
+    },
+    {
+      "id": 1187,
+      "word": "promising",
+      "phonetic": "[\nˈ\np\nrɒmɪsɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "有希望的,",
+      "example": "有前途的"
+    },
+    {
+      "id": 1188,
+      "word": "compromise",
+      "phonetic": "[ˈkɒmprəmaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "/n.妥协,折",
+      "example": "衷"
+    },
+    {
+      "id": 1189,
+      "word": "prone",
+      "phonetic": "[prəʊn]",
+      "partOfSpeech": "a.",
+      "definition": "俯卧的;易",
+      "example": "于…的;"
+    },
+    {
+      "id": 1190,
+      "word": "mind-set",
+      "phonetic": "['maɪnds'et]",
+      "partOfSpeech": "n.",
+      "definition": "思想的形",
+      "example": "式;思维,心态"
+    },
+    {
+      "id": 1191,
+      "word": "fuel",
+      "phonetic": "[ˈfju:əl]",
+      "partOfSpeech": "n.",
+      "definition": "燃料",
+      "example": "vt.给…加燃"
+    },
+    {
+      "id": 1192,
+      "word": "fossil",
+      "phonetic": "[ˈfɒsl]",
+      "partOfSpeech": "n.",
+      "definition": "化石",
+      "example": "Wind energy has replaced fossil fuels."
+    },
+    {
+      "id": 1193,
+      "word": "underline",
+      "phonetic": "[ˌʌndəˈlaɪn]",
+      "partOfSpeech": "vt.",
+      "definition": "在…下面",
+      "example": "画线;加强,强"
+    },
+    {
+      "id": 1194,
+      "word": "present",
+      "phonetic": "[\nˈ\np\nreznt]",
+      "partOfSpeech": "a.",
+      "definition": "出席的;现",
+      "example": "在的,当下的"
+    },
+    {
+      "id": 1195,
+      "word": "moment",
+      "phonetic": "[ˈməʊmənt]",
+      "partOfSpeech": "n.",
+      "definition": "片刻,瞬间,",
+      "example": "时刻"
+    },
+    {
+      "id": 1196,
+      "word": "fortunate",
+      "phonetic": "[ˈfɔ:tʃənət]",
+      "partOfSpeech": "a.",
+      "definition": "幸运的,侥",
+      "example": "幸的"
+    },
+    {
+      "id": 1197,
+      "word": "alive",
+      "phonetic": "[əˈlaɪv]",
+      "partOfSpeech": "a.",
+      "definition": "活着着,有",
+      "example": "生气的;活跃"
+    },
+    {
+      "id": 1198,
+      "word": "value",
+      "phonetic": "[ˈvælju:]",
+      "partOfSpeech": "n.",
+      "definition": "价值,价格;",
+      "example": "意义,涵义;重"
+    },
+    {
+      "id": 1199,
+      "word": "cinema",
+      "phonetic": "[ˈsɪnəmə]",
+      "partOfSpeech": "n.",
+      "definition": "电影院;电",
+      "example": "影,影片"
+    },
+    {
+      "id": 1200,
+      "word": "unique",
+      "phonetic": "[juˈni:k]",
+      "partOfSpeech": "a.",
+      "definition": "唯一的,独",
+      "example": "特的,独一无"
+    },
+    {
+      "id": 1201,
+      "word": "therefore",
+      "phonetic": "[ˈðeəfɔ:(r)]",
+      "partOfSpeech": "ad.",
+      "definition": "因此,从而",
+      "example": "conj.因此"
+    },
+    {
+      "id": 1202,
+      "word": "senior",
+      "phonetic": "[ˈsi:niə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "资深的;（级",
+      "example": "别、地位等）"
+    },
+    {
+      "id": 1203,
+      "word": "sentiment",
+      "phonetic": "[ˈsentɪmənt]",
+      "partOfSpeech": "n.",
+      "definition": "感情;情操;",
+      "example": "情绪"
+    },
+    {
+      "id": 1204,
+      "word": "science",
+      "phonetic": "[ˈsaɪəns]",
+      "partOfSpeech": "n.",
+      "definition": "科学;理科;",
+      "example": "学科;技术,知"
+    },
+    {
+      "id": 1205,
+      "word": "scientist",
+      "phonetic": "[ˈsaɪəntɪst]",
+      "partOfSpeech": "n.",
+      "definition": "科学家",
+      "example": "Scientists have known that birds flying in"
+    },
+    {
+      "id": 1206,
+      "word": "scientific",
+      "phonetic": "[ˌsaɪənˈtɪfɪk]",
+      "partOfSpeech": "a.",
+      "definition": "科学的;有",
+      "example": "系统的;应用"
+    },
+    {
+      "id": 1207,
+      "word": "detail",
+      "phonetic": "[ˈdi:teɪl]",
+      "partOfSpeech": "n.",
+      "definition": "详述;（照",
+      "example": "片、绘画等"
+    },
+    {
+      "id": 1208,
+      "word": "fruitful",
+      "phonetic": "[ˈfru:tfl]",
+      "partOfSpeech": "a.",
+      "definition": "多产的;果",
+      "example": "实累累的,富"
+    },
+    {
+      "id": 1209,
+      "word": "prompt",
+      "phonetic": "[prɒmpt]",
+      "partOfSpeech": "a.",
+      "definition": "敏捷的,迅",
+      "example": "速的,即刻的"
+    },
+    {
+      "id": 1210,
+      "word": "prosperity",
+      "phonetic": "[prɒˈsperəti]",
+      "partOfSpeech": "n.",
+      "definition": "繁荣; 成功;",
+      "example": "兴旺,昌盛"
+    },
+    {
+      "id": 1211,
+      "word": "prosper",
+      "phonetic": "[\nˈ\np\nrɒspə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "繁荣,使繁",
+      "example": "荣,使成功"
+    },
+    {
+      "id": 1212,
+      "word": "prosperous",
+      "phonetic": "[\nˈ\np\nrɒspərəs]",
+      "partOfSpeech": "a.",
+      "definition": "繁荣的,兴",
+      "example": "旺的"
+    },
+    {
+      "id": 1213,
+      "word": "February",
+      "phonetic": "[ˈfebruəri]",
+      "partOfSpeech": "n.",
+      "definition": "二月（缩",
+      "example": "Feb.）"
+    },
+    {
+      "id": 1214,
+      "word": "receive",
+      "phonetic": "[rɪˈsi:v]",
+      "partOfSpeech": "v.",
+      "definition": "收到,接到;",
+      "example": "遭受,受到;接"
+    },
+    {
+      "id": 1215,
+      "word": "meanwhile",
+      "phonetic": "[ˈmi:nwaɪl]",
+      "partOfSpeech": "n.",
+      "definition": "其间,其时",
+      "example": "ad.同时,当时"
+    },
+    {
+      "id": 1216,
+      "word": "manifest",
+      "phonetic": "[ˈmænɪfest]",
+      "partOfSpeech": "v.",
+      "definition": "表明,证明,",
+      "example": "显示"
+    },
+    {
+      "id": 1217,
+      "word": "factory",
+      "phonetic": "[ˈfæktri]",
+      "partOfSpeech": "n.",
+      "definition": "工厂,制造",
+      "example": "厂"
+    },
+    {
+      "id": 1218,
+      "word": "junior",
+      "phonetic": "[ˈdʒu:niə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "较年幼的;",
+      "example": "低年级的;资"
+    },
+    {
+      "id": 1219,
+      "word": "isolate",
+      "phonetic": "[ˈaɪsəleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "（使）隔离/",
+      "example": "孤立; [电]使"
+    },
+    {
+      "id": 1220,
+      "word": "alone",
+      "phonetic": "[əˈləʊn]",
+      "partOfSpeech": "a.",
+      "definition": "单独,独立",
+      "example": "ad.仅仅,只;单"
+    },
+    {
+      "id": 1221,
+      "word": "guard",
+      "phonetic": "[gɑ:d]",
+      "partOfSpeech": "v.",
+      "definition": "/n.守卫,保",
+      "example": "卫,提防 n.哨"
+    },
+    {
+      "id": 1222,
+      "word": "guitar",
+      "phonetic": "[gɪˈtɑ:(r)]",
+      "partOfSpeech": "n.",
+      "definition": "吉他,六弦",
+      "example": "琴"
+    },
+    {
+      "id": 1224,
+      "word": "yet",
+      "phonetic": "[jet]",
+      "partOfSpeech": "ad.",
+      "definition": "还,尚,仍,",
+      "example": "已经,甚至,更"
+    },
+    {
+      "id": 1225,
+      "word": "virtue",
+      "phonetic": "[ˈvɜ:tʃu:]",
+      "partOfSpeech": "n.",
+      "definition": "美德,德行;",
+      "example": "优点,长处"
+    },
+    {
+      "id": 1226,
+      "word": "classical",
+      "phonetic": "[ˈklæsɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "传统的; 古",
+      "example": "典的,经典的;"
+    },
+    {
+      "id": 1227,
+      "word": "emphasize",
+      "phonetic": "[ˈemfəsaɪz]",
+      "partOfSpeech": "vt.",
+      "definition": "强调,着重;",
+      "example": "加强语气"
+    },
+    {
+      "id": 1228,
+      "word": "embarrass",
+      "phonetic": "[ɪmˈbærəs]",
+      "partOfSpeech": "v.",
+      "definition": "使窘迫,使",
+      "example": "为难,使尴尬"
+    },
+    {
+      "id": 1229,
+      "word": "permanent",
+      "phonetic": "[\nˈ\np\nɜ:mənənt]",
+      "partOfSpeech": "a.",
+      "definition": "永久（性）",
+      "example": "的,永恒的,耐"
+    },
+    {
+      "id": 1230,
+      "word": "folk",
+      "phonetic": "[fəʊk]",
+      "partOfSpeech": "n.",
+      "definition": "民族;人们;",
+      "example": "〈口〉家属,"
+    },
+    {
+      "id": 1231,
+      "word": "along",
+      "phonetic": "[əˈlɒŋ]",
+      "partOfSpeech": "prep.",
+      "definition": "沿着",
+      "example": "ad.一 起,向"
+    },
+    {
+      "id": 1232,
+      "word": "stage",
+      "phonetic": "[steɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "阶段,时期",
+      "example": "舞台;戏剧;驿"
+    },
+    {
+      "id": 1233,
+      "word": "evolve",
+      "phonetic": "[iˈvɒlv]",
+      "partOfSpeech": "v.",
+      "definition": "(使)发",
+      "example": "展,(使)进化"
+    },
+    {
+      "id": 1234,
+      "word": "broad",
+      "phonetic": "[brɔ:d]",
+      "partOfSpeech": "a.",
+      "definition": "宽的,广阔",
+      "example": "的;广大的;宽"
+    },
+    {
+      "id": 1235,
+      "word": "truth",
+      "phonetic": "[tru:θ]",
+      "partOfSpeech": "n.",
+      "definition": "真实,真相;",
+      "example": "真实性,忠实"
+    },
+    {
+      "id": 1236,
+      "word": "share",
+      "phonetic": "[ʃeə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(+with)分",
+      "example": "配,分享,共用;"
+    },
+    {
+      "id": 1237,
+      "word": "surprise",
+      "phonetic": "[sə\nˈ\np\nraɪz]",
+      "partOfSpeech": "vt.",
+      "definition": "使惊奇;突",
+      "example": "袭; 意外发现"
+    },
+    {
+      "id": 1238,
+      "word": "concentrate",
+      "phonetic": "[ˈkɒnsntreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(+on)集中,",
+      "example": "专心;浓缩"
+    },
+    {
+      "id": 1239,
+      "word": "distinctive",
+      "phonetic": "[dɪˈstɪŋktɪv]",
+      "partOfSpeech": "a.",
+      "definition": "独特;有特",
+      "example": "色的,与众不"
+    },
+    {
+      "id": 1240,
+      "word": "least",
+      "phonetic": "[li:st]",
+      "partOfSpeech": "a.",
+      "definition": "最小的;最",
+      "example": "少的"
+    },
+    {
+      "id": 1241,
+      "word": "damage",
+      "phonetic": "[ˈdæmɪdʒ]",
+      "partOfSpeech": "vt.",
+      "definition": "损害,毁坏",
+      "example": "n.损害,损毁;"
+    },
+    {
+      "id": 1242,
+      "word": "ecology",
+      "phonetic": "[iˈkɒlədʒi]",
+      "partOfSpeech": "n.",
+      "definition": "生态（学） To keep ecology in balance is our duty.",
+      "example": "保持生态平衡是我们的职责。"
+    },
+    {
+      "id": 1243,
+      "word": "severe",
+      "phonetic": "[sɪˈvɪə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "严厉的;剧",
+      "example": "烈的,严重的,"
+    },
+    {
+      "id": 1244,
+      "word": "earn",
+      "phonetic": "[ɜ:n]",
+      "partOfSpeech": "v.",
+      "definition": "赚得,挣得,",
+      "example": "获得"
+    },
+    {
+      "id": 1245,
+      "word": "earnest",
+      "phonetic": "[ˈɜ:nɪst]",
+      "partOfSpeech": "a.",
+      "definition": "热心的;诚",
+      "example": "挚的,真挚的;"
+    },
+    {
+      "id": 1246,
+      "word": "earnings",
+      "phonetic": "[ˈɜ:nɪŋz]",
+      "partOfSpeech": "n.",
+      "definition": "收入,所得;",
+      "example": "工资,报酬;收"
+    },
+    {
+      "id": 1247,
+      "word": "eager",
+      "phonetic": "[ˈi:gə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "渴望的,热",
+      "example": "切的"
+    },
+    {
+      "id": 1248,
+      "word": "plausible",
+      "phonetic": "[\nˈ\np\nlɔ:zəbl]",
+      "partOfSpeech": "a.",
+      "definition": "似乎合理",
+      "example": "的,似乎可信"
+    },
+    {
+      "id": 1249,
+      "word": "pioneer",
+      "phonetic": "[ˌpaɪəˈnɪə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "先驱者;拓",
+      "example": "荒者;开发者;"
+    },
+    {
+      "id": 1250,
+      "word": "ideal",
+      "phonetic": "[aɪˈdi:əl]",
+      "partOfSpeech": "a.",
+      "definition": "理想的;空",
+      "example": "想的;理想主"
+    },
+    {
+      "id": 1251,
+      "word": "select",
+      "phonetic": "[sɪˈlekt]",
+      "partOfSpeech": "v.",
+      "definition": "选择,挑选",
+      "example": "a.精选的,选"
+    },
+    {
+      "id": 1252,
+      "word": "selection",
+      "phonetic": "[sɪˈlekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "选择,挑选;",
+      "example": "选集,精选物"
+    },
+    {
+      "id": 1253,
+      "word": "procedure",
+      "phonetic": "[prəˈsi:dʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "程序,手续,",
+      "example": "步骤"
+    },
+    {
+      "id": 1254,
+      "word": "preserve",
+      "phonetic": "[prɪˈzɜ:v]",
+      "partOfSpeech": "v.",
+      "definition": "保护,维持;",
+      "example": "保存,保藏;腌"
+    },
+    {
+      "id": 1256,
+      "word": "faith",
+      "phonetic": "[feɪθ]",
+      "partOfSpeech": "n.",
+      "definition": "信任,信用;",
+      "example": "信仰,信条"
+    },
+    {
+      "id": 1257,
+      "word": "faithful",
+      "phonetic": "[ˈfeɪθfl]",
+      "partOfSpeech": "a.",
+      "definition": "守信的,忠",
+      "example": "实的,如实的,"
+    },
+    {
+      "id": 1258,
+      "word": "successive",
+      "phonetic": "[səkˈsesɪv]",
+      "partOfSpeech": "a.",
+      "definition": "接连的,连",
+      "example": "续的"
+    },
+    {
+      "id": 1259,
+      "word": "preside",
+      "phonetic": "[prɪˈzaɪd]",
+      "partOfSpeech": "v.",
+      "definition": "(+at,over)主",
+      "example": "持"
+    },
+    {
+      "id": 1260,
+      "word": "victory",
+      "phonetic": "[ˈvɪktəri]",
+      "partOfSpeech": "n.",
+      "definition": "胜利",
+      "example": "It was a last victory."
+    },
+    {
+      "id": 1261,
+      "word": "succession",
+      "phonetic": "[səkˈseʃn]",
+      "partOfSpeech": "n.",
+      "definition": "连续,系列;",
+      "example": "继任,继承"
+    },
+    {
+      "id": 1262,
+      "word": "witness",
+      "phonetic": "[ˈwɪtnəs]",
+      "partOfSpeech": "n.",
+      "definition": "目击者,证",
+      "example": "人;证据,证明"
+    },
+    {
+      "id": 1263,
+      "word": "swear",
+      "phonetic": "[sweə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "诅咒,骂人;",
+      "example": "宣誓,发誓"
+    },
+    {
+      "id": 1264,
+      "word": "treatment",
+      "phonetic": "[ˈtri:tmənt]",
+      "partOfSpeech": "n.",
+      "definition": "待遇;治疗,",
+      "example": "疗法"
+    },
+    {
+      "id": 1265,
+      "word": "treaty",
+      "phonetic": "[ˈtri:ti]",
+      "partOfSpeech": "n.",
+      "definition": "条约协议,",
+      "example": "协商;谈判"
+    },
+    {
+      "id": 1266,
+      "word": "abroad",
+      "phonetic": "[əˈbrɔ:d]",
+      "partOfSpeech": "ad.",
+      "definition": "到国外,在",
+      "example": "海外"
+    },
+    {
+      "id": 1268,
+      "word": "drop",
+      "phonetic": "[drɒp]",
+      "partOfSpeech": "n.",
+      "definition": "滴;落下;微",
+      "example": "量"
+    },
+    {
+      "id": 1269,
+      "word": "able",
+      "phonetic": "[ˈeɪbl]",
+      "partOfSpeech": "a.",
+      "definition": "（",
+      "example": "+to）能够"
+    },
+    {
+      "id": 1270,
+      "word": "weather",
+      "phonetic": "[ˈweðə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "天气,气象",
+      "example": "v.晒干,风化,"
+    },
+    {
+      "id": 1271,
+      "word": "judgment",
+      "phonetic": "['dʒʌdʒmənt]",
+      "partOfSpeech": "n.",
+      "definition": "判断,鉴定;",
+      "example": "辨别力,判断"
+    },
+    {
+      "id": 1272,
+      "word": "accuracy",
+      "phonetic": "[ˈækjərəsi]",
+      "partOfSpeech": "n.",
+      "definition": "准确,精确 The time needed in making decisions may",
+      "example": "predetermine the accuracy of our judgment."
+    },
+    {
+      "id": 1273,
+      "word": "quarter",
+      "phonetic": "[ˈkwɔ:tə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "四分之一;",
+      "example": "季;一刻钟"
+    },
+    {
+      "id": 1274,
+      "word": "greenhouse",
+      "phonetic": "[ˈgri:nhaʊs]",
+      "partOfSpeech": "n.",
+      "definition": "温室",
+      "example": "The specific impact of the greenhouse effect"
+    },
+    {
+      "id": 1275,
+      "word": "produce",
+      "phonetic": "[prəˈdju:s]",
+      "partOfSpeech": "v.",
+      "definition": "生产,产生;",
+      "example": "显示;上演,演"
+    },
+    {
+      "id": 1276,
+      "word": "fit",
+      "phonetic": "[fɪt]",
+      "partOfSpeech": "v.",
+      "definition": "使适合;安",
+      "example": "装"
+    },
+    {
+      "id": 1277,
+      "word": "institute",
+      "phonetic": "[ˈ\nɪnstɪtju:t]",
+      "partOfSpeech": "n.",
+      "definition": "学会,研究",
+      "example": "所;学院"
+    },
+    {
+      "id": 1278,
+      "word": "institution",
+      "phonetic": "[ˌɪnstɪˈtju:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "公共机构,",
+      "example": "协会,学校;制"
+    },
+    {
+      "id": 1279,
+      "word": "future",
+      "phonetic": "[ˈfju:tʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "将来,未来;",
+      "example": "前途,前景 a."
+    },
+    {
+      "id": 1280,
+      "word": "weigh",
+      "phonetic": "[weɪ]",
+      "partOfSpeech": "v.",
+      "definition": "称…重量,",
+      "example": "称;重达;考虑,"
+    },
+    {
+      "id": 1281,
+      "word": "anxious",
+      "phonetic": "[ˈæŋkʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "(+about) 忧",
+      "example": "虑的, 担心"
+    },
+    {
+      "id": 1282,
+      "word": "communicate",
+      "phonetic": "[kəˈmjunɪˌket]",
+      "partOfSpeech": "v.",
+      "definition": "传达,传送;",
+      "example": "交流;通讯,通"
+    },
+    {
+      "id": 1283,
+      "word": "communication",
+      "phonetic": "[kəˌmju:nɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "通讯,传",
+      "example": "达;(pl.)通讯"
+    },
+    {
+      "id": 1284,
+      "word": "acquaintance",
+      "phonetic": "[əˈkweɪntəns]",
+      "partOfSpeech": "n.",
+      "definition": "相识; 相识",
+      "example": "的人,熟人;"
+    },
+    {
+      "id": 1285,
+      "word": "acquaint",
+      "phonetic": "[əˈkweɪnt]",
+      "partOfSpeech": "vt.",
+      "definition": "使熟悉;使",
+      "example": "认识;把某事"
+    },
+    {
+      "id": 1286,
+      "word": "acquire",
+      "phonetic": "[əˈkwaɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "获得;学到",
+      "example": "（知识等）"
+    },
+    {
+      "id": 1287,
+      "word": "industry",
+      "phonetic": "[ˈ\nɪndəstri]",
+      "partOfSpeech": "n.",
+      "definition": "工业;产业",
+      "example": "（经济词汇）"
+    },
+    {
+      "id": 1288,
+      "word": "bush",
+      "phonetic": "[bʊʃ]",
+      "partOfSpeech": "n.",
+      "definition": "灌木(丛)",
+      "example": "Trees and bushes grew down to the water's"
+    },
+    {
+      "id": 1289,
+      "word": "suit",
+      "phonetic": "[su:t]",
+      "partOfSpeech": "v.",
+      "definition": "合适,适合;",
+      "example": "相配,适应"
+    },
+    {
+      "id": 1290,
+      "word": "title",
+      "phonetic": "[ˈtaɪtl]",
+      "partOfSpeech": "n.",
+      "definition": "标题; 头衔;",
+      "example": "[体]冠军; [影"
+    },
+    {
+      "id": 1291,
+      "word": "suitable",
+      "phonetic": "[ˈsu:təbl]",
+      "partOfSpeech": "a.",
+      "definition": "(+for)合适",
+      "example": "的,适宜的"
+    },
+    {
+      "id": 1292,
+      "word": "destroy",
+      "phonetic": "[dɪˈstrɔɪ]",
+      "partOfSpeech": "v.",
+      "definition": "破坏,摧毁,",
+      "example": "消灭"
+    },
+    {
+      "id": 1293,
+      "word": "acre",
+      "phonetic": "['eɪkə]",
+      "partOfSpeech": "n.",
+      "definition": "英亩;土地,",
+      "example": "地产"
+    },
+    {
+      "id": 1294,
+      "word": "destruction",
+      "phonetic": "[dɪˈstrʌkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "摧毁; 破坏,",
+      "example": "毁灭,消灭,灭"
+    },
+    {
+      "id": 1295,
+      "word": "destructive",
+      "phonetic": "[dɪˈstrʌktɪv]",
+      "partOfSpeech": "a.",
+      "definition": "破坏性的",
+      "example": "毁灭性的;有"
+    },
+    {
+      "id": 1296,
+      "word": "adapt",
+      "phonetic": "[əˈdæpt]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)(使)适",
+      "example": "应,改变,改写"
+    },
+    {
+      "id": 1297,
+      "word": "adopt",
+      "phonetic": "[əˈdɒpt]",
+      "partOfSpeech": "vt.",
+      "definition": "收养;采用,",
+      "example": "采取,采纳;正"
+    },
+    {
+      "id": 1298,
+      "word": "add",
+      "phonetic": "[æd]",
+      "partOfSpeech": "vt.",
+      "definition": "增加;补充;",
+      "example": "附带说明"
+    },
+    {
+      "id": 1299,
+      "word": "admit",
+      "phonetic": "[ədˈmɪt]",
+      "partOfSpeech": "v.",
+      "definition": "承认,供认,",
+      "example": "让…进入"
+    },
+    {
+      "id": 1300,
+      "word": "chew",
+      "phonetic": "[tʃu:]",
+      "partOfSpeech": "vt.",
+      "definition": "咀嚼,咬;深",
+      "example": "思,考虑"
+    },
+    {
+      "id": 1301,
+      "word": "adolescent",
+      "phonetic": "[ˌædəˈlesnt]",
+      "partOfSpeech": "n.",
+      "definition": "青少年",
+      "example": "a.青春期的,"
+    },
+    {
+      "id": 1302,
+      "word": "primarily",
+      "phonetic": "[praɪˈmerəli]",
+      "partOfSpeech": "ad.",
+      "definition": "首先,主",
+      "example": "要地"
+    },
+    {
+      "id": 1303,
+      "word": "suffer",
+      "phonetic": "[ˈsʌfə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(+from)",
+      "example": "受痛苦, 患"
+    },
+    {
+      "id": 1304,
+      "word": "suffering",
+      "phonetic": "[ˈsʌfərɪŋ]",
+      "partOfSpeech": "",
+      "definition": "（",
+      "example": "pl.）n.受"
+    },
+    {
+      "id": 1305,
+      "word": "bias",
+      "phonetic": "[ˈbaɪəs]",
+      "partOfSpeech": "n.",
+      "definition": "/v.(使有)",
+      "example": "偏见,偏心,"
+    },
+    {
+      "id": 1306,
+      "word": "adviser",
+      "phonetic": "[ədˈvaɪzə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "导师,顾问 Outside directors are supposed to serve as",
+      "example": "helpful, yet less biased, advisers on a firm's"
+    },
+    {
+      "id": 1307,
+      "word": "synthesis",
+      "phonetic": "[ˈsɪnθəsɪs]",
+      "partOfSpeech": "n.",
+      "definition": "综合,合成 His novels are a rich synthesis of Balkan",
+      "example": "history and mythology."
+    },
+    {
+      "id": 1308,
+      "word": "advocate",
+      "phonetic": "[ˈædvəkeɪt]",
+      "partOfSpeech": "vt.",
+      "definition": "提倡;鼓",
+      "example": "吹; 拥护;"
+    },
+    {
+      "id": 1309,
+      "word": "aeroplane",
+      "phonetic": "[ˈeərəpleɪn]",
+      "partOfSpeech": "n.",
+      "definition": "飞机",
+      "example": "（"
+    },
+    {
+      "id": 1310,
+      "word": "aerospace",
+      "phonetic": "[ˈeərəʊspeɪs]",
+      "partOfSpeech": "n.",
+      "definition": "太空,宇宙",
+      "example": "空间"
+    },
+    {
+      "id": 1311,
+      "word": "affirm",
+      "phonetic": "[əˈfɜ:m]",
+      "partOfSpeech": "v.",
+      "definition": "断言,肯定,",
+      "example": "（在法庭"
+    },
+    {
+      "id": 1312,
+      "word": "afraid",
+      "phonetic": "[əˈfreɪd]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)怕,害",
+      "example": "怕的;恐怕,"
+    },
+    {
+      "id": 1313,
+      "word": "agriculture",
+      "phonetic": "[ˈægrɪkʌltʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "农业",
+      "example": "Industry and agriculture are the two"
+    },
+    {
+      "id": 1314,
+      "word": "ahead",
+      "phonetic": "[əˈhed]",
+      "partOfSpeech": "ad.",
+      "definition": "在前,向",
+      "example": "前,提前,前"
+    },
+    {
+      "id": 1315,
+      "word": "aircraft",
+      "phonetic": "[ˈeəkrɑ:ft]",
+      "partOfSpeech": "n.",
+      "definition": "航空器,飞",
+      "example": "机"
+    },
+    {
+      "id": 1316,
+      "word": "substantial",
+      "phonetic": "[səbˈstænʃl]",
+      "partOfSpeech": "a.",
+      "definition": "实质的,真",
+      "example": "实的;坚固"
+    },
+    {
+      "id": 1317,
+      "word": "trumpet",
+      "phonetic": "[ˈtrʌmpɪt]",
+      "partOfSpeech": "n.",
+      "definition": "小号;喇",
+      "example": "叭; [乐]音"
+    },
+    {
+      "id": 1318,
+      "word": "insect",
+      "phonetic": "[ˈ\nɪnˌsɛkt]",
+      "partOfSpeech": "n.",
+      "definition": "虫,昆虫;",
+      "example": "卑鄙的人;"
+    },
+    {
+      "id": 1319,
+      "word": "drought",
+      "phonetic": "[draʊt]",
+      "partOfSpeech": "n.",
+      "definition": "旱灾,干旱 Drought and insects have killed over 100",
+      "example": "million"
+    },
+    {
+      "id": 1320,
+      "word": "vital",
+      "phonetic": "[ˈvaɪtl]",
+      "partOfSpeech": "a.",
+      "definition": "生死攸关",
+      "example": "的,重要的;"
+    },
+    {
+      "id": 1321,
+      "word": "prioritize",
+      "phonetic": "[praɪˈɔ:rətaɪz]",
+      "partOfSpeech": "vt.",
+      "definition": "优先处",
+      "example": "理; 按重要"
+    },
+    {
+      "id": 1323,
+      "word": "craft",
+      "phonetic": "[kræft]",
+      "partOfSpeech": "n.",
+      "definition": "手艺;船;",
+      "example": "飞行器;诡"
+    },
+    {
+      "id": 1324,
+      "word": "journey",
+      "phonetic": "[ˈdʒɜ:rni]",
+      "partOfSpeech": "n.",
+      "definition": "旅行,旅程",
+      "example": "行期; 历程,"
+    },
+    {
+      "id": 1325,
+      "word": "probability",
+      "phonetic": "[ˌprɒbəˈbɪləti]",
+      "partOfSpeech": "n.",
+      "definition": "可能性,概",
+      "example": "率"
+    },
+    {
+      "id": 1326,
+      "word": "departure",
+      "phonetic": "[dɪ\nˈ\np\nɑ:tʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "离开,起程 They found that after a surprise departure,",
+      "example": "the probability that the company will"
+    },
+    {
+      "id": 1327,
+      "word": "co-ordinate",
+      "phonetic": "[kəʊ'ɔ:dənɪt]",
+      "partOfSpeech": "v.",
+      "definition": "使…协调",
+      "example": "n.协调; 坐"
+    },
+    {
+      "id": 1328,
+      "word": "destination",
+      "phonetic": "[ˌdestɪˈneɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "目的地,终",
+      "example": "点"
+    },
+    {
+      "id": 1329,
+      "word": "airline",
+      "phonetic": "[ˈeəlaɪn]",
+      "partOfSpeech": "n.",
+      "definition": "航线;航空",
+      "example": "公司"
+    },
+    {
+      "id": 1330,
+      "word": "alarm",
+      "phonetic": "[əˈlɑ:m]",
+      "partOfSpeech": "n.",
+      "definition": "警报;惊恐",
+      "example": "v.使惊恐,惊"
+    },
+    {
+      "id": 1331,
+      "word": "alcohol",
+      "phonetic": "[ˈælkəhɒl]",
+      "partOfSpeech": "n.",
+      "definition": "酒精,乙醇,",
+      "example": "含酒精饮品"
+    },
+    {
+      "id": 1332,
+      "word": "jealous",
+      "phonetic": "[ˈdʒeləs]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)妒忌",
+      "example": "的;猜疑的,"
+    },
+    {
+      "id": 1333,
+      "word": "jealousy",
+      "phonetic": "[ˈdʒeləsi]",
+      "partOfSpeech": "n.",
+      "definition": "妒忌,猜",
+      "example": "忌; 戒备,小"
+    },
+    {
+      "id": 1334,
+      "word": "alert",
+      "phonetic": "[əˈlɜ:t]",
+      "partOfSpeech": "a.",
+      "definition": "警觉的,警",
+      "example": "惕的;思维"
+    },
+    {
+      "id": 1335,
+      "word": "alike",
+      "phonetic": "[əˈlaɪk]",
+      "partOfSpeech": "a.",
+      "definition": "同样的,相",
+      "example": "似的"
+    },
+    {
+      "id": 1336,
+      "word": "annual",
+      "phonetic": "[ˈænjuəl]",
+      "partOfSpeech": "a.",
+      "definition": "每年的,年",
+      "example": "度的"
+    },
+    {
+      "id": 1337,
+      "word": "anticipate",
+      "phonetic": "[ænˈtɪsəˌpet]",
+      "partOfSpeech": "v.",
+      "definition": "预期,预料,",
+      "example": "预感,期望）"
+    },
+    {
+      "id": 1338,
+      "word": "insatiable",
+      "phonetic": "[ɪnˈseʃəbəl]",
+      "partOfSpeech": "a.",
+      "definition": "贪得无厌",
+      "example": "的; 无法满"
+    },
+    {
+      "id": 1339,
+      "word": "appetite",
+      "phonetic": "[ˈæpɪˌtaɪt]",
+      "partOfSpeech": "n.",
+      "definition": "食欲,胃",
+      "example": "口;欲望,爱"
+    },
+    {
+      "id": 1340,
+      "word": "applaud",
+      "phonetic": "[ə\nˈ\np\nlɔ:d]",
+      "partOfSpeech": "v.",
+      "definition": "喝彩,欢呼,",
+      "example": "鼓掌,称赞"
+    },
+    {
+      "id": 1341,
+      "word": "boost",
+      "phonetic": "[bu:st]",
+      "partOfSpeech": "vt.",
+      "definition": "促进",
+      "example": "boost population growth（17,T1）"
+    },
+    {
+      "id": 1342,
+      "word": "storage",
+      "phonetic": "[ˈstɔ:rɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "贮藏(量),",
+      "example": "保管;库房"
+    },
+    {
+      "id": 1343,
+      "word": "battery",
+      "phonetic": "[ˈbætri]",
+      "partOfSpeech": "n.",
+      "definition": "电池(组);",
+      "example": "炮兵连,炮组"
+    },
+    {
+      "id": 1344,
+      "word": "application",
+      "phonetic": "[ˌæplɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "请求,申请",
+      "example": "(书,表);应"
+    },
+    {
+      "id": 1345,
+      "word": "applicable",
+      "phonetic": "[ə\nˈ\np\nlɪkəbl]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)能应",
+      "example": "用的,适用的"
+    },
+    {
+      "id": 1346,
+      "word": "appliance",
+      "phonetic": "[ə\nˈ\np\nlaɪəns]",
+      "partOfSpeech": "n.",
+      "definition": "用具,器具 Caution! Don't turn on any electric appliance",
+      "example": "without permission."
+    },
+    {
+      "id": 1347,
+      "word": "appoint",
+      "phonetic": "[ə\nˈ\np\nɔɪnt]",
+      "partOfSpeech": "v.",
+      "definition": "任命,委任;",
+      "example": "约定,指定"
+    },
+    {
+      "id": 1348,
+      "word": "flaw",
+      "phonetic": "[flɔ:]",
+      "partOfSpeech": "n.",
+      "definition": "裂缝;缺陷 The argument is full of fundamental flaws.",
+      "example": "这段论述充满根本性的错误。"
+    },
+    {
+      "id": 1349,
+      "word": "forest",
+      "phonetic": "[ˈfɒrɪst]",
+      "partOfSpeech": "n.",
+      "definition": "森林",
+      "example": "Parts of the forest are still dense and"
+    },
+    {
+      "id": 1350,
+      "word": "carbon",
+      "phonetic": "[ˈkɑ:bən]",
+      "partOfSpeech": "n.",
+      "definition": "碳",
+      "example": "restoring the forest's capacity to pull carbon"
+    },
+    {
+      "id": 1351,
+      "word": "approve",
+      "phonetic": "[ə\nˈ\np\nru:v]",
+      "partOfSpeech": "v.",
+      "definition": "(+of)赞成,",
+      "example": "满意,同意;"
+    },
+    {
+      "id": 1352,
+      "word": "approval",
+      "phonetic": "[ə\nˈ\np\nruvəl]",
+      "partOfSpeech": "n.",
+      "definition": "赞成,同",
+      "example": "意;认可,批"
+    },
+    {
+      "id": 1353,
+      "word": "architect",
+      "phonetic": "[ˈɑ:kɪtekt]",
+      "partOfSpeech": "n.",
+      "definition": "建筑师",
+      "example": "Most American architects used to be"
+    },
+    {
+      "id": 1354,
+      "word": "extreme",
+      "phonetic": "[ɪkˈstri:m]",
+      "partOfSpeech": "a.",
+      "definition": "末端的,尽",
+      "example": "头的;极度"
+    },
+    {
+      "id": 1355,
+      "word": "arise",
+      "phonetic": "[əˈraɪz]",
+      "partOfSpeech": "v.",
+      "definition": "出现,发",
+      "example": "生;(+from)"
+    },
+    {
+      "id": 1356,
+      "word": "arrange",
+      "phonetic": "[əˈreɪndʒ]",
+      "partOfSpeech": "v.",
+      "definition": "整理,排列,",
+      "example": "布置;安排,"
+    },
+    {
+      "id": 1357,
+      "word": "array",
+      "phonetic": "[əˈreɪ]",
+      "partOfSpeech": "n.",
+      "definition": "一系列,大",
+      "example": "量;排列"
+    },
+    {
+      "id": 1358,
+      "word": "assemble",
+      "phonetic": "[əˈsembl]",
+      "partOfSpeech": "v.",
+      "definition": "集合,集会,",
+      "example": "会议;装配"
+    },
+    {
+      "id": 1359,
+      "word": "assembly",
+      "phonetic": "[əˈsembli]",
+      "partOfSpeech": "n.",
+      "definition": "集合,集会,",
+      "example": "会议;装配"
+    },
+    {
+      "id": 1360,
+      "word": "arrival",
+      "phonetic": "[əˈraɪvl]",
+      "partOfSpeech": "n.",
+      "definition": "到来,到",
+      "example": "达;到达的"
+    },
+    {
+      "id": 1361,
+      "word": "personality",
+      "phonetic": "[ˌpɜ:səˈnæləti]",
+      "partOfSpeech": "n.",
+      "definition": "人格,个",
+      "example": "性，人"
+    },
+    {
+      "id": 1362,
+      "word": "complex",
+      "phonetic": "[ˈkɒmpleks]",
+      "partOfSpeech": "a.",
+      "definition": "复杂的;合",
+      "example": "成的,综合的"
+    },
+    {
+      "id": 1363,
+      "word": "aspect",
+      "phonetic": "[ˈæspekt]",
+      "partOfSpeech": "n.",
+      "definition": "样子,外表,",
+      "example": "面貌;(问题"
+    },
+    {
+      "id": 1364,
+      "word": "assistant",
+      "phonetic": "[əˈsɪstənt]",
+      "partOfSpeech": "n.",
+      "definition": "助手,助教",
+      "example": "a.辅助的,助"
+    },
+    {
+      "id": 1365,
+      "word": "assist",
+      "phonetic": "[əˈsɪst]",
+      "partOfSpeech": "v.",
+      "definition": "帮助,援助,",
+      "example": "协助"
+    },
+    {
+      "id": 1366,
+      "word": "assume",
+      "phonetic": "[əˈsju:m]",
+      "partOfSpeech": "v.",
+      "definition": "假装;假定,",
+      "example": "设想;采取,"
+    },
+    {
+      "id": 1367,
+      "word": "assumption",
+      "phonetic": "[əˈsʌmpʃn]",
+      "partOfSpeech": "n.",
+      "definition": "假定,设",
+      "example": "想;采取;承"
+    },
+    {
+      "id": 1368,
+      "word": "battle",
+      "phonetic": "[ˈbætl]",
+      "partOfSpeech": "n.",
+      "definition": "战役,战",
+      "example": "斗;斗争"
+    },
+    {
+      "id": 1369,
+      "word": "assure",
+      "phonetic": "[əˈʃʊə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "使确信,使",
+      "example": "放心;保证,"
+    },
+    {
+      "id": 1370,
+      "word": "member",
+      "phonetic": "[ˈmembə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "成员,会员 Some Congress members are trying to block",
+      "example": "the plan.（16,T2）一些国会议员正试图阻止"
+    },
+    {
+      "id": 1371,
+      "word": "preliminary",
+      "phonetic": "[prɪˈlɪmɪnəri]",
+      "partOfSpeech": "a.",
+      "definition": "预备的,初",
+      "example": "步的"
+    },
+    {
+      "id": 1372,
+      "word": "astonish",
+      "phonetic": "[əˈstɒnɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "使惊讶,使",
+      "example": "吃惊"
+    },
+    {
+      "id": 1373,
+      "word": "athlete",
+      "phonetic": "[ˈæθli:t]",
+      "partOfSpeech": "n.",
+      "definition": "运动员",
+      "example": "More people start doing sport and produce"
+    },
+    {
+      "id": 1374,
+      "word": "attorney",
+      "phonetic": "[əˈtɜ:ni]",
+      "partOfSpeech": "n.",
+      "definition": "律师",
+      "example": "Adam Bailey, a real estate attorney based in"
+    },
+    {
+      "id": 1375,
+      "word": "auction",
+      "phonetic": "['ɔːkʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "拍卖会;竞",
+      "example": "卖;标售"
+    },
+    {
+      "id": 1376,
+      "word": "author",
+      "phonetic": "['ɔːθə]",
+      "partOfSpeech": "n.",
+      "definition": "作者;创始",
+      "example": "人"
+    },
+    {
+      "id": 1377,
+      "word": "technician",
+      "phonetic": "[tek'nɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "技术员,技",
+      "example": "师,技工"
+    },
+    {
+      "id": 1378,
+      "word": "auto",
+      "phonetic": "['ɔːtəʊ]",
+      "partOfSpeech": "n.",
+      "definition": "汽车",
+      "example": "（"
+    },
+    {
+      "id": 1379,
+      "word": "automation",
+      "phonetic": "[ɔːtə'meɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "自动(化) Automation is accelerating technological",
+      "example": "development.（14,T3）"
+    },
+    {
+      "id": 1380,
+      "word": "exercise",
+      "phonetic": "['eksəsaɪz]",
+      "partOfSpeech": "n.",
+      "definition": "练习,习",
+      "example": "题;训练,锻"
+    },
+    {
+      "id": 1381,
+      "word": "civil",
+      "phonetic": "['sɪvl]",
+      "partOfSpeech": "a.",
+      "definition": "公民的,市",
+      "example": "民的;民间"
+    },
+    {
+      "id": 1382,
+      "word": "aviation",
+      "phonetic": "[eɪvɪ'eɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "航空,飞行 International Civil Aviation Organisation",
+      "example": "（10,T5）"
+    },
+    {
+      "id": 1383,
+      "word": "shelter",
+      "phonetic": "[\n'\nʃ\neltə]",
+      "partOfSpeech": "n.",
+      "definition": "掩蔽处;掩",
+      "example": "蔽,保护;避"
+    },
+    {
+      "id": 1384,
+      "word": "civilian",
+      "phonetic": "[sɪ'vɪlj(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "平民",
+      "example": "a.平民的;民"
+    },
+    {
+      "id": 1385,
+      "word": "civilization",
+      "phonetic": "[ˌsɪvɪlaɪˈzeɪʃən]",
+      "partOfSpeech": "",
+      "definition": "(=civilisatio",
+      "example": "n) n.文明,文"
+    },
+    {
+      "id": 1386,
+      "word": "classify",
+      "phonetic": "['klæsɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "分类,分等",
+      "example": "(级)"
+    },
+    {
+      "id": 1387,
+      "word": "dealer",
+      "phonetic": "['diːlə]",
+      "partOfSpeech": "n.",
+      "definition": "商人,贩子 You are well advised to buy your car through a",
+      "example": "reputable dealer."
+    },
+    {
+      "id": 1388,
+      "word": "await",
+      "phonetic": "[ə'weɪt]",
+      "partOfSpeech": "v.",
+      "definition": "等候,期待 Some art dealers were awaiting better chances",
+      "example": "to come.（10,T1）"
+    },
+    {
+      "id": 1389,
+      "word": "aware",
+      "phonetic": "[ə'weə]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)知道",
+      "example": "的,意识到的"
+    },
+    {
+      "id": 1390,
+      "word": "bankruptcy",
+      "phonetic": "['bæŋkrʌptsɪ]",
+      "partOfSpeech": "n.",
+      "definition": "破产",
+      "example": "v.使破产"
+    },
+    {
+      "id": 1391,
+      "word": "barrel",
+      "phonetic": "['bær(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "桶;枪管,",
+      "example": "炮管"
+    },
+    {
+      "id": 1392,
+      "word": "exaggerate",
+      "phonetic": "[ɪg'zædʒəreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "夸大,夸张 There could be more unrest, but I wouldn't",
+      "example": "exaggerate the problems."
+    },
+    {
+      "id": 1393,
+      "word": "barrier",
+      "phonetic": "['bærɪə]",
+      "partOfSpeech": "n.",
+      "definition": "栅栏,屏",
+      "example": "障;障碍(物)"
+    },
+    {
+      "id": 1394,
+      "word": "base",
+      "phonetic": "[beɪs]",
+      "partOfSpeech": "n.",
+      "definition": "基础,底",
+      "example": "部;根据地"
+    },
+    {
+      "id": 1395,
+      "word": "regulate",
+      "phonetic": "['regjʊleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "管制,控制;",
+      "example": "调节,校准;"
+    },
+    {
+      "id": 1396,
+      "word": "basic",
+      "phonetic": "['beɪsɪk]",
+      "partOfSpeech": "a.",
+      "definition": "基本的,基",
+      "example": "础的"
+    },
+    {
+      "id": 1397,
+      "word": "belief",
+      "phonetic": "[bɪ'liːf]",
+      "partOfSpeech": "n.",
+      "definition": "信仰,信",
+      "example": "条;相信,信"
+    },
+    {
+      "id": 1398,
+      "word": "honor",
+      "phonetic": "[ˈɒnə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "尊敬,敬",
+      "example": "意;荣誉,光"
+    },
+    {
+      "id": 1399,
+      "word": "belong",
+      "phonetic": "[bɪ'lɒŋ]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)属于,",
+      "example": "附属,隶属;"
+    },
+    {
+      "id": 1400,
+      "word": "solar",
+      "phonetic": "['səʊlə]",
+      "partOfSpeech": "a.",
+      "definition": "太阳的,日",
+      "example": "光的"
+    },
+    {
+      "id": 1401,
+      "word": "beneath",
+      "phonetic": "[bɪˈniːθ]",
+      "partOfSpeech": "prep.",
+      "definition": "在…下边,",
+      "example": "在…之下"
+    },
+    {
+      "id": 1402,
+      "word": "beneficial",
+      "phonetic": "[benɪ\n'\nf\nɪʃ(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)有利的,",
+      "example": "有益的"
+    },
+    {
+      "id": 1403,
+      "word": "beneficiary",
+      "phonetic": "[benɪ\n'\nf\nɪʃ(ə)rɪ]",
+      "partOfSpeech": "n.",
+      "definition": "受惠者（, 遗产",
+      "example": "的）受益人"
+    },
+    {
+      "id": 1404,
+      "word": "bid",
+      "phonetic": "[bɪd]",
+      "partOfSpeech": "v.",
+      "definition": "祝愿;命令,吩",
+      "example": "咐;报价,投标"
+    },
+    {
+      "id": 1405,
+      "word": "bidder",
+      "phonetic": "['bɪdə]",
+      "partOfSpeech": "n.",
+      "definition": "出价人,投标",
+      "example": "人"
+    },
+    {
+      "id": 1406,
+      "word": "provision",
+      "phonetic": "[prə'vɪʒ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "供应,(一批)",
+      "example": "供应品;预备;条"
+    },
+    {
+      "id": 1407,
+      "word": "bind",
+      "phonetic": "[baɪnd]",
+      "partOfSpeech": "v.",
+      "definition": "捆,绑,包括,束",
+      "example": "缚,约束"
+    },
+    {
+      "id": 1408,
+      "word": "blank",
+      "phonetic": "[blæŋk]",
+      "partOfSpeech": "a.",
+      "definition": "空白的,空着",
+      "example": "的;失色的"
+    },
+    {
+      "id": 1409,
+      "word": "blanket",
+      "phonetic": "['blæŋkɪt]",
+      "partOfSpeech": "n.",
+      "definition": "毛毯,毯子",
+      "example": "Phones become our security blanket."
+    },
+    {
+      "id": 1410,
+      "word": "operational",
+      "phonetic": "[ɒpə'reɪʃ(ə)n(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "操作的,运转",
+      "example": "的"
+    },
+    {
+      "id": 1411,
+      "word": "blueprint",
+      "phonetic": "['blʊ\n'\np\nrɪnt]",
+      "partOfSpeech": "n.",
+      "definition": "蓝图,设计",
+      "example": "图,(周详的)计"
+    },
+    {
+      "id": 1412,
+      "word": "raise",
+      "phonetic": "[reɪz]",
+      "partOfSpeech": "v.",
+      "definition": "举起,提升;增",
+      "example": "加;饲养;引起;"
+    },
+    {
+      "id": 1413,
+      "word": "operation",
+      "phonetic": "[ɒpə'reɪʃ(ə)n]",
+      "partOfSpeech": "n.",
+      "definition": "运转,开动,操",
+      "example": "作;(+on)手术;"
+    },
+    {
+      "id": 1414,
+      "word": "boil",
+      "phonetic": "[bɒɪl]",
+      "partOfSpeech": "v.",
+      "definition": "(使)沸腾,煮",
+      "example": "(沸)"
+    },
+    {
+      "id": 1415,
+      "word": "calorie",
+      "phonetic": "['kælərɪ]",
+      "partOfSpeech": "n.",
+      "definition": "卡路里（热量",
+      "example": "单位）"
+    },
+    {
+      "id": 1416,
+      "word": "bold",
+      "phonetic": "[bəʊld]",
+      "partOfSpeech": "a.",
+      "definition": "大胆的,勇敢",
+      "example": "的;冒失的;黑体"
+    },
+    {
+      "id": 1417,
+      "word": "bonus",
+      "phonetic": "['bəʊnəs]",
+      "partOfSpeech": "n.",
+      "definition": "奖金,红利",
+      "example": "How could she have let those enormous"
+    },
+    {
+      "id": 1418,
+      "word": "boom",
+      "phonetic": "[buːm]",
+      "partOfSpeech": "v.",
+      "definition": "迅速发展,兴",
+      "example": "旺;"
+    },
+    {
+      "id": 1419,
+      "word": "internal",
+      "phonetic": "[ɪn'tɜːn(ə)l]",
+      "partOfSpeech": "a.",
+      "definition": "内部的,内的;",
+      "example": "国内的,内政的"
+    },
+    {
+      "id": 1420,
+      "word": "border",
+      "phonetic": "['bɔːdə]",
+      "partOfSpeech": "n.",
+      "definition": "边界,国界;边",
+      "example": "(沿)"
+    },
+    {
+      "id": 1421,
+      "word": "empty",
+      "phonetic": "[ˈemptɪ]",
+      "partOfSpeech": "a.",
+      "definition": "空的;空洞的",
+      "example": "v.倒空,使成为"
+    },
+    {
+      "id": 1422,
+      "word": "convey",
+      "phonetic": "[kən'veɪ]",
+      "partOfSpeech": "v.",
+      "definition": "运送,搬运,转",
+      "example": "运;传达,传播"
+    },
+    {
+      "id": 1423,
+      "word": "bottle",
+      "phonetic": "['bɒt(ə)l]",
+      "partOfSpeech": "v.",
+      "definition": "装瓶",
+      "example": "n.瓶(子)"
+    },
+    {
+      "id": 1424,
+      "word": "hedge",
+      "phonetic": "[hedʒ]",
+      "partOfSpeech": "n.",
+      "definition": "篱笆,树篱,障",
+      "example": "碍物 v.用树篱"
+    },
+    {
+      "id": 1425,
+      "word": "breath",
+      "phonetic": "[breθ]",
+      "partOfSpeech": "n.",
+      "definition": "呼吸,气息",
+      "example": "People over 50 or those with breathing"
+    },
+    {
+      "id": 1426,
+      "word": "political",
+      "phonetic": "[pəˈlɪtɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "政治的;政党",
+      "example": "的; 对政治有"
+    },
+    {
+      "id": 1427,
+      "word": "brief",
+      "phonetic": "[bri:f]",
+      "partOfSpeech": "a.",
+      "definition": "简短的,简洁",
+      "example": "的"
+    },
+    {
+      "id": 1428,
+      "word": "politics",
+      "phonetic": "[\nˈ\np\nɒlətɪks]",
+      "partOfSpeech": "n.",
+      "definition": "政治,政治学;",
+      "example": "政纲,政见"
+    },
+    {
+      "id": 1429,
+      "word": "brush",
+      "phonetic": "[brʌʃ]",
+      "partOfSpeech": "n.",
+      "definition": "刷(子),毛刷;",
+      "example": "画笔"
+    },
+    {
+      "id": 1430,
+      "word": "plot",
+      "phonetic": "[plɒt]",
+      "partOfSpeech": "n.",
+      "definition": "秘密计划;情",
+      "example": "节"
+    },
+    {
+      "id": 1431,
+      "word": "enemy",
+      "phonetic": "[ˈenəmi]",
+      "partOfSpeech": "n.",
+      "definition": "敌人,敌军",
+      "example": "Theresa May's enemies are currently"
+    },
+    {
+      "id": 1432,
+      "word": "brutal",
+      "phonetic": "[ˈbru:tl]",
+      "partOfSpeech": "a.",
+      "definition": "残忍的;严峻",
+      "example": "的;严酷的"
+    },
+    {
+      "id": 1433,
+      "word": "bunch",
+      "phonetic": "[bʌntʃ]",
+      "partOfSpeech": "n.",
+      "definition": "(一)簇,束,捆,",
+      "example": "串"
+    },
+    {
+      "id": 1434,
+      "word": "notice",
+      "phonetic": "[ˈnəʊtɪs]",
+      "partOfSpeech": "n.",
+      "definition": "通知,通告,布",
+      "example": "告;注意,认识"
+    },
+    {
+      "id": 1435,
+      "word": "noticeable",
+      "phonetic": "[ˈnəʊtɪsəbl]",
+      "partOfSpeech": "a.",
+      "definition": "显而易见的,",
+      "example": "明显的;引人注"
+    },
+    {
+      "id": 1436,
+      "word": "laugh",
+      "phonetic": "[lɑ:f]",
+      "partOfSpeech": "n.",
+      "definition": "笑,笑声",
+      "example": "v.笑;讥笑"
+    },
+    {
+      "id": 1437,
+      "word": "laughter",
+      "phonetic": "[ˈlɑ:ftə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "笑,笑声",
+      "example": "Their laughter filled the corridor."
+    },
+    {
+      "id": 1438,
+      "word": "burst",
+      "phonetic": "[bɜ:st]",
+      "partOfSpeech": "v.",
+      "definition": "（",
+      "example": "+into）爆裂,"
+    },
+    {
+      "id": 1439,
+      "word": "byproduct",
+      "phonetic": "['baɪˌprɒdʌkt]",
+      "partOfSpeech": "n.",
+      "definition": "副产品",
+      "example": "Happiness is not a goal but a natural"
+    },
+    {
+      "id": 1440,
+      "word": "campus",
+      "phonetic": "[ˈkæmpəs]",
+      "partOfSpeech": "n.",
+      "definition": "(大学)校园 It seems worthless to take off-campus",
+      "example": "courses.（17,T3）参加校外课程似乎毫无"
+    },
+    {
+      "id": 1441,
+      "word": "capable",
+      "phonetic": "[ˈkeɪpəbl]",
+      "partOfSpeech": "a.",
+      "definition": "有本领的,有",
+      "example": "能力的;(+of)可"
+    },
+    {
+      "id": 1442,
+      "word": "cargo",
+      "phonetic": "[ˈkɑ:gəʊ]",
+      "partOfSpeech": "n.",
+      "definition": "（船或飞机装",
+      "example": "载的）货物,负"
+    },
+    {
+      "id": 1443,
+      "word": "reach",
+      "phonetic": "[ri:tʃ]",
+      "partOfSpeech": "v.",
+      "definition": "抵达;(+out)伸",
+      "example": "手,够到"
+    },
+    {
+      "id": 1444,
+      "word": "racial",
+      "phonetic": "[ˈreɪʃl]",
+      "partOfSpeech": "a.",
+      "definition": "种的,种族的 The city had faced racial crisis and come",
+      "example": "through it."
+    },
+    {
+      "id": 1445,
+      "word": "supreme",
+      "phonetic": "[su:\nˈ\np\nri:m]",
+      "partOfSpeech": "a.",
+      "definition": "极度的,最重",
+      "example": "要的;至高的,最"
+    },
+    {
+      "id": 1446,
+      "word": "case",
+      "phonetic": "[keɪs]",
+      "partOfSpeech": "n.",
+      "definition": "箱,盒,容器;情",
+      "example": "况,事实;病例;"
+    },
+    {
+      "id": 1447,
+      "word": "proxy",
+      "phonetic": "[\nˈ\np\nrɒksi]",
+      "partOfSpeech": "n.",
+      "definition": "代理权,代表",
+      "example": "权;代理人,委托"
+    },
+    {
+      "id": 1448,
+      "word": "check",
+      "phonetic": "[tʃek]",
+      "partOfSpeech": "vt.",
+      "definition": "检查,核对;抑",
+      "example": "制; 在…打勾"
+    },
+    {
+      "id": 1449,
+      "word": "cash",
+      "phonetic": "[kæʃ]",
+      "partOfSpeech": "v.",
+      "definition": "兑现,付(收)",
+      "example": "现款 n.现金,现"
+    },
+    {
+      "id": 1450,
+      "word": "catch",
+      "phonetic": "[kætʃ]",
+      "partOfSpeech": "v.",
+      "definition": "捕捉,捕获;赶",
+      "example": "上;感染;理解,"
+    },
+    {
+      "id": 1451,
+      "word": "humor",
+      "phonetic": "['hju:mə]",
+      "partOfSpeech": "n.",
+      "definition": "(=humour)幽",
+      "example": "默,诙谐"
+    },
+    {
+      "id": 1452,
+      "word": "humorous",
+      "phonetic": "[ˈhju:mərəs]",
+      "partOfSpeech": "a.",
+      "definition": "幽默的,诙谐",
+      "example": "的"
+    },
+    {
+      "id": 1453,
+      "word": "circle",
+      "phonetic": "[ˈsɜ:kl]",
+      "partOfSpeech": "n.",
+      "definition": "圆,圆周;集团;",
+      "example": "周期,循环"
+    },
+    {
+      "id": 1454,
+      "word": "circuit",
+      "phonetic": "[ˈsɜ:kɪt]",
+      "partOfSpeech": "n.",
+      "definition": "环行,周线,巡",
+      "example": "回;电路,线路"
+    },
+    {
+      "id": 1455,
+      "word": "client",
+      "phonetic": "[ˈklaɪənt]",
+      "partOfSpeech": "n.",
+      "definition": "顾客;(诉讼)",
+      "example": "委托人"
+    },
+    {
+      "id": 1456,
+      "word": "fair",
+      "phonetic": "[feə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "公平的,合理",
+      "example": "的;相当的"
+    },
+    {
+      "id": 1457,
+      "word": "ladder",
+      "phonetic": "[ˈlædə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "梯子,阶梯",
+      "example": "He was halfway up the ladder."
+    },
+    {
+      "id": 1458,
+      "word": "climb",
+      "phonetic": "[klaɪm]",
+      "partOfSpeech": "v.",
+      "definition": "/n.攀登,爬",
+      "example": "Women can continue to climb the corporate"
+    },
+    {
+      "id": 1459,
+      "word": "orient",
+      "phonetic": "[ˈɔ:rient]",
+      "partOfSpeech": "vt.",
+      "definition": "标定方向;",
+      "example": "使… 向东方;"
+    },
+    {
+      "id": 1460,
+      "word": "orientation",
+      "phonetic": "[ˌɔ:riənˈteɪʃn]",
+      "partOfSpeech": "a.",
+      "definition": "东方的（; 太阳",
+      "example": "等） 上升的 n."
+    },
+    {
+      "id": 1461,
+      "word": "coincidence",
+      "phonetic": "[kəʊˈ\nɪnsɪdəns]",
+      "partOfSpeech": "n.",
+      "definition": "巧合,巧事;一",
+      "example": "致,符合"
+    },
+    {
+      "id": 1462,
+      "word": "colleague",
+      "phonetic": "[ˈkɒli:g]",
+      "partOfSpeech": "n.",
+      "definition": "同事,同僚",
+      "example": "Your home colleagues—your family—"
+    },
+    {
+      "id": 1463,
+      "word": "combination",
+      "phonetic": "[ˌkɒmbɪˈneɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "结合,联合,合",
+      "example": "并;化合(物)"
+    },
+    {
+      "id": 1464,
+      "word": "committee",
+      "phonetic": "[kəˈmɪti]",
+      "partOfSpeech": "n.",
+      "definition": "委员会,全体",
+      "example": "委员"
+    },
+    {
+      "id": 1465,
+      "word": "commute",
+      "phonetic": "[kəˈmju:t]",
+      "partOfSpeech": "vi.",
+      "definition": "通勤;代偿",
+      "example": "vt.用…交换;"
+    },
+    {
+      "id": 1466,
+      "word": "compel",
+      "phonetic": "[kəm\nˈ\np\nel]",
+      "partOfSpeech": "vt.",
+      "definition": "强迫,迫使;",
+      "example": "强制发生,使不"
+    },
+    {
+      "id": 1467,
+      "word": "complicated",
+      "phonetic": "[ˈkɒmplɪkeɪtɪd]",
+      "partOfSpeech": "a.",
+      "definition": "错综复杂的,",
+      "example": "麻烦的,难解的"
+    },
+    {
+      "id": 1468,
+      "word": "complicate",
+      "phonetic": "[ˈkɒmplɪkeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(使)变复杂 I do not wish to complicate the task more",
+      "example": "than is necessary."
+    },
+    {
+      "id": 1469,
+      "word": "complication",
+      "phonetic": "[ˌkɒmplɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "复杂,纠纷;并",
+      "example": "发症"
+    },
+    {
+      "id": 1470,
+      "word": "compliment",
+      "phonetic": "[ˈkɒmplɪmənt]",
+      "partOfSpeech": "n.",
+      "definition": "(pl.)问候,致",
+      "example": "意 n./v.称赞,恭"
+    },
+    {
+      "id": 1471,
+      "word": "raid",
+      "phonetic": "[reɪd]",
+      "partOfSpeech": "n.",
+      "definition": "袭击;突袭;搜",
+      "example": "捕;抢劫"
+    },
+    {
+      "id": 1472,
+      "word": "compound",
+      "phonetic": "[ˈkɒmpaʊnd]",
+      "partOfSpeech": "n.",
+      "definition": "[化学] 化合",
+      "example": "物;混合物;复合"
+    },
+    {
+      "id": 1473,
+      "word": "rectify",
+      "phonetic": "[ˈrektɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "纠正,整顿",
+      "example": "to rectify a fault"
+    },
+    {
+      "id": 1474,
+      "word": "comprehensive",
+      "phonetic": "[ˌkɒmprɪˈhensɪv]",
+      "partOfSpeech": "a.",
+      "definition": "综合的; 广",
+      "example": "泛的,全面的;"
+    },
+    {
+      "id": 1475,
+      "word": "comprehend",
+      "phonetic": "[ˌkɒmprɪˈhend]",
+      "partOfSpeech": "v.",
+      "definition": "理解,了解",
+      "example": "I just cannot comprehend your attitude."
+    },
+    {
+      "id": 1476,
+      "word": "comprehension",
+      "phonetic": "[ˌkɒmprɪˈhenʃn]",
+      "partOfSpeech": "a.",
+      "definition": "理解(力),领",
+      "example": "悟"
+    },
+    {
+      "id": 1477,
+      "word": "summarize",
+      "phonetic": "[ˈsʌməraɪz]",
+      "partOfSpeech": "v.",
+      "definition": "(=summarise)",
+      "example": "概括,总结"
+    },
+    {
+      "id": 1478,
+      "word": "concise",
+      "phonetic": "[kənˈsaɪs]",
+      "partOfSpeech": "a.",
+      "definition": "简明的,简洁",
+      "example": "的"
+    },
+    {
+      "id": 1479,
+      "word": "opposite",
+      "phonetic": "[ˈɒpəzɪt]",
+      "partOfSpeech": "a.",
+      "definition": "相反的",
+      "example": "n.对立面"
+    },
+    {
+      "id": 1480,
+      "word": "conclusion",
+      "phonetic": "[kənˈklu:ʒn]",
+      "partOfSpeech": "n.",
+      "definition": "结束,终结;结",
+      "example": "论,推论"
+    },
+    {
+      "id": 1481,
+      "word": "summary",
+      "phonetic": "[ˈsʌməri]",
+      "partOfSpeech": "n.",
+      "definition": "摘要,概要 a.",
+      "example": "概括的,简略的"
+    },
+    {
+      "id": 1482,
+      "word": "conclude",
+      "phonetic": "[kənˈklu:d]",
+      "partOfSpeech": "v.",
+      "definition": "结束,终止;断",
+      "example": "定,下结论;缔"
+    },
+    {
+      "id": 1483,
+      "word": "formula",
+      "phonetic": "[ˈfɔ:mjələ]",
+      "partOfSpeech": "n.",
+      "definition": "公式,程式,方",
+      "example": "案，方法"
+    },
+    {
+      "id": 1484,
+      "word": "conduct",
+      "phonetic": "[kənˈdʌkt]",
+      "partOfSpeech": "n.",
+      "definition": "行为,品行",
+      "example": "v.引导;实施;指"
+    },
+    {
+      "id": 1485,
+      "word": "conductor",
+      "phonetic": "[kənˈdʌktə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "领队,(乐队)",
+      "example": "指挥;(电车等"
+    },
+    {
+      "id": 1486,
+      "word": "formulate",
+      "phonetic": "[ˈfɔ:mjuleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "构想,规划;系",
+      "example": "统地阐述"
+    },
+    {
+      "id": 1487,
+      "word": "install",
+      "phonetic": "[ɪnˈstɔ:l]",
+      "partOfSpeech": "v.",
+      "definition": "安装,设置",
+      "example": "They will install a heating and lighting"
+    },
+    {
+      "id": 1488,
+      "word": "installation",
+      "phonetic": "[ˌɪnstəˈleɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "安装,设置;装",
+      "example": "置,设备"
+    },
+    {
+      "id": 1489,
+      "word": "confine",
+      "phonetic": "[kənˈfaɪn]",
+      "partOfSpeech": "vt.",
+      "definition": "限制;局限",
+      "example": "于;禁闭;管制"
+    },
+    {
+      "id": 1490,
+      "word": "plastic",
+      "phonetic": "[\nˈ\np\nlæstɪk]",
+      "partOfSpeech": "n.",
+      "definition": "(常 pl.)塑料,",
+      "example": "塑料制品"
+    },
+    {
+      "id": 1491,
+      "word": "urge",
+      "phonetic": "[ɜ:dʒ]",
+      "partOfSpeech": "v.",
+      "definition": "催促,力劝;强",
+      "example": "烈希望"
+    },
+    {
+      "id": 1492,
+      "word": "reform",
+      "phonetic": "[rɪˈfɔ:m]",
+      "partOfSpeech": "v.",
+      "definition": "/n.改革,改造,",
+      "example": "改良"
+    },
+    {
+      "id": 1493,
+      "word": "conform",
+      "phonetic": "[kənˈfɔ:m]",
+      "partOfSpeech": "v.",
+      "definition": "(+to)遵守,依",
+      "example": "照,符合,顺应"
+    },
+    {
+      "id": 1494,
+      "word": "connect",
+      "phonetic": "[kəˈnekt]",
+      "partOfSpeech": "v.",
+      "definition": "连接,连结 Talking to strangers can make you feel",
+      "example": "connected.（15,完型）和陌生人交谈会让"
+    },
+    {
+      "id": 1495,
+      "word": "verdict",
+      "phonetic": "[ˈvɜ:dɪkt]",
+      "partOfSpeech": "n.",
+      "definition": "裁定;定论;判",
+      "example": "断;意见"
+    },
+    {
+      "id": 1496,
+      "word": "conscience",
+      "phonetic": "[ˈkɒnʃəns]",
+      "partOfSpeech": "n.",
+      "definition": "良心,良知",
+      "example": "Verdicts should represent the conscience of"
+    },
+    {
+      "id": 1497,
+      "word": "conscious",
+      "phonetic": "[ˈkɒnʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)意识到",
+      "example": "的,自觉的;神志"
+    },
+    {
+      "id": 1498,
+      "word": "dissolve",
+      "phonetic": "[dɪˈzɒlv]",
+      "partOfSpeech": "v.",
+      "definition": "(使)溶解,(使)",
+      "example": "融化;解散,取消"
+    },
+    {
+      "id": 1499,
+      "word": "consequence",
+      "phonetic": "[ˈkɒnsɪkwəns]",
+      "partOfSpeech": "n.",
+      "definition": "结果,后果,影",
+      "example": "响;重要性"
+    },
+    {
+      "id": 1500,
+      "word": "scene",
+      "phonetic": "[si:n]",
+      "partOfSpeech": "n.",
+      "definition": "景色,景象,舞",
+      "example": "台;(戏)一场"
+    },
+    {
+      "id": 1501,
+      "word": "consideration",
+      "phonetic": "[kənˌsɪdəˈreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "需要考虑的",
+      "example": "事,理由;考虑,"
+    },
+    {
+      "id": 1502,
+      "word": "constitution",
+      "phonetic": "[ˌkɒnstɪˈtju:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "构成,构造,组",
+      "example": "成(方式),成分;"
+    },
+    {
+      "id": 1503,
+      "word": "district",
+      "phonetic": "[ˈdɪstrɪkt]",
+      "partOfSpeech": "n.",
+      "definition": "地区,行政区 landscapes that are traditionally",
+      "example": "considered beautiful such as the Lake"
+    },
+    {
+      "id": 1504,
+      "word": "construction",
+      "phonetic": "[kənˈstrʌkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "建造,建筑物 Another nationwide concern is whether pu",
+      "example": "blic funds from other agencies are going in"
+    },
+    {
+      "id": 1505,
+      "word": "consultant",
+      "phonetic": "[kənˈsʌltənt]",
+      "partOfSpeech": "n.",
+      "definition": "会诊医师,顾",
+      "example": "问医生;顾问"
+    },
+    {
+      "id": 1506,
+      "word": "import",
+      "phonetic": "[ˈ\nɪmpɔ:t]",
+      "partOfSpeech": "v.",
+      "definition": "/n.进口,输",
+      "example": "入,(pl.)进口商"
+    },
+    {
+      "id": 1507,
+      "word": "consume",
+      "phonetic": "[kənˈsju:m]",
+      "partOfSpeech": "v.",
+      "definition": "消费,消费,耗",
+      "example": "尽"
+    },
+    {
+      "id": 1508,
+      "word": "excessive",
+      "phonetic": "[ɪkˈsesɪv]",
+      "partOfSpeech": "a.",
+      "definition": "过多的,过分",
+      "example": "的"
+    },
+    {
+      "id": 1509,
+      "word": "consumption",
+      "phonetic": "[kənˈsʌmpʃn]",
+      "partOfSpeech": "n.",
+      "definition": "消耗量,消耗 The consumption of unhealthy food",
+      "example": "should be seen to be just as damaging as"
+    },
+    {
+      "id": 1510,
+      "word": "strain",
+      "phonetic": "[streɪn]",
+      "partOfSpeech": "n.",
+      "definition": "过多的疲劳;",
+      "example": "张力 v.扭伤,拉"
+    },
+    {
+      "id": 1511,
+      "word": "contact",
+      "phonetic": "[ˈkɒntækt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.(使)接触,",
+      "example": "联系,交往"
+    },
+    {
+      "id": 1512,
+      "word": "contain",
+      "phonetic": "[kənˈteɪn]",
+      "partOfSpeech": "v.",
+      "definition": "包含,容纳,装",
+      "example": "有;等于,相等于"
+    },
+    {
+      "id": 1513,
+      "word": "container",
+      "phonetic": "[kənˈteɪnə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "容器;集装箱 The rules state that samples must be",
+      "example": "enclosed in two watertight containers."
+    },
+    {
+      "id": 1514,
+      "word": "context",
+      "phonetic": "[ˈkɒntekst]",
+      "partOfSpeech": "n.",
+      "definition": "语境; 上下",
+      "example": "文; 背景; 环境"
+    },
+    {
+      "id": 1515,
+      "word": "convince",
+      "phonetic": "[kənˈvɪns]",
+      "partOfSpeech": "v.",
+      "definition": "(+of)使信服,",
+      "example": "使确信"
+    },
+    {
+      "id": 1516,
+      "word": "cooperative",
+      "phonetic": "[kəʊ'ɒpərətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "合作的,协作",
+      "example": "的"
+    },
+    {
+      "id": 1517,
+      "word": "cooperate",
+      "phonetic": "[kəʊ'ɒpəreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(+with)合作,",
+      "example": "协作,相配合"
+    },
+    {
+      "id": 1518,
+      "word": "corner",
+      "phonetic": "[ˈkɔ:nə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "角(落),(街道)",
+      "example": "拐角"
+    },
+    {
+      "id": 1519,
+      "word": "sign",
+      "phonetic": "[saɪn]",
+      "partOfSpeech": "n.",
+      "definition": "标记,招牌;征",
+      "example": "兆,迹象"
+    },
+    {
+      "id": 1520,
+      "word": "invite",
+      "phonetic": "[ɪnˈvaɪt]",
+      "partOfSpeech": "v.",
+      "definition": "邀请,招待",
+      "example": "He invites them to his island retreat for a"
+    },
+    {
+      "id": 1521,
+      "word": "membership",
+      "phonetic": "[ˈmembəʃɪp]",
+      "partOfSpeech": "n.",
+      "definition": "会员资格;会",
+      "example": "员身份;会员全"
+    },
+    {
+      "id": 1522,
+      "word": "corporation",
+      "phonetic": "[ˌkɔ:pəˈreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "公司,企业,团",
+      "example": "体"
+    },
+    {
+      "id": 1523,
+      "word": "correct",
+      "phonetic": "[kəˈrekt]",
+      "partOfSpeech": "a.",
+      "definition": "正确的,恰当",
+      "example": "的,端正的"
+    },
+    {
+      "id": 1524,
+      "word": "intensity",
+      "phonetic": "[ɪnˈtensəti]",
+      "partOfSpeech": "n.",
+      "definition": "强烈,剧烈;强",
+      "example": "度"
+    },
+    {
+      "id": 1525,
+      "word": "intense",
+      "phonetic": "[ɪnˈtens]",
+      "partOfSpeech": "a.",
+      "definition": "强烈的,剧烈",
+      "example": "的;热烈的,热情"
+    },
+    {
+      "id": 1526,
+      "word": "correlate",
+      "phonetic": "[ˈkɒrəleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "联系;使互相",
+      "example": "关联"
+    },
+    {
+      "id": 1527,
+      "word": "correspond",
+      "phonetic": "[ˌkɒrəˈspɒnd]",
+      "partOfSpeech": "v.",
+      "definition": "通信,(+with)",
+      "example": "符合,一"
+    },
+    {
+      "id": 1528,
+      "word": "correspondent",
+      "phonetic": "[ˌkɒrəˈspɒndənt]",
+      "partOfSpeech": "n.",
+      "definition": "记者,通讯员;",
+      "example": "通信者"
+    },
+    {
+      "id": 1529,
+      "word": "corrupt",
+      "phonetic": "[kəˈrʌpt]",
+      "partOfSpeech": "v.",
+      "definition": "贿赂,收买 a.",
+      "example": "腐败的,贪污的"
+    },
+    {
+      "id": 1530,
+      "word": "credit",
+      "phonetic": "[ˈkredɪt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.信用,信任",
+      "example": "n.信用贷款,赊"
+    },
+    {
+      "id": 1531,
+      "word": "costly",
+      "phonetic": "[ˈkɒstli]",
+      "partOfSpeech": "a.",
+      "definition": "昂贵的,价值",
+      "example": "高的,豪华的"
+    },
+    {
+      "id": 1532,
+      "word": "council",
+      "phonetic": "[ˈkaʊnsl]",
+      "partOfSpeech": "n.",
+      "definition": "理事会,委员",
+      "example": "会,议事机构"
+    },
+    {
+      "id": 1533,
+      "word": "infant",
+      "phonetic": "[ˈ\nɪnfənt]",
+      "partOfSpeech": "n.",
+      "definition": "婴儿,幼儿;",
+      "example": "未成年人 a.婴"
+    },
+    {
+      "id": 1534,
+      "word": "counsel",
+      "phonetic": "[ˈkaʊnsl]",
+      "partOfSpeech": "v.",
+      "definition": "/n.劝告,忠告",
+      "example": "n.法律顾问,辩"
+    },
+    {
+      "id": 1535,
+      "word": "crash",
+      "phonetic": "[kræʃ]",
+      "partOfSpeech": "v.",
+      "definition": "碰撞;发出巨",
+      "example": "响; 暴跌;睡觉"
+    },
+    {
+      "id": 1536,
+      "word": "instinct",
+      "phonetic": "[ˈ\nɪnstɪŋkt]",
+      "partOfSpeech": "n.",
+      "definition": "本能,直觉,天",
+      "example": "性"
+    },
+    {
+      "id": 1537,
+      "word": "curiosity",
+      "phonetic": "[ˌkjʊəriˈɒsəti]",
+      "partOfSpeech": "n.",
+      "definition": "好奇心,爱打",
+      "example": "听的癖性;奇人;"
+    },
+    {
+      "id": 1538,
+      "word": "curious",
+      "phonetic": "[ˈkjʊəriəs]",
+      "partOfSpeech": "a.",
+      "definition": "好奇的,稀奇",
+      "example": "的"
+    },
+    {
+      "id": 1539,
+      "word": "curriculum",
+      "phonetic": "[kəˈrɪkjələm]",
+      "partOfSpeech": "n.",
+      "definition": "(pl.)curricula",
+      "example": "课程,(学校等"
+    },
+    {
+      "id": 1540,
+      "word": "database",
+      "phonetic": "[ˈdeɪtəbeɪs]",
+      "partOfSpeech": "n.",
+      "definition": "数据库",
+      "example": "The researchers from Ohio University"
+    },
+    {
+      "id": 1541,
+      "word": "miracle",
+      "phonetic": "[ˈmɪrəkl]",
+      "partOfSpeech": "n.",
+      "definition": "奇迹,令人惊",
+      "example": "奇的人(或事)"
+    },
+    {
+      "id": 1542,
+      "word": "dazzle",
+      "phonetic": "[ˈdæzl]",
+      "partOfSpeech": "v.",
+      "definition": "使惊异不已,",
+      "example": "目眩;赞叹 n.耀"
+    },
+    {
+      "id": 1543,
+      "word": "drastic",
+      "phonetic": "[ˈdræstɪk]",
+      "partOfSpeech": "a.",
+      "definition": "激烈的,严厉",
+      "example": "的"
+    },
+    {
+      "id": 1544,
+      "word": "decrease",
+      "phonetic": "[dɪˈkri:s]",
+      "partOfSpeech": "v.",
+      "definition": "/n.减少,减小 its drastically decreased population",
+      "example": "（16,T2）人口急剧减少"
+    },
+    {
+      "id": 1545,
+      "word": "degree",
+      "phonetic": "[dɪˈgri:]",
+      "partOfSpeech": "n.",
+      "definition": "程度;度数;学",
+      "example": "位;等级"
+    },
+    {
+      "id": 1546,
+      "word": "bureaucratic",
+      "phonetic": "[ˌbjʊərəˈkrætɪk]",
+      "partOfSpeech": "a.",
+      "definition": "官僚的,官僚",
+      "example": "主义的"
+    },
+    {
+      "id": 1547,
+      "word": "delay",
+      "phonetic": "[dɪˈleɪ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.耽搁,延迟 One survey found that bureaucratic delays",
+      "example": "led H-2A workers to arrive on the job an"
+    },
+    {
+      "id": 1548,
+      "word": "density",
+      "phonetic": "[ˈdensəti]",
+      "partOfSpeech": "n.",
+      "definition": "密集,密度,浓",
+      "example": "度"
+    },
+    {
+      "id": 1549,
+      "word": "dense",
+      "phonetic": "[dens]",
+      "partOfSpeech": "a.",
+      "definition": "浓厚的,密集",
+      "example": "的,稠密的"
+    },
+    {
+      "id": 1550,
+      "word": "department",
+      "phonetic": "[dɪ\nˈ\np\nɑ:tmənt]",
+      "partOfSpeech": "n.",
+      "definition": "部,局,处,科,",
+      "example": "部门;系,学部"
+    },
+    {
+      "id": 1551,
+      "word": "description",
+      "phonetic": "[dɪˈskrɪpʃn]",
+      "partOfSpeech": "n.",
+      "definition": "描写,形容;种",
+      "example": "类"
+    },
+    {
+      "id": 1552,
+      "word": "describe",
+      "phonetic": "[dɪˈskraɪb]",
+      "partOfSpeech": "v.",
+      "definition": "描述,形容",
+      "example": "Mr. Schmidt described it as a “voluntary"
+    },
+    {
+      "id": 1553,
+      "word": "remind",
+      "phonetic": "[rɪˈmaɪnd]",
+      "partOfSpeech": "v.",
+      "definition": "(+of)提醒,使",
+      "example": "想起"
+    },
+    {
+      "id": 1554,
+      "word": "desire",
+      "phonetic": "[dɪˈzaɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "/n.愿望,欲望,",
+      "example": "要求"
+    },
+    {
+      "id": 1555,
+      "word": "singular",
+      "phonetic": "[ˈsɪŋgjələ(r)]",
+      "partOfSpeech": "a.",
+      "definition": "单数的",
+      "example": "The word 'you' can be singular or plural."
+    },
+    {
+      "id": 1556,
+      "word": "despair",
+      "phonetic": "[dɪˈspeə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "绝望;使人绝",
+      "example": "望的人（或事"
+    },
+    {
+      "id": 1557,
+      "word": "device",
+      "phonetic": "[dɪˈvaɪs]",
+      "partOfSpeech": "n.",
+      "definition": "装置,设备,仪",
+      "example": "表;方法,设计"
+    },
+    {
+      "id": 1558,
+      "word": "devise",
+      "phonetic": "[dɪˈvaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "设计,想出,发",
+      "example": "明"
+    },
+    {
+      "id": 1559,
+      "word": "differentiate",
+      "phonetic": "[ˌdɪfəˈrenʃieɪt]",
+      "partOfSpeech": "v.",
+      "definition": "区分,区",
+      "example": "别;(使)不同"
+    },
+    {
+      "id": 1560,
+      "word": "diffuse",
+      "phonetic": "[dɪˈfju:s]",
+      "partOfSpeech": "v.",
+      "definition": "扩散;传播",
+      "example": "a.(文章等)冗长"
+    },
+    {
+      "id": 1561,
+      "word": "dim",
+      "phonetic": "[dɪm]",
+      "partOfSpeech": "a.",
+      "definition": "暗淡的,昏暗",
+      "example": "的; 不光明的;"
+    },
+    {
+      "id": 1562,
+      "word": "urban",
+      "phonetic": "[ˈɜ:bən]",
+      "partOfSpeech": "a.",
+      "definition": "城市的",
+      "example": "For urban areas this approach was wholly"
+    },
+    {
+      "id": 1563,
+      "word": "dirty",
+      "phonetic": "[ˈdɜ:ti]",
+      "partOfSpeech": "a.",
+      "definition": "弄脏的;下流",
+      "example": "的"
+    },
+    {
+      "id": 1564,
+      "word": "advantage",
+      "phonetic": "[ədˈvɑ:ntɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "有利条件;益",
+      "example": "处; 优越（性）"
+    },
+    {
+      "id": 1565,
+      "word": "disadvantage",
+      "phonetic": "[ˌdɪsədˈvɑ:ntɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "不利,不利条",
+      "example": "件;损害,缺点"
+    },
+    {
+      "id": 1566,
+      "word": "chief",
+      "phonetic": "[tʃi:f]",
+      "partOfSpeech": "a.",
+      "definition": "主要的,首要",
+      "example": "的 n.首领,领袖"
+    },
+    {
+      "id": 1567,
+      "word": "executive",
+      "phonetic": "[ɪgˈzekjətɪv]",
+      "partOfSpeech": "n.",
+      "definition": "总经理,董事,",
+      "example": "行政负责人"
+    },
+    {
+      "id": 1568,
+      "word": "presumably",
+      "phonetic": "[prɪˈzju:məbli]",
+      "partOfSpeech": "ad.",
+      "definition": "推测起来,大",
+      "example": "概"
+    },
+    {
+      "id": 1569,
+      "word": "disagree",
+      "phonetic": "[ˌdɪsəˈgri:]",
+      "partOfSpeech": "v.",
+      "definition": "(+with)意见",
+      "example": "不同;不一致"
+    },
+    {
+      "id": 1570,
+      "word": "straight",
+      "phonetic": "[streɪt]",
+      "partOfSpeech": "a.",
+      "definition": "直的;整齐的,",
+      "example": "端正的 ad.直"
+    },
+    {
+      "id": 1571,
+      "word": "disappoint",
+      "phonetic": "[ˌdɪsə\nˈ\np\nɔɪnt]",
+      "partOfSpeech": "v.",
+      "definition": "使失望,使扫",
+      "example": "兴"
+    },
+    {
+      "id": 1572,
+      "word": "silver",
+      "phonetic": "[ˈsɪlvə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "银;银器;银币",
+      "example": "v.镀银"
+    },
+    {
+      "id": 1573,
+      "word": "disaster",
+      "phonetic": "[dɪˈzɑ:stə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "灾难,天灾",
+      "example": "No one tries harder than the jobless to find"
+    },
+    {
+      "id": 1575,
+      "word": "discipline",
+      "phonetic": "[ˈdɪsəplɪn]",
+      "partOfSpeech": "vt.",
+      "definition": "训练;使有纪",
+      "example": "律; 使有条理"
+    },
+    {
+      "id": 1576,
+      "word": "disclose",
+      "phonetic": "[dɪsˈkləʊz]",
+      "partOfSpeech": "vt.",
+      "definition": "公开; 揭露;",
+      "example": "使显露; 使暴"
+    },
+    {
+      "id": 1577,
+      "word": "discussion",
+      "phonetic": "[dɪˈskʌʃn]",
+      "partOfSpeech": "n.",
+      "definition": "讨论",
+      "example": "But the discussions now seem out of date."
+    },
+    {
+      "id": 1578,
+      "word": "recycle",
+      "phonetic": "[ˌri:ˈsaɪkl]",
+      "partOfSpeech": "v.",
+      "definition": "回收利用;",
+      "example": "使再循环;重复"
+    },
+    {
+      "id": 1579,
+      "word": "trash",
+      "phonetic": "[træʃ]",
+      "partOfSpeech": "n.",
+      "definition": "废物,垃圾",
+      "example": "Don't read that awful trash."
+    },
+    {
+      "id": 1580,
+      "word": "disposal",
+      "phonetic": "[dɪˈspəʊzl]",
+      "partOfSpeech": "n.",
+      "definition": "处理,处置;布",
+      "example": "置,安排"
+    },
+    {
+      "id": 1581,
+      "word": "dispose",
+      "phonetic": "[dɪˈspəʊz]",
+      "partOfSpeech": "v.",
+      "definition": "(+of)处理,处",
+      "example": "置;(+for)布置,"
+    },
+    {
+      "id": 1582,
+      "word": "dispute",
+      "phonetic": "[dɪˈspju:t]",
+      "partOfSpeech": "v.",
+      "definition": "争论,争执",
+      "example": "worsen political disputes"
+    },
+    {
+      "id": 1583,
+      "word": "satisfy",
+      "phonetic": "[ˈsætɪsfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "满意,使满意;",
+      "example": "说服"
+    },
+    {
+      "id": 1584,
+      "word": "distance",
+      "phonetic": "[ˈdɪstəns]",
+      "partOfSpeech": "n.",
+      "definition": "距离,间隔,远",
+      "example": "方,路程"
+    },
+    {
+      "id": 1585,
+      "word": "distinction",
+      "phonetic": "[dɪˈstɪŋkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "差别,区分",
+      "example": "It is worth making an important"
+    },
+    {
+      "id": 1586,
+      "word": "distract",
+      "phonetic": "[dɪˈstrækt]",
+      "partOfSpeech": "v.",
+      "definition": "分散,打扰;迷",
+      "example": "惑,扰乱"
+    },
+    {
+      "id": 1587,
+      "word": "distress",
+      "phonetic": "[dɪˈstres]",
+      "partOfSpeech": "n.",
+      "definition": "苦恼;危难;不",
+      "example": "幸 v.使苦恼"
+    },
+    {
+      "id": 1588,
+      "word": "doom",
+      "phonetic": "[du:m]",
+      "partOfSpeech": "n.",
+      "definition": "厄运,劫数",
+      "example": "v.注定,命定"
+    },
+    {
+      "id": 1589,
+      "word": "dose",
+      "phonetic": "[dəʊs]",
+      "partOfSpeech": "n.",
+      "definition": "剂量,一服,一",
+      "example": "剂 v.(给…)服药"
+    },
+    {
+      "id": 1590,
+      "word": "fascinate",
+      "phonetic": "[ˈfæsɪneɪt]",
+      "partOfSpeech": "v.",
+      "definition": "迷住,强烈吸",
+      "example": "引"
+    },
+    {
+      "id": 1591,
+      "word": "upstairs",
+      "phonetic": "[ˌʌpˈsteəz]",
+      "partOfSpeech": "ad.",
+      "definition": "/a.在楼上",
+      "example": "(的),往楼上"
+    },
+    {
+      "id": 1592,
+      "word": "downstairs",
+      "phonetic": "[ˌdaʊnˈsteəz]",
+      "partOfSpeech": "ad.",
+      "definition": "在楼下,往楼",
+      "example": "下"
+    },
+    {
+      "id": 1593,
+      "word": "downward",
+      "phonetic": "[ˈdaʊnwəd]",
+      "partOfSpeech": "a.",
+      "definition": "向下的",
+      "example": "ad.(=downward"
+    },
+    {
+      "id": 1594,
+      "word": "dramatic",
+      "phonetic": "[drəˈmætɪk]",
+      "partOfSpeech": "a.",
+      "definition": "戏剧的,戏剧",
+      "example": "性的;剧烈的"
+    },
+    {
+      "id": 1595,
+      "word": "drama",
+      "phonetic": "[ˈdrɑ:mə]",
+      "partOfSpeech": "n.",
+      "definition": "剧本,戏剧;戏",
+      "example": "剧性事件或场"
+    },
+    {
+      "id": 1596,
+      "word": "neutral",
+      "phonetic": "[ˈnju:trəl]",
+      "partOfSpeech": "a.",
+      "definition": "中立的;中性",
+      "example": "的,中和的"
+    },
+    {
+      "id": 1597,
+      "word": "dress",
+      "phonetic": "[dres]",
+      "partOfSpeech": "n.",
+      "definition": "服装,童装,女",
+      "example": "装"
+    },
+    {
+      "id": 1598,
+      "word": "duration",
+      "phonetic": "[djuˈreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "持久;期间;持",
+      "example": "续时间"
+    },
+    {
+      "id": 1599,
+      "word": "durable",
+      "phonetic": "[ˈdjʊərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "持久的,耐久",
+      "example": "的"
+    },
+    {
+      "id": 1600,
+      "word": "during",
+      "phonetic": "[ˈdjʊərɪŋ]",
+      "partOfSpeech": "prep.",
+      "definition": "在…的时",
+      "example": "候; 在…期间,"
+    },
+    {
+      "id": 1601,
+      "word": "economical",
+      "phonetic": "[ˌi:kəˈnɒmɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "节约的,经",
+      "example": "济的"
+    },
+    {
+      "id": 1602,
+      "word": "effort",
+      "phonetic": "[ˈefət]",
+      "partOfSpeech": "n.",
+      "definition": "工作;努力,",
+      "example": "尝试;成就;杰"
+    },
+    {
+      "id": 1603,
+      "word": "verbal",
+      "phonetic": "[ˈvɜ:bl]",
+      "partOfSpeech": "a.",
+      "definition": "言语的，动",
+      "example": "词的"
+    },
+    {
+      "id": 1604,
+      "word": "exchange",
+      "phonetic": "[ɪksˈtʃeɪndʒ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.(+for)交",
+      "example": "换,兑换;交流,"
+    },
+    {
+      "id": 1605,
+      "word": "either",
+      "phonetic": "[ˈaɪðə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "/pron.(两者",
+      "example": "中)任一的"
+    },
+    {
+      "id": 1606,
+      "word": "elsewhere",
+      "phonetic": "[ˌelsˈweə(r)]",
+      "partOfSpeech": "ad.",
+      "definition": "在别处,向",
+      "example": "别处"
+    },
+    {
+      "id": 1607,
+      "word": "emerge",
+      "phonetic": "[iˈmɜ:dʒ]",
+      "partOfSpeech": "v.",
+      "definition": "浮现,出现 As this new science of habit has emerged,",
+      "example": "controversies have erupted.（10,T3）"
+    },
+    {
+      "id": 1608,
+      "word": "vast",
+      "phonetic": "[vɑ:st]",
+      "partOfSpeech": "a.",
+      "definition": "巨大的,辽",
+      "example": "阔的,大量的;"
+    },
+    {
+      "id": 1609,
+      "word": "emergency",
+      "phonetic": "[iˈmɜ:dʒənsi]",
+      "partOfSpeech": "n.",
+      "definition": "紧急情况,",
+      "example": "突然事件,非"
+    },
+    {
+      "id": 1610,
+      "word": "judge",
+      "phonetic": "[dʒʌdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "法官;裁判",
+      "example": "员;鉴定人 v."
+    },
+    {
+      "id": 1611,
+      "word": "post",
+      "phonetic": "[pəʊst]",
+      "partOfSpeech": "v.",
+      "definition": "贴出;公告;",
+      "example": "投寄 n.(支)"
+    },
+    {
+      "id": 1613,
+      "word": "emigrate",
+      "phonetic": "[ˈemɪgreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(+to,from)",
+      "example": "自本国移居"
+    },
+    {
+      "id": 1614,
+      "word": "fantastic",
+      "phonetic": "[fænˈtæstɪk]",
+      "partOfSpeech": "a.",
+      "definition": "奇异的,幻",
+      "example": "想的,异想天"
+    },
+    {
+      "id": 1615,
+      "word": "faulty",
+      "phonetic": "[ˈfɔ:lti]",
+      "partOfSpeech": "a.",
+      "definition": "有缺点的,",
+      "example": "有错误的"
+    },
+    {
+      "id": 1616,
+      "word": "favor",
+      "phonetic": "[\n'\nf\neɪvə]",
+      "partOfSpeech": "n.",
+      "definition": "恩惠,帮助;",
+      "example": "好感,喜爱"
+    },
+    {
+      "id": 1617,
+      "word": "favorite",
+      "phonetic": "[\n'\nf\neɪvərɪt]",
+      "partOfSpeech": "n.",
+      "definition": "最喜欢的人",
+      "example": "或物"
+    },
+    {
+      "id": 1618,
+      "word": "favorable",
+      "phonetic": "[\n'\nf\neɪvərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "赞许的,有",
+      "example": "利的,顺利的"
+    },
+    {
+      "id": 1619,
+      "word": "feature",
+      "phonetic": "[ˈfi:tʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "特征,特点;",
+      "example": "容貌,面貌"
+    },
+    {
+      "id": 1620,
+      "word": "feed",
+      "phonetic": "[fi:d]",
+      "partOfSpeech": "v.",
+      "definition": "(on,with)",
+      "example": "喂 养,饲"
+    },
+    {
+      "id": 1621,
+      "word": "fellow",
+      "phonetic": "[ˈfeləʊ]",
+      "partOfSpeech": "n.",
+      "definition": "人,家伙;伙",
+      "example": "伴,同事"
+    },
+    {
+      "id": 1622,
+      "word": "fetch",
+      "phonetic": "[fetʃ]",
+      "partOfSpeech": "vt.",
+      "definition": "接来（某",
+      "example": "人）"
+    },
+    {
+      "id": 1623,
+      "word": "fever",
+      "phonetic": "[ˈfi:və(r)]",
+      "partOfSpeech": "n.",
+      "definition": "发热; 一时",
+      "example": "的狂热; 激动"
+    },
+    {
+      "id": 1624,
+      "word": "fiscal",
+      "phonetic": "[ˈfɪskl]",
+      "partOfSpeech": "a.",
+      "definition": "财政的",
+      "example": "Euro-zone members should agree to some"
+    },
+    {
+      "id": 1625,
+      "word": "error",
+      "phonetic": "[ˈerə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "错误,过失 The plane was shot down in error by a NATO",
+      "example": "missile."
+    },
+    {
+      "id": 1626,
+      "word": "fix",
+      "phonetic": "[fɪks]",
+      "partOfSpeech": "v.",
+      "definition": "使固定,安",
+      "example": "装;确定,决定,"
+    },
+    {
+      "id": 1627,
+      "word": "flatter",
+      "phonetic": "[ˈflætə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "奉承,使高",
+      "example": "兴,使显得更"
+    },
+    {
+      "id": 1628,
+      "word": "float",
+      "phonetic": "[fləʊt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.浮动,飘",
+      "example": "浮"
+    },
+    {
+      "id": 1629,
+      "word": "fluctuation",
+      "phonetic": "[ˌ\nflʌktʃʊ'eɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "波动;起伏 Weighing yourself regularly is a wonderful",
+      "example": "way to stay aware of any significant weight"
+    },
+    {
+      "id": 1630,
+      "word": "form",
+      "phonetic": "[fɔ:m]",
+      "partOfSpeech": "n.",
+      "definition": "形状,形式;",
+      "example": "表格 v.组成,"
+    },
+    {
+      "id": 1631,
+      "word": "former",
+      "phonetic": "[ˈfɔ:mə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "以前的,在",
+      "example": "前的 pron.前"
+    },
+    {
+      "id": 1632,
+      "word": "foster",
+      "phonetic": "[ˈfɒstə(r)]",
+      "partOfSpeech": "vt.",
+      "definition": "养育,抚养,",
+      "example": "培养"
+    },
+    {
+      "id": 1633,
+      "word": "frequency",
+      "phonetic": "[ˈfri:kwənsi]",
+      "partOfSpeech": "n.",
+      "definition": "频率,周率 The growing frequency of wildfires is a",
+      "example": "national concern because of its impact on"
+    },
+    {
+      "id": 1634,
+      "word": "indifferent",
+      "phonetic": "[ɪnˈdɪfrənt]",
+      "partOfSpeech": "a.",
+      "definition": "冷漠的,不",
+      "example": "关心的,不积"
+    },
+    {
+      "id": 1635,
+      "word": "fundamental",
+      "phonetic": "[ˌfʌndəˈmɛntl]",
+      "partOfSpeech": "a.",
+      "definition": "基础的,基",
+      "example": "本的,根本的,"
+    },
+    {
+      "id": 1636,
+      "word": "furious",
+      "phonetic": "[ˈfjʊəriəs]",
+      "partOfSpeech": "a.",
+      "definition": "激烈的;狂",
+      "example": "怒的,暴怒的;"
+    },
+    {
+      "id": 1637,
+      "word": "furnish",
+      "phonetic": "[ˈfɜ:nɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "供应,提供;",
+      "example": "装备,布置"
+    },
+    {
+      "id": 1638,
+      "word": "furthermore",
+      "phonetic": "[ˌ\nfɜ:ðəˈmɔ:(r)]",
+      "partOfSpeech": "ad.",
+      "definition": "而且,此外 Furthermore, these losses make us mature",
+      "example": "and eventually move us toward future"
+    },
+    {
+      "id": 1639,
+      "word": "gesture",
+      "phonetic": "[ˈdʒestʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "姿势,姿态,",
+      "example": "手势 v.做手"
+    },
+    {
+      "id": 1640,
+      "word": "glare",
+      "phonetic": "[gleə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "/v.瞪眼,闪",
+      "example": "耀,闪光"
+    },
+    {
+      "id": 1641,
+      "word": "glory",
+      "phonetic": "[ˈglɔ:ri]",
+      "partOfSpeech": "n.",
+      "definition": "光荣,荣誉 Romantics stressed the uniqueness of the",
+      "example": "artist’s person experience rather than public"
+    },
+    {
+      "id": 1642,
+      "word": "glue",
+      "phonetic": "[glu:]",
+      "partOfSpeech": "n.",
+      "definition": "胶,胶水",
+      "example": "v.胶合,粘贴"
+    },
+    {
+      "id": 1643,
+      "word": "govern",
+      "phonetic": "[ˈgʌvn]",
+      "partOfSpeech": "v.",
+      "definition": "统治,管理;",
+      "example": "决定,支配"
+    },
+    {
+      "id": 1644,
+      "word": "government",
+      "phonetic": "[ˈgʌvənmənt]",
+      "partOfSpeech": "n.",
+      "definition": "政府,内阁;",
+      "example": "管理,支配;政"
+    },
+    {
+      "id": 1645,
+      "word": "gown",
+      "phonetic": "[gaʊn]",
+      "partOfSpeech": "n.",
+      "definition": "长袍,法衣,",
+      "example": "礼服,睡袍"
+    },
+    {
+      "id": 1646,
+      "word": "grasp",
+      "phonetic": "[grɑ:sp]",
+      "partOfSpeech": "v.",
+      "definition": "/n.抓住,抓",
+      "example": "紧;掌握,领会"
+    },
+    {
+      "id": 1647,
+      "word": "gross",
+      "phonetic": "[grəʊs]",
+      "partOfSpeech": "a.",
+      "definition": "总的,毛(重)",
+      "example": "的;"
+    },
+    {
+      "id": 1648,
+      "word": "substitute",
+      "phonetic": "[ˈsʌbstɪtju:t]",
+      "partOfSpeech": "n.",
+      "definition": "代用品,代",
+      "example": "替品 v.(for)"
+    },
+    {
+      "id": 1649,
+      "word": "sympathy",
+      "phonetic": "[ˈsɪmpəθi]",
+      "partOfSpeech": "n.",
+      "definition": "同情,同情",
+      "example": "心"
+    },
+    {
+      "id": 1650,
+      "word": "guilt",
+      "phonetic": "[gɪlt]",
+      "partOfSpeech": "n.",
+      "definition": "罪过,内疚 High sympathy can substitute for low guilt.",
+      "example": "（19,T1）富有同情可以弥补内疚感的不足。"
+    },
+    {
+      "id": 1651,
+      "word": "handle",
+      "phonetic": "[ˈhændl]",
+      "partOfSpeech": "n.",
+      "definition": "柄,把手,拉",
+      "example": "手"
+    },
+    {
+      "id": 1652,
+      "word": "hazard",
+      "phonetic": "[ˈhæzəd]",
+      "partOfSpeech": "n.",
+      "definition": "危险,冒险,",
+      "example": "危害 v.冒险,"
+    },
+    {
+      "id": 1653,
+      "word": "harsh",
+      "phonetic": "[hɑ:ʃ]",
+      "partOfSpeech": "a.",
+      "definition": "刺耳的; 残",
+      "example": "酷的; 粗糙"
+    },
+    {
+      "id": 1654,
+      "word": "pursuit",
+      "phonetic": "[pəˈsju:t]",
+      "partOfSpeech": "n.",
+      "definition": "追赶,追求;",
+      "example": "职业,工作"
+    },
+    {
+      "id": 1655,
+      "word": "hinder",
+      "phonetic": "[ˈhɪndə(r)]",
+      "partOfSpeech": "vt.",
+      "definition": "阻碍,妨碍;",
+      "example": "成为阻碍 a."
+    },
+    {
+      "id": 1656,
+      "word": "imagine",
+      "phonetic": "[ɪˈmædʒɪn]",
+      "partOfSpeech": "v.",
+      "definition": "想象,设想,",
+      "example": "料想"
+    },
+    {
+      "id": 1657,
+      "word": "wage",
+      "phonetic": "[weɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "工资; 报酬",
+      "example": "vt.实行,进行,"
+    },
+    {
+      "id": 1658,
+      "word": "immense",
+      "phonetic": "[ɪˈmens]",
+      "partOfSpeech": "a.",
+      "definition": "极大的,巨",
+      "example": "大的; 浩瀚"
+    },
+    {
+      "id": 1659,
+      "word": "immune",
+      "phonetic": "[ɪˈmju:n]",
+      "partOfSpeech": "a.",
+      "definition": "免疫的,有",
+      "example": "免疫力的;免"
+    },
+    {
+      "id": 1660,
+      "word": "implication",
+      "phonetic": "[ˌɪmplɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "含意,暗示,",
+      "example": "言外之意"
+    },
+    {
+      "id": 1661,
+      "word": "intricate",
+      "phonetic": "[ˈ\nɪntrɪkət]",
+      "partOfSpeech": "a.",
+      "definition": "错综复杂",
+      "example": "的,复杂精细"
+    },
+    {
+      "id": 1662,
+      "word": "incentive",
+      "phonetic": "[ɪnˈsentɪv]",
+      "partOfSpeech": "n.",
+      "definition": "动机; 诱",
+      "example": "因; 刺激;"
+    },
+    {
+      "id": 1663,
+      "word": "interrupt",
+      "phonetic": "[ˌɪntəˈrʌpt]",
+      "partOfSpeech": "v.",
+      "definition": "中断,遮断,",
+      "example": "阻碍;打断"
+    },
+    {
+      "id": 1664,
+      "word": "incline",
+      "phonetic": "[ɪnˈklaɪn]",
+      "partOfSpeech": "v.",
+      "definition": "(使)倾",
+      "example": "斜;(使)倾向"
+    },
+    {
+      "id": 1665,
+      "word": "infect",
+      "phonetic": "[ɪnˈfekt]",
+      "partOfSpeech": "vt.",
+      "definition": "传染,感染 The likelihood of infection is minimal.",
+      "example": "感染的可能性极小。"
+    },
+    {
+      "id": 1666,
+      "word": "interact",
+      "phonetic": "[ˌɪntərˈækt]",
+      "partOfSpeech": "v.",
+      "definition": "互动; 相互",
+      "example": "作用; 沟通交"
+    },
+    {
+      "id": 1667,
+      "word": "interest",
+      "phonetic": "[ˈ\nɪntrəst]",
+      "partOfSpeech": "n.",
+      "definition": "(+in)兴趣,",
+      "example": "重要性;利益,"
+    },
+    {
+      "id": 1668,
+      "word": "lessen",
+      "phonetic": "[ˈlesn]",
+      "partOfSpeech": "v.",
+      "definition": "减少,减轻 Gap year experiences can lessen the blow",
+      "example": "when it comes to adjusting to college（. 17,T3）"
+    },
+    {
+      "id": 1669,
+      "word": "interference",
+      "phonetic": "[ˌɪntəˈfɪərəns]",
+      "partOfSpeech": "n.",
+      "definition": "(in)干涉,干",
+      "example": "预;(with)妨"
+    },
+    {
+      "id": 1670,
+      "word": "seal",
+      "phonetic": "[si:l]",
+      "partOfSpeech": "n.",
+      "definition": "封铅,封条;",
+      "example": "印,图章;海豹"
+    },
+    {
+      "id": 1671,
+      "word": "conflict",
+      "phonetic": "[ˈkɒnflɪkt]",
+      "partOfSpeech": "n.",
+      "definition": "冲突;矛盾;",
+      "example": "战斗;相互干"
+    },
+    {
+      "id": 1672,
+      "word": "leisure",
+      "phonetic": "[ˈleʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "闲暇; 悠闲;",
+      "example": "a.闲暇的; 空"
+    },
+    {
+      "id": 1673,
+      "word": "liberal",
+      "phonetic": "[ˈlɪbərəl]",
+      "partOfSpeech": "a.",
+      "definition": "慷慨的,大",
+      "example": "方的;富足的;"
+    },
+    {
+      "id": 1674,
+      "word": "likelihood",
+      "phonetic": "[ˈlaɪklihʊd]",
+      "partOfSpeech": "",
+      "definition": "可能性",
+      "example": "The likelihood of being named in a federal"
+    },
+    {
+      "id": 1675,
+      "word": "literacy",
+      "phonetic": "[ˈlɪtərəsi]",
+      "partOfSpeech": "n.",
+      "definition": "有文化,识",
+      "example": "字"
+    },
+    {
+      "id": 1676,
+      "word": "locate",
+      "phonetic": "[ləʊˈkeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "查找…地",
+      "example": "点;使…坐落"
+    },
+    {
+      "id": 1677,
+      "word": "loosen",
+      "phonetic": "[ˈlu:sn]",
+      "partOfSpeech": "v.",
+      "definition": "解开,放松 The current immigration system in the US has",
+      "example": "loosened control over immigrants.（13,T2）"
+    },
+    {
+      "id": 1678,
+      "word": "margin",
+      "phonetic": "[ˈmɑ:dʒɪn]",
+      "partOfSpeech": "n.",
+      "definition": "边缘,范围;",
+      "example": "利润,盈余;"
+    },
+    {
+      "id": 1679,
+      "word": "masculine",
+      "phonetic": "[ˈmæskjəlɪn]",
+      "partOfSpeech": "a.",
+      "definition": "男子气概",
+      "example": "的;阳性的,雄"
+    },
+    {
+      "id": 1680,
+      "word": "grade",
+      "phonetic": "[greɪd]",
+      "partOfSpeech": "n.",
+      "definition": "等级,级别;",
+      "example": "年级;分数"
+    },
+    {
+      "id": 1681,
+      "word": "matter",
+      "phonetic": "[ˈmætə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "物质,物体;",
+      "example": "毛病,麻烦;事"
+    },
+    {
+      "id": 1682,
+      "word": "upgrade",
+      "phonetic": "[ˌʌpˈgreɪd]",
+      "partOfSpeech": "v.",
+      "definition": "提升,使升",
+      "example": "级"
+    },
+    {
+      "id": 1683,
+      "word": "meal",
+      "phonetic": "[mi:l]",
+      "partOfSpeech": "n.",
+      "definition": "膳食,一餐 A few decades ago, many people didn’t drink",
+      "example": "water outside of a meal.（10,T3）"
+    },
+    {
+      "id": 1684,
+      "word": "meanwhile",
+      "phonetic": "[ˈmi:nwaɪl]",
+      "partOfSpeech": "ad.",
+      "definition": "同时,当时 Meanwhile, this policy does nothing to",
+      "example": "ensure that the homework students receive is"
+    },
+    {
+      "id": 1685,
+      "word": "measurement",
+      "phonetic": "[ˈmeʒəmənt]",
+      "partOfSpeech": "n.",
+      "definition": "衡量,测量 Home is an ideal place for stress",
+      "example": "measurement."
+    },
+    {
+      "id": 1686,
+      "word": "mechanize",
+      "phonetic": "[ˈmekənaɪz]",
+      "partOfSpeech": "vt.",
+      "definition": "使机械化,",
+      "example": "用机械装置,"
+    },
+    {
+      "id": 1687,
+      "word": "merely",
+      "phonetic": "[ˈmɪəli]",
+      "partOfSpeech": "ad.",
+      "definition": "仅仅,只不",
+      "example": "过"
+    },
+    {
+      "id": 1688,
+      "word": "merit",
+      "phonetic": "[ˈmerɪt]",
+      "partOfSpeech": "n.",
+      "definition": "优点,价值,",
+      "example": "功绩 v.值得,"
+    },
+    {
+      "id": 1689,
+      "word": "middle",
+      "phonetic": "[ˈmɪdl]",
+      "partOfSpeech": "n.",
+      "definition": "中央; 中间;",
+      "example": "腰部; 正中 a."
+    },
+    {
+      "id": 1690,
+      "word": "odd",
+      "phonetic": "[ɒd]",
+      "partOfSpeech": "a.",
+      "definition": "奇数的;奇",
+      "example": "怪的;单只的;"
+    },
+    {
+      "id": 1691,
+      "word": "method",
+      "phonetic": "[ˈmeθəd]",
+      "partOfSpeech": "n.",
+      "definition": "方法,办法 But in my experience, using such methods to",
+      "example": "free up the odd 30 minutes doesn't work."
+    },
+    {
+      "id": 1692,
+      "word": "military",
+      "phonetic": "[ˈmɪlətri]",
+      "partOfSpeech": "a.",
+      "definition": "军事的,军",
+      "example": "用的,军队的"
+    },
+    {
+      "id": 1693,
+      "word": "mistake",
+      "phonetic": "[mɪˈsteɪk]",
+      "partOfSpeech": "n.",
+      "definition": "错误,过失,",
+      "example": "误解 v.弄"
+    },
+    {
+      "id": 1694,
+      "word": "misunderstand",
+      "phonetic": "[ˌmɪsʌndəˈstænd]",
+      "partOfSpeech": "v.",
+      "definition": "误解,误会 People may misunderstand global warming.",
+      "example": "（19,T2）人们可能会误解全球变暖。"
+    },
+    {
+      "id": 1695,
+      "word": "mock",
+      "phonetic": "[mɒk]",
+      "partOfSpeech": "v.",
+      "definition": "嘲笑",
+      "example": "a.仿制的,假"
+    },
+    {
+      "id": 1696,
+      "word": "moisture",
+      "phonetic": "[ˈmɔɪstʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "水分;湿气;",
+      "example": "潮湿;降雨量"
+    },
+    {
+      "id": 1697,
+      "word": "mourn",
+      "phonetic": "[mɔ:n]",
+      "partOfSpeech": "v.",
+      "definition": "哀悼,悲掉 When our time of mourning is over, we press",
+      "example": "forward.（15,T5）"
+    },
+    {
+      "id": 1698,
+      "word": "muscle",
+      "phonetic": "[ˈmʌsl]",
+      "partOfSpeech": "n.",
+      "definition": "肌肉,体力 I had gained weight in the form of muscle",
+      "example": "mass."
+    },
+    {
+      "id": 1699,
+      "word": "native",
+      "phonetic": "[ˈneɪtɪv]",
+      "partOfSpeech": "a.",
+      "definition": "本地的,本",
+      "example": "国的;天生的"
+    },
+    {
+      "id": 1700,
+      "word": "neighborhood",
+      "phonetic": "['neɪbəhʊd]",
+      "partOfSpeech": "n.",
+      "definition": "(=neighbour",
+      "example": "hood) 邻居;"
+    },
+    {
+      "id": 1701,
+      "word": "nod",
+      "phonetic": "[nɒd]",
+      "partOfSpeech": "v.",
+      "definition": "点头示意;使屈",
+      "example": "服; 点头答应"
+    },
+    {
+      "id": 1702,
+      "word": "nurture",
+      "phonetic": "[ˈnɜ:tʃə(r)]",
+      "partOfSpeech": "vt.",
+      "definition": "培育;养育;滋养;",
+      "example": "培植"
+    },
+    {
+      "id": 1703,
+      "word": "obey",
+      "phonetic": "[əˈbeɪ]",
+      "partOfSpeech": "v.",
+      "definition": "服从,遵从;听由,",
+      "example": "听从摆布"
+    },
+    {
+      "id": 1704,
+      "word": "obstacle",
+      "phonetic": "[ˈɒbstəkl]",
+      "partOfSpeech": "n.",
+      "definition": "障碍,妨碍,干扰 One considers the obstacles to achieving",
+      "example": "the meritocratic ideal.（13,T4）"
+    },
+    {
+      "id": 1705,
+      "word": "organic",
+      "phonetic": "[ɔ:ˈgænɪk]",
+      "partOfSpeech": "a.",
+      "definition": "器官的;有机的;",
+      "example": "有机体的"
+    },
+    {
+      "id": 1706,
+      "word": "outcome",
+      "phonetic": "[ˈaʊtkʌm]",
+      "partOfSpeech": "n.",
+      "definition": "结果,成果",
+      "example": "Managing immigration today requires"
+    },
+    {
+      "id": 1707,
+      "word": "outline",
+      "phonetic": "[ˈaʊtlaɪn]",
+      "partOfSpeech": "n.",
+      "definition": "轮廓,略图;大纲,",
+      "example": "梗概"
+    },
+    {
+      "id": 1708,
+      "word": "reduction",
+      "phonetic": "[rɪˈdʌkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "减小,缩小",
+      "example": "Many companies have announced"
+    },
+    {
+      "id": 1709,
+      "word": "output",
+      "phonetic": "[ˈaʊtpʊt]",
+      "partOfSpeech": "n.",
+      "definition": "产量,输出量",
+      "example": "carbon-dioxide output"
+    },
+    {
+      "id": 1710,
+      "word": "ownership",
+      "phonetic": "[ˈəʊnəʃɪp]",
+      "partOfSpeech": "n.",
+      "definition": "所有(权),所有制 It can help them feel a sense of control",
+      "example": "and ownership.（19,T5）"
+    },
+    {
+      "id": 1711,
+      "word": "panic",
+      "phonetic": "[\nˈ\np\nænɪk]",
+      "partOfSpeech": "n.",
+      "definition": "恐慌,惊慌",
+      "example": "I phoned the doctor in a panic."
+    },
+    {
+      "id": 1712,
+      "word": "paradox",
+      "phonetic": "[\nˈ\np\nærədɒks]",
+      "partOfSpeech": "n.",
+      "definition": "反论,悖论;似非",
+      "example": "而是的论点"
+    },
+    {
+      "id": 1713,
+      "word": "partly",
+      "phonetic": "[\nˈ\np\nɑ:tli]",
+      "partOfSpeech": "ad.",
+      "definition": "部分地,不完全",
+      "example": "地"
+    },
+    {
+      "id": 1714,
+      "word": "partner",
+      "phonetic": "[\nˈ\np\nɑ:tnə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "合作者,合伙人;",
+      "example": "伙伴,舞伴"
+    },
+    {
+      "id": 1715,
+      "word": "passion",
+      "phonetic": "[\nˈ\np\næʃn]",
+      "partOfSpeech": "n.",
+      "definition": "激情,热情;热心,",
+      "example": "爱好;热恋;酷爱"
+    },
+    {
+      "id": 1716,
+      "word": "pattern",
+      "phonetic": "[\nˈ\np\nætn]",
+      "partOfSpeech": "n.",
+      "definition": "模式,式样;图案,",
+      "example": "图样"
+    },
+    {
+      "id": 1717,
+      "word": "pave",
+      "phonetic": "[peɪv]",
+      "partOfSpeech": "v.",
+      "definition": "铺砌,铺(路)",
+      "example": "pave tennis courts"
+    },
+    {
+      "id": 1718,
+      "word": "peasant",
+      "phonetic": "[\nˈ\np\neznt]",
+      "partOfSpeech": "n.",
+      "definition": "农民;农夫;佃农;",
+      "example": "粗俗的人"
+    },
+    {
+      "id": 1719,
+      "word": "straddle",
+      "phonetic": "[ˈstrædl]",
+      "partOfSpeech": "v.",
+      "definition": "跨坐;叉开腿;不",
+      "example": "表明态度"
+    },
+    {
+      "id": 1720,
+      "word": "permission",
+      "phonetic": "[pəˈmɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "允许,同意",
+      "example": "You must ask permission for all major"
+    },
+    {
+      "id": 1721,
+      "word": "personal",
+      "phonetic": "[\nˈ\np\nɜ:sənl]",
+      "partOfSpeech": "n.",
+      "definition": "个人的,私人的;",
+      "example": "亲自的;身体的,人"
+    },
+    {
+      "id": 1722,
+      "word": "phase",
+      "phonetic": "[feɪz]",
+      "partOfSpeech": "n.",
+      "definition": "阶段,状态,时期;",
+      "example": "相,相位"
+    },
+    {
+      "id": 1723,
+      "word": "philosopher",
+      "phonetic": "[fəˈlɒsəfə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "哲学家,哲人",
+      "example": "Chinese philosopher"
+    },
+    {
+      "id": 1724,
+      "word": "philosophy",
+      "phonetic": "[fəˈlɒsəfi]",
+      "partOfSpeech": "n.",
+      "definition": "哲学; 哲理; 哲",
+      "example": "学体系,哲学思想"
+    },
+    {
+      "id": 1725,
+      "word": "phrase",
+      "phonetic": "[freɪz]",
+      "partOfSpeech": "n.",
+      "definition": "短语,词语,习语 We bought a Danish phrase book.",
+      "example": "我买了一本丹麦常用语手册。"
+    },
+    {
+      "id": 1726,
+      "word": "signature",
+      "phonetic": "[ˈsɪgnətʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "签名,署名,签字 Mies’s signature phrase",
+      "example": "（11,T3）密斯的口头禅www.zkedu.com.cn"
+    },
+    {
+      "id": 1727,
+      "word": "pick",
+      "phonetic": "[pɪk]",
+      "partOfSpeech": "v.",
+      "definition": "拾,采,摘;挑选,选",
+      "example": "择"
+    },
+    {
+      "id": 1728,
+      "word": "pile",
+      "phonetic": "[paɪl]",
+      "partOfSpeech": "n.",
+      "definition": "堆",
+      "example": "v.(up)堆,叠,堆积"
+    },
+    {
+      "id": 1729,
+      "word": "pilot",
+      "phonetic": "[\nˈ\np\naɪlət]",
+      "partOfSpeech": "n.",
+      "definition": "飞行员;引航员",
+      "example": "v.驾驶(飞机等);领"
+    },
+    {
+      "id": 1730,
+      "word": "surround",
+      "phonetic": "[səˈraʊnd]",
+      "partOfSpeech": "v.",
+      "definition": "包围,环绕",
+      "example": "If you are surrounded by problems and"
+    },
+    {
+      "id": 1731,
+      "word": "pocket",
+      "phonetic": "[\nˈ\np\nɒkɪt]",
+      "partOfSpeech": "n.",
+      "definition": "衣袋",
+      "example": "a.袖珍的,小型的"
+    },
+    {
+      "id": 1732,
+      "word": "pork",
+      "phonetic": "[pɔ:k]",
+      "partOfSpeech": "n.",
+      "definition": "猪肉",
+      "example": "A marketing trick that has turned the"
+    },
+    {
+      "id": 1733,
+      "word": "possible",
+      "phonetic": "[\nˈ\np\nɒsəbl]",
+      "partOfSpeech": "a.",
+      "definition": "可能的",
+      "example": "It is quite possible that the homework"
+    },
+    {
+      "id": 1734,
+      "word": "presence",
+      "phonetic": "[\nˈ\np\nrezns]",
+      "partOfSpeech": "n.",
+      "definition": "出席,到场,存在,",
+      "example": "在"
+    },
+    {
+      "id": 1735,
+      "word": "pressure",
+      "phonetic": "[\nˈ\np\nreʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "压(力);强制,压",
+      "example": "迫,压强"
+    },
+    {
+      "id": 1737,
+      "word": "probably",
+      "phonetic": "[\nˈ\np\nrɒbəbli]",
+      "partOfSpeech": "ad.",
+      "definition": "或许,大概",
+      "example": "A true cashless society is probably not"
+    },
+    {
+      "id": 1738,
+      "word": "proceed",
+      "phonetic": "[prəˈsi:d]",
+      "partOfSpeech": "v.",
+      "definition": "进行,前进,继续",
+      "example": "下去;发生"
+    },
+    {
+      "id": 1739,
+      "word": "harbor",
+      "phonetic": "['hɑ:bə]",
+      "partOfSpeech": "n.",
+      "definition": "港口,海港;避难",
+      "example": "所,藏身处"
+    },
+    {
+      "id": 1740,
+      "word": "professional",
+      "phonetic": "[prəˈfeʃənl]",
+      "partOfSpeech": "a.",
+      "definition": "职业的,专门的",
+      "example": "n.自由职业者,专"
+    },
+    {
+      "id": 1741,
+      "word": "profession",
+      "phonetic": "[prəˈfeʃn]",
+      "partOfSpeech": "n.",
+      "definition": "职业,专业,自由",
+      "example": "职业"
+    },
+    {
+      "id": 1742,
+      "word": "psychology",
+      "phonetic": "[saɪˈkɒlədʒi]",
+      "partOfSpeech": "n.",
+      "definition": "心理学,心理",
+      "example": "a fascination with the psychology of"
+    },
+    {
+      "id": 1743,
+      "word": "professor",
+      "phonetic": "[prəˈfesə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "教授",
+      "example": "a psychology professor at the University"
+    },
+    {
+      "id": 1744,
+      "word": "progressive",
+      "phonetic": "[prəˈgresɪv]",
+      "partOfSpeech": "a.",
+      "definition": "进步的,先进的;",
+      "example": "前进的"
+    },
+    {
+      "id": 1745,
+      "word": "proper",
+      "phonetic": "[\nˈ\np\nrɒpə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "适合的;合乎体",
+      "example": "统的;固有的;有礼"
+    },
+    {
+      "id": 1746,
+      "word": "pursue",
+      "phonetic": "[pəˈsju:]",
+      "partOfSpeech": "v.",
+      "definition": "追赶,追踪;继续,",
+      "example": "从事"
+    },
+    {
+      "id": 1747,
+      "word": "qualification",
+      "phonetic": "[ˌkwɒlɪfɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "资格,合格;限定,",
+      "example": "条件;合格证"
+    },
+    {
+      "id": 1748,
+      "word": "qualify",
+      "phonetic": "[ˈkwɒlɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "(使)具有资格,证",
+      "example": "明合格;"
+    },
+    {
+      "id": 1749,
+      "word": "quiet",
+      "phonetic": "[ˈkwaɪət]",
+      "partOfSpeech": "a.",
+      "definition": "安静的,平静的",
+      "example": "n.安静"
+    },
+    {
+      "id": 1750,
+      "word": "straw",
+      "phonetic": "[strɔ:]",
+      "partOfSpeech": "n.",
+      "definition": "稻草,麦杆;吸管 a bottle of lemonade with a straw in it",
+      "example": "一瓶插着吸管的柠檬水"
+    },
+    {
+      "id": 1751,
+      "word": "quit",
+      "phonetic": "[kwɪt]",
+      "partOfSpeech": "v.",
+      "definition": "离开,退出;停止,",
+      "example": "放弃,辞职"
+    },
+    {
+      "id": 1752,
+      "word": "quota",
+      "phonetic": "[ˈkwəʊtə]",
+      "partOfSpeech": "n.",
+      "definition": "限额,定额,配额,",
+      "example": "指标"
+    },
+    {
+      "id": 1753,
+      "word": "radical",
+      "phonetic": "[ˈrædɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "基本的,重要的;",
+      "example": "激进的,极端的;根"
+    },
+    {
+      "id": 1754,
+      "word": "range",
+      "phonetic": "[reɪndʒ]",
+      "partOfSpeech": "n.",
+      "definition": "范围,领域;排列,",
+      "example": "连续;(山)脉"
+    },
+    {
+      "id": 1755,
+      "word": "rap",
+      "phonetic": "[ræp]",
+      "partOfSpeech": "vt.",
+      "definition": "轻拍;严厉指责",
+      "example": "n.轻拍;斥责;说唱"
+    },
+    {
+      "id": 1756,
+      "word": "rapid",
+      "phonetic": "[ˈræpɪd]",
+      "partOfSpeech": "a.",
+      "definition": "快,急速的",
+      "example": "n.(pl.)急流,湍滩"
+    },
+    {
+      "id": 1757,
+      "word": "ratio",
+      "phonetic": "[ˈreɪʃiəʊ]",
+      "partOfSpeech": "n.",
+      "definition": "比,比率,比例",
+      "example": "A set ratio of women in a board is"
+    },
+    {
+      "id": 1758,
+      "word": "reaction",
+      "phonetic": "[riˈækʃn]",
+      "partOfSpeech": "n.",
+      "definition": "反应",
+      "example": "This normal human reaction is used to"
+    },
+    {
+      "id": 1759,
+      "word": "readily",
+      "phonetic": "[ˈredɪli]",
+      "partOfSpeech": "ad.",
+      "definition": "容易地;乐意地,",
+      "example": "欣然地"
+    },
+    {
+      "id": 1760,
+      "word": "realise",
+      "phonetic": "['rɪəlaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "(=realize)认识到,",
+      "example": "体会到;实现"
+    },
+    {
+      "id": 1761,
+      "word": "realm",
+      "phonetic": "[relm]",
+      "partOfSpeech": "n.",
+      "definition": "王国,国土;领域 open up new realms",
+      "example": "（12,T5）开辟了新领域"
+    },
+    {
+      "id": 1762,
+      "word": "realty",
+      "phonetic": "[ˈri:əlti]",
+      "partOfSpeech": "n.",
+      "definition": "不动产,房地产 Realty agents and psychologists have",
+      "example": "mixed views about the financial effects."
+    },
+    {
+      "id": 1763,
+      "word": "reap",
+      "phonetic": "[ri:p]",
+      "partOfSpeech": "v.",
+      "definition": "收割,收获",
+      "example": "While leaving room for improvisation in"
+    },
+    {
+      "id": 1764,
+      "word": "reckless",
+      "phonetic": "[ˈrekləs]",
+      "partOfSpeech": "a.",
+      "definition": "鲁莽的不顾危险",
+      "example": "的,粗心大意的;满"
+    },
+    {
+      "id": 1765,
+      "word": "reckon",
+      "phonetic": "[ˈrekən]",
+      "partOfSpeech": "v.",
+      "definition": "认为,估计;指望,",
+      "example": "想要;测算"
+    },
+    {
+      "id": 1766,
+      "word": "recognition",
+      "phonetic": "[ˌrekəgˈnɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "认出,辨认;承认 a global recognition",
+      "example": "（13,T2）全球认可"
+    },
+    {
+      "id": 1767,
+      "word": "recreation",
+      "phonetic": "[ˌrekriˈeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "娱乐,消遣,重建,",
+      "example": "重现"
+    },
+    {
+      "id": 1768,
+      "word": "recur",
+      "phonetic": "[rɪˈkɜ:(r)]",
+      "partOfSpeech": "vi.",
+      "definition": "复发,重现",
+      "example": "A recurring theme is that as"
+    },
+    {
+      "id": 1769,
+      "word": "refuge",
+      "phonetic": "[ˈrefju:dʒ]",
+      "partOfSpeech": "n.",
+      "definition": "避难处,藏身处 a place of refuge.",
+      "example": "（15,T1）避难所"
+    },
+    {
+      "id": 1770,
+      "word": "regret",
+      "phonetic": "[rɪˈgret]",
+      "partOfSpeech": "v.",
+      "definition": "/n.遗憾,懊悔,抱",
+      "example": "歉"
+    },
+    {
+      "id": 1771,
+      "word": "unusual",
+      "phonetic": "[ʌnˈju:ʒuəl]",
+      "partOfSpeech": "a.",
+      "definition": "不平常的,与众",
+      "example": "不同的"
+    },
+    {
+      "id": 1772,
+      "word": "reliance",
+      "phonetic": "[rɪˈlaɪəns]",
+      "partOfSpeech": "n.",
+      "definition": "信赖,依靠",
+      "example": "American papers have long been highly"
+    },
+    {
+      "id": 1773,
+      "word": "remark",
+      "phonetic": "[rɪˈmɑ:k]",
+      "partOfSpeech": "n.",
+      "definition": "(+about,on)评语,",
+      "example": "意见"
+    },
+    {
+      "id": 1774,
+      "word": "remember",
+      "phonetic": "[rɪˈmembə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "记住;(+to) 转达",
+      "example": "问候, 代…致意,"
+    },
+    {
+      "id": 1775,
+      "word": "removal",
+      "phonetic": "[rɪˈmu:vl]",
+      "partOfSpeech": "n.",
+      "definition": "移动,迁居;除去 complete removal of all electronic",
+      "example": "devices"
+    },
+    {
+      "id": 1776,
+      "word": "remove",
+      "phonetic": "[rɪˈmu:v]",
+      "partOfSpeech": "v.",
+      "definition": "排除,消除,去掉;",
+      "example": "搬迁,移动,运走"
+    },
+    {
+      "id": 1777,
+      "word": "Renaissance",
+      "phonetic": "[rɪˈneɪsns]",
+      "partOfSpeech": "n.",
+      "definition": "文艺复兴",
+      "example": "the earliest days of the Renaissance"
+    },
+    {
+      "id": 1778,
+      "word": "renew",
+      "phonetic": "[rɪˈnju:]",
+      "partOfSpeech": "v.",
+      "definition": "(使)更新,恢复,重",
+      "example": "新开始,继续"
+    },
+    {
+      "id": 1779,
+      "word": "renewal",
+      "phonetic": "[rɪˈnju:əl]",
+      "partOfSpeech": "n.",
+      "definition": "重建,重生;更新,",
+      "example": "革新;重申;合同的"
+    },
+    {
+      "id": 1780,
+      "word": "repeatedly",
+      "phonetic": "[rɪ\n'\np\ni:tɪdlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "重复地,再三地 It also repeatedly and firmly fuses girls’",
+      "example": "identity to appearance.（12,T2）"
+    },
+    {
+      "id": 1781,
+      "word": "repetition",
+      "phonetic": "[ˌrepəˈtɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "重复,反复",
+      "example": "He has a repetition of a previous talk."
+    },
+    {
+      "id": 1783,
+      "word": "report",
+      "phonetic": "[rɪ\nˈ\np\nɔ:t]",
+      "partOfSpeech": "n.",
+      "definition": "报告,汇报;传说,",
+      "example": "传阅"
+    },
+    {
+      "id": 1784,
+      "word": "reproduce",
+      "phonetic": "[ˌri:prəˈdju:s]",
+      "partOfSpeech": "v.",
+      "definition": "复制,重现,再版;",
+      "example": "生殖,繁殖; 再现;"
+    },
+    {
+      "id": 1785,
+      "word": "visa",
+      "phonetic": "[ˈvi:zə]",
+      "partOfSpeech": "n.",
+      "definition": "签证;信用卡",
+      "example": "Do you need a visa for the USA?"
+    },
+    {
+      "id": 1786,
+      "word": "request",
+      "phonetic": "[rɪˈkwest]",
+      "partOfSpeech": "v.",
+      "definition": "/n.请求,要求,申",
+      "example": "请（书）"
+    },
+    {
+      "id": 1787,
+      "word": "resistant",
+      "phonetic": "[rɪˈzɪstənt]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)抵抗的,有",
+      "example": "抵抗力的"
+    },
+    {
+      "id": 1788,
+      "word": "resolute",
+      "phonetic": "[ˈrezəlu:t]",
+      "partOfSpeech": "a.",
+      "definition": "坚决的,果断的 a resolute man",
+      "example": "不屈不挠的人"
+    },
+    {
+      "id": 1789,
+      "word": "restaurant",
+      "phonetic": "[ˈrestrɒnt]",
+      "partOfSpeech": "n.",
+      "definition": "餐馆,饭店",
+      "example": "Eating at London's best restaurants at"
+    },
+    {
+      "id": 1790,
+      "word": "sow",
+      "phonetic": "[səʊ]",
+      "partOfSpeech": "v.",
+      "definition": "播种",
+      "example": "Sow the seed in a warm place in"
+    },
+    {
+      "id": 1791,
+      "word": "restrict",
+      "phonetic": "[rɪˈstrɪkt]",
+      "partOfSpeech": "v.",
+      "definition": "限制,约束",
+      "example": "The policy restricts teachers’ power in"
+    },
+    {
+      "id": 1793,
+      "word": "retrospect",
+      "phonetic": "[ˈretrəspekt]",
+      "partOfSpeech": "n.",
+      "definition": "回顾,回想",
+      "example": "vt.回顾; 追溯"
+    },
+    {
+      "id": 1794,
+      "word": "review",
+      "phonetic": "[rɪˈvju:]",
+      "partOfSpeech": "v.",
+      "definition": "回顾,复习",
+      "example": "n.回顾,复习;评论"
+    },
+    {
+      "id": 1795,
+      "word": "revive",
+      "phonetic": "[rɪˈvaɪv]",
+      "partOfSpeech": "v.",
+      "definition": "（使）复活,恢复;",
+      "example": "振奋,复原;再生,重"
+    },
+    {
+      "id": 1796,
+      "word": "right",
+      "phonetic": "[raɪt]",
+      "partOfSpeech": "a.",
+      "definition": "正确的;合适的;",
+      "example": "右边的"
+    },
+    {
+      "id": 1797,
+      "word": "robot",
+      "phonetic": "[ˈrəʊbɒt]",
+      "partOfSpeech": "n.",
+      "definition": "机器人,自动机",
+      "example": "械"
+    },
+    {
+      "id": 1798,
+      "word": "role",
+      "phonetic": "[rəʊl]",
+      "partOfSpeech": "n.",
+      "definition": "角色;作用,任务 lead role",
+      "example": "主角"
+    },
+    {
+      "id": 1799,
+      "word": "root",
+      "phonetic": "[ru:t]",
+      "partOfSpeech": "n.",
+      "definition": "根,根部;根本,根",
+      "example": "源"
+    },
+    {
+      "id": 1800,
+      "word": "rough",
+      "phonetic": "[rʌf]",
+      "partOfSpeech": "a.",
+      "definition": "粗糙的;粗略的,",
+      "example": "大致的;粗野的,粗"
+    },
+    {
+      "id": 1801,
+      "word": "routine",
+      "phonetic": "[ru:ˈti:n]",
+      "partOfSpeech": "n.",
+      "definition": "例行公事,",
+      "example": "常规,惯例"
+    },
+    {
+      "id": 1802,
+      "word": "royal",
+      "phonetic": "[ˈrɔɪəl]",
+      "partOfSpeech": "a.",
+      "definition": "王室的,皇",
+      "example": "家的;第一流"
+    },
+    {
+      "id": 1803,
+      "word": "royalty",
+      "phonetic": "[ˈrɔɪəlti]",
+      "partOfSpeech": "n.",
+      "definition": "皇家,皇族 a ceremony attended by royalty",
+      "example": "王室成员参加的一个庆典"
+    },
+    {
+      "id": 1804,
+      "word": "ruthless",
+      "phonetic": "[ˈru:θləs]",
+      "partOfSpeech": "a.",
+      "definition": "残酷的,无",
+      "example": "情的"
+    },
+    {
+      "id": 1805,
+      "word": "satisfaction",
+      "phonetic": "[ˌsætɪsˈfækʃn]",
+      "partOfSpeech": "n.",
+      "definition": "满足,满意;",
+      "example": "乐事,愉快"
+    },
+    {
+      "id": 1806,
+      "word": "satisfactory",
+      "phonetic": "[ˌsætɪsˈfæktəri]",
+      "partOfSpeech": "a.",
+      "definition": "令人满意的 I never got a satisfactory answer.",
+      "example": "我从未得到令我满意的答复。"
+    },
+    {
+      "id": 1807,
+      "word": "savage",
+      "phonetic": "[ˈsævɪdʒ]",
+      "partOfSpeech": "a.",
+      "definition": "野蛮的;凶",
+      "example": "恶的,残暴的"
+    },
+    {
+      "id": 1808,
+      "word": "scorn",
+      "phonetic": "[skɔ:n]",
+      "partOfSpeech": "v.",
+      "definition": "/n.轻蔑,藐",
+      "example": "视"
+    },
+    {
+      "id": 1809,
+      "word": "screen",
+      "phonetic": "[skri:n]",
+      "partOfSpeech": "n.",
+      "definition": "屏幕,屏风;",
+      "example": "帘"
+    },
+    {
+      "id": 1811,
+      "word": "secure",
+      "phonetic": "[sɪˈkjʊə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "(+from,agai",
+      "example": "nst)安全的,放"
+    },
+    {
+      "id": 1812,
+      "word": "cotton",
+      "phonetic": "[ˈkɒtn]",
+      "partOfSpeech": "n.",
+      "definition": "棉花;棉线,",
+      "example": "棉纱;棉制品"
+    },
+    {
+      "id": 1813,
+      "word": "seed",
+      "phonetic": "[si:d]",
+      "partOfSpeech": "n.",
+      "definition": "种子",
+      "example": "v.播种;结实,"
+    },
+    {
+      "id": 1814,
+      "word": "segment",
+      "phonetic": "[ˈsegmənt]",
+      "partOfSpeech": "n.",
+      "definition": "环节;段落;",
+      "example": "[计算机]分段;"
+    },
+    {
+      "id": 1815,
+      "word": "seize",
+      "phonetic": "[si:z]",
+      "partOfSpeech": "v.",
+      "definition": "抓住,逮住;",
+      "example": "夺取,占领;没"
+    },
+    {
+      "id": 1816,
+      "word": "sequence",
+      "phonetic": "[ˈsi:kwəns]",
+      "partOfSpeech": "n.",
+      "definition": "先后,次序;",
+      "example": "连续,数列"
+    },
+    {
+      "id": 1817,
+      "word": "service",
+      "phonetic": "[ˈsɜ:vɪs]",
+      "partOfSpeech": "n.",
+      "definition": "服务;公共",
+      "example": "设施;维修保"
+    },
+    {
+      "id": 1818,
+      "word": "shade",
+      "phonetic": "[ʃeɪd]",
+      "partOfSpeech": "n.",
+      "definition": "荫,阴影;遮",
+      "example": "光物,罩"
+    },
+    {
+      "id": 1819,
+      "word": "shine",
+      "phonetic": "[ʃaɪn]",
+      "partOfSpeech": "v.",
+      "definition": "照耀,发光;",
+      "example": "擦亮 n.光泽,"
+    },
+    {
+      "id": 1820,
+      "word": "shock",
+      "phonetic": "[ʃɒk]",
+      "partOfSpeech": "n.",
+      "definition": "震动;电击,",
+      "example": "触电;休克"
+    },
+    {
+      "id": 1821,
+      "word": "shoot",
+      "phonetic": "[ʃu:t]",
+      "partOfSpeech": "v.",
+      "definition": "发射;掠过,",
+      "example": "疾驰而过"
+    },
+    {
+      "id": 1822,
+      "word": "shorten",
+      "phonetic": "[ˈʃɔ:tn]",
+      "partOfSpeech": "vt.",
+      "definition": "变短,截短,",
+      "example": "缩短"
+    },
+    {
+      "id": 1823,
+      "word": "shortly",
+      "phonetic": "[ˈʃɔ:tli]",
+      "partOfSpeech": "ad.",
+      "definition": "立刻,不久;",
+      "example": "简略地,简言"
+    },
+    {
+      "id": 1824,
+      "word": "shrug",
+      "phonetic": "[ʃrʌg]",
+      "partOfSpeech": "v.",
+      "definition": "耸肩（以表",
+      "example": "示冷淡,怀疑"
+    },
+    {
+      "id": 1825,
+      "word": "silly",
+      "phonetic": "[ˈsɪli]",
+      "partOfSpeech": "a.",
+      "definition": "傻的,糊涂",
+      "example": "的,愚蠢的"
+    },
+    {
+      "id": 1826,
+      "word": "simplify",
+      "phonetic": "[ˈsɪmplɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "简化,使单纯simplify routine matters",
+      "example": "（17,T2）简化日常事务"
+    },
+    {
+      "id": 1827,
+      "word": "sink",
+      "phonetic": "[sɪŋk]",
+      "partOfSpeech": "v.",
+      "definition": "(使)下沉,下",
+      "example": "落"
+    },
+    {
+      "id": 1828,
+      "word": "sip",
+      "phonetic": "[sɪp]",
+      "partOfSpeech": "vt.",
+      "definition": "啜饮",
+      "example": "n.啜"
+    },
+    {
+      "id": 1829,
+      "word": "skip",
+      "phonetic": "[skɪp]",
+      "partOfSpeech": "vi.",
+      "definition": "跳;跳绳;略",
+      "example": "过"
+    },
+    {
+      "id": 1830,
+      "word": "slim",
+      "phonetic": "[slɪm]",
+      "partOfSpeech": "a.",
+      "definition": "苗条的;(机",
+      "example": "会)少的,纤细"
+    },
+    {
+      "id": 1831,
+      "word": "volume",
+      "phonetic": "[ˈvɒlju:m]",
+      "partOfSpeech": "n.",
+      "definition": "容积,体积;",
+      "example": "卷,册;音量,响"
+    },
+    {
+      "id": 1832,
+      "word": "slave",
+      "phonetic": "[sleɪv]",
+      "partOfSpeech": "n.",
+      "definition": "奴隶,苦工 v.",
+      "example": "做苦工,拼命"
+    },
+    {
+      "id": 1833,
+      "word": "slavery",
+      "phonetic": "[ˈsleɪvəri]",
+      "partOfSpeech": "n.",
+      "definition": "奴役;奴隶",
+      "example": "制"
+    },
+    {
+      "id": 1834,
+      "word": "slippery",
+      "phonetic": "[ˈslɪpəri]",
+      "partOfSpeech": "a.",
+      "definition": "滑溜的;狡",
+      "example": "猾的; 不可靠"
+    },
+    {
+      "id": 1835,
+      "word": "slot",
+      "phonetic": "[slɒt]",
+      "partOfSpeech": "n.",
+      "definition": "位置; 狭槽,",
+      "example": "水沟"
+    },
+    {
+      "id": 1836,
+      "word": "snack",
+      "phonetic": "[snæk]",
+      "partOfSpeech": "n.",
+      "definition": "快餐,小吃,",
+      "example": "点心"
+    },
+    {
+      "id": 1837,
+      "word": "soak",
+      "phonetic": "[səʊk]",
+      "partOfSpeech": "v.",
+      "definition": "浸泡,浸湿,",
+      "example": "吸入"
+    },
+    {
+      "id": 1838,
+      "word": "soldier",
+      "phonetic": "[ˈsəʊldʒə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "士兵,军人 a volunteer soldier",
+      "example": "（12,完型）一个志愿兵"
+    },
+    {
+      "id": 1839,
+      "word": "solid",
+      "phonetic": "[ˈsɒlɪd]",
+      "partOfSpeech": "a.",
+      "definition": "固体的;结",
+      "example": "实的,稳固的,"
+    },
+    {
+      "id": 1840,
+      "word": "solve",
+      "phonetic": "[sɒlv]",
+      "partOfSpeech": "v.",
+      "definition": "解决,解答 We might then begin to solve our immigration",
+      "example": "challenges.（13,T2）"
+    },
+    {
+      "id": 1841,
+      "word": "soon",
+      "phonetic": "[su:n]",
+      "partOfSpeech": "ad.",
+      "definition": "不久,即刻;",
+      "example": "早,快"
+    },
+    {
+      "id": 1842,
+      "word": "sound",
+      "phonetic": "[saʊnd]",
+      "partOfSpeech": "n.",
+      "definition": "声音",
+      "example": "v.发声,响"
+    },
+    {
+      "id": 1843,
+      "word": "specialist",
+      "phonetic": "[ˈspeʃəlɪst]",
+      "partOfSpeech": "n.",
+      "definition": "专家",
+      "example": "a specialist in fire ecology and management."
+    },
+    {
+      "id": 1844,
+      "word": "speech",
+      "phonetic": "[spi:tʃ]",
+      "partOfSpeech": "n.",
+      "definition": "演说,讲话;",
+      "example": "言语,语言"
+    },
+    {
+      "id": 1845,
+      "word": "split",
+      "phonetic": "[splɪt]",
+      "partOfSpeech": "v.",
+      "definition": "裂开,劈开;",
+      "example": "分裂,分离"
+    },
+    {
+      "id": 1846,
+      "word": "staff",
+      "phonetic": "[stɑ:f]",
+      "partOfSpeech": "n.",
+      "definition": "全体职工;",
+      "example": "杠,棒;参谋部"
+    },
+    {
+      "id": 1847,
+      "word": "stagnation",
+      "phonetic": "[stæɡ'neɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "淤塞,停滞,",
+      "example": "沉滞"
+    },
+    {
+      "id": 1848,
+      "word": "station",
+      "phonetic": "[ˈsteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "车站;所,站,",
+      "example": "局;身份,地位"
+    },
+    {
+      "id": 1849,
+      "word": "statistical",
+      "phonetic": "[stə'tɪstɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "统计的,统",
+      "example": "计学的"
+    },
+    {
+      "id": 1850,
+      "word": "straightforward",
+      "phonetic": "[ˌstreɪtˈfɔ:wəd]",
+      "partOfSpeech": "a.",
+      "definition": "正直的;简",
+      "example": "单的,易懂的"
+    },
+    {
+      "id": 1851,
+      "word": "strange",
+      "phonetic": "[streɪndʒ]",
+      "partOfSpeech": "a.",
+      "definition": "奇怪的,奇",
+      "example": "异的;陌生的,"
+    },
+    {
+      "id": 1852,
+      "word": "stretch",
+      "phonetic": "[stretʃ]",
+      "partOfSpeech": "v.",
+      "definition": "拉长,伸",
+      "example": "n.一段时间,"
+    },
+    {
+      "id": 1853,
+      "word": "strive",
+      "phonetic": "[straɪv]",
+      "partOfSpeech": "v.",
+      "definition": "奋斗,努力 Should a leader strive to be loved or feared?",
+      "example": "（"
+    },
+    {
+      "id": 1854,
+      "word": "strong",
+      "phonetic": "[strɒŋ]",
+      "partOfSpeech": "a.",
+      "definition": "强烈的;强",
+      "example": "的; 坚强的;"
+    },
+    {
+      "id": 1855,
+      "word": "structural",
+      "phonetic": "[ˈstrʌktʃərəl]",
+      "partOfSpeech": "a.",
+      "definition": "结构的,构",
+      "example": "造的"
+    },
+    {
+      "id": 1856,
+      "word": "stubborn",
+      "phonetic": "[ˈstʌbən]",
+      "partOfSpeech": "a.",
+      "definition": "顽固的,倔",
+      "example": "强的;难对付"
+    },
+    {
+      "id": 1857,
+      "word": "subject",
+      "phonetic": "[ˈsʌbdʒɪkt]",
+      "partOfSpeech": "n.",
+      "definition": "主题;学科，",
+      "example": "被实验的对"
+    },
+    {
+      "id": 1858,
+      "word": "subtle",
+      "phonetic": "[ˈsʌtl]",
+      "partOfSpeech": "a.",
+      "definition": "精巧的,巧",
+      "example": "妙的;细微的,"
+    },
+    {
+      "id": 1859,
+      "word": "suck",
+      "phonetic": "[sʌk]",
+      "partOfSpeech": "v.",
+      "definition": "吮吸;吸取;",
+      "example": "吸入; 卷进"
+    },
+    {
+      "id": 1860,
+      "word": "sudden",
+      "phonetic": "[ˈsʌdn]",
+      "partOfSpeech": "a.",
+      "definition": "突然的,意",
+      "example": "外的"
+    },
+    {
+      "id": 1861,
+      "word": "technique",
+      "phonetic": "[tekˈni:k]",
+      "partOfSpeech": "n.",
+      "definition": "技术,技能;",
+      "example": "工艺"
+    },
+    {
+      "id": 1862,
+      "word": "sufficient",
+      "phonetic": "[səˈfɪʃnt]",
+      "partOfSpeech": "a.",
+      "definition": "(+for)足够",
+      "example": "的,充分的"
+    },
+    {
+      "id": 1863,
+      "word": "summit",
+      "phonetic": "[ˈsʌmɪt]",
+      "partOfSpeech": "n.",
+      "definition": "顶点;最高",
+      "example": "级会议"
+    },
+    {
+      "id": 1864,
+      "word": "superficial",
+      "phonetic": "[ˌsu:pəˈfɪʃl]",
+      "partOfSpeech": "a.",
+      "definition": "表面的;肤",
+      "example": "浅的,浅薄的"
+    },
+    {
+      "id": 1865,
+      "word": "superiority",
+      "phonetic": "[su:ˌpɪəriˈɒrəti]",
+      "partOfSpeech": "n.",
+      "definition": "优越性,优",
+      "example": "势,优越感"
+    },
+    {
+      "id": 1866,
+      "word": "supervise",
+      "phonetic": "[ˈsu:pəvaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "管理,监督 The government should supervise local sports",
+      "example": "associations."
+    },
+    {
+      "id": 1867,
+      "word": "surpass",
+      "phonetic": "[sə\nˈ\np\nɑ:s]",
+      "partOfSpeech": "v.",
+      "definition": "超过,胜过 The art market surpassed many other",
+      "example": "industries in momentum."
+    },
+    {
+      "id": 1868,
+      "word": "surplus",
+      "phonetic": "[ˈsɜ:pləs]",
+      "partOfSpeech": "n.",
+      "definition": "过剩,剩余",
+      "example": "a.过剩的,剩"
+    },
+    {
+      "id": 1869,
+      "word": "surprising",
+      "phonetic": "[sə\nˈ\np\nraɪzɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "使人惊奇",
+      "example": "的,惊人的,奇"
+    },
+    {
+      "id": 1870,
+      "word": "symbol",
+      "phonetic": "[ˈsɪmbl]",
+      "partOfSpeech": "n.",
+      "definition": "符号,标志;",
+      "example": "象征"
+    },
+    {
+      "id": 1871,
+      "word": "vary",
+      "phonetic": "[ˈveəri]",
+      "partOfSpeech": "v.",
+      "definition": "改变,变化,",
+      "example": "使不同"
+    },
+    {
+      "id": 1872,
+      "word": "tactics",
+      "phonetic": "['tæktɪks]",
+      "partOfSpeech": "n.",
+      "definition": "策略,战术 tough tactics",
+      "example": "（11,T5）强硬的策略"
+    },
+    {
+      "id": 1873,
+      "word": "airline",
+      "phonetic": "[ˈeəlaɪn]",
+      "partOfSpeech": "n.",
+      "definition": "航空公司 international airlines",
+      "example": "国际航空公司"
+    },
+    {
+      "id": 1874,
+      "word": "textile",
+      "phonetic": "[ˈtekstaɪl]",
+      "partOfSpeech": "n.",
+      "definition": "纺织品",
+      "example": "a.纺织的"
+    },
+    {
+      "id": 1875,
+      "word": "beverage",
+      "phonetic": "[ˈbevərɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "饮料",
+      "example": "Then beverage companies started bottling the"
+    },
+    {
+      "id": 1876,
+      "word": "theory",
+      "phonetic": "[ˈθɪəri]",
+      "partOfSpeech": "n.",
+      "definition": "理论,原理;",
+      "example": "学说"
+    },
+    {
+      "id": 1877,
+      "word": "infer",
+      "phonetic": "[ɪnˈfɜ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "推论,推断 We may infer from the last paragraph that...",
+      "example": "（12,T2）我们可以从最后一段推断出..."
+    },
+    {
+      "id": 1878,
+      "word": "expert",
+      "phonetic": "[ˈekspɜ:t]",
+      "partOfSpeech": "a.",
+      "definition": "熟练的,有",
+      "example": "经验的;专门"
+    },
+    {
+      "id": 1879,
+      "word": "thought",
+      "phonetic": "[θɔ:t]",
+      "partOfSpeech": "n.",
+      "definition": "思想;思维;",
+      "example": "想法,观念"
+    },
+    {
+      "id": 1880,
+      "word": "enroll",
+      "phonetic": "[ɪn'rəʊl]",
+      "partOfSpeech": "v.",
+      "definition": "招收;登记;",
+      "example": "入学,加入"
+    },
+    {
+      "id": 1881,
+      "word": "tight",
+      "phonetic": "[taɪt]",
+      "partOfSpeech": "a.",
+      "definition": "紧的;紧身",
+      "example": "的,装紧的;密"
+    },
+    {
+      "id": 1882,
+      "word": "slice",
+      "phonetic": "[slaɪs]",
+      "partOfSpeech": "n.",
+      "definition": "薄片,切片;",
+      "example": "一份;部分切"
+    },
+    {
+      "id": 1883,
+      "word": "tiny",
+      "phonetic": "[ˈtaɪni]",
+      "partOfSpeech": "a.",
+      "definition": "极小的,微",
+      "example": "小的"
+    },
+    {
+      "id": 1884,
+      "word": "increasingly",
+      "phonetic": "[ɪnˈkri:sɪŋli]",
+      "partOfSpeech": "ad.",
+      "definition": "不断增加",
+      "example": "地,日益"
+    },
+    {
+      "id": 1885,
+      "word": "extend",
+      "phonetic": "[ɪkˈstend]",
+      "partOfSpeech": "v.",
+      "definition": "延长,延伸,",
+      "example": "扩展"
+    },
+    {
+      "id": 1886,
+      "word": "tool",
+      "phonetic": "[tu:l]",
+      "partOfSpeech": "n.",
+      "definition": "工具",
+      "example": "He loves working with tools."
+    },
+    {
+      "id": 1887,
+      "word": "entertainment",
+      "phonetic": "[ˌentəˈteɪnmənt]",
+      "partOfSpeech": "n.",
+      "definition": "娱乐业",
+      "example": "entertainment companies"
+    },
+    {
+      "id": 1888,
+      "word": "whichever",
+      "phonetic": "[wɪtʃˈevə(r)]",
+      "partOfSpeech": "pron.",
+      "definition": "/a.无论",
+      "example": "哪个,无论哪"
+    },
+    {
+      "id": 1889,
+      "word": "touch",
+      "phonetic": "[tʌtʃ]",
+      "partOfSpeech": "v.",
+      "definition": "触,碰,摸;感",
+      "example": "动;涉及 n.触"
+    },
+    {
+      "id": 1890,
+      "word": "external",
+      "phonetic": "[ɪkˈstɜ:nl]",
+      "partOfSpeech": "a.",
+      "definition": "外部的,外",
+      "example": "面的"
+    },
+    {
+      "id": 1891,
+      "word": "via",
+      "phonetic": "[ˈvaɪə]",
+      "partOfSpeech": "prep.",
+      "definition": "经,通过 Systems have been fixed via political means.",
+      "example": "（13,T2）系统已通过政治手段得到修复。"
+    },
+    {
+      "id": 1893,
+      "word": "transmit",
+      "phonetic": "[trænsˈmɪt]",
+      "partOfSpeech": "v.",
+      "definition": "传播,发射;",
+      "example": "传递,传导"
+    },
+    {
+      "id": 1894,
+      "word": "withhold",
+      "phonetic": "[wɪðˈhəʊld]",
+      "partOfSpeech": "v.",
+      "definition": "拒绝,不给;",
+      "example": "使停止,阻挡"
+    },
+    {
+      "id": 1895,
+      "word": "enable",
+      "phonetic": "[ɪˈneɪbl]",
+      "partOfSpeech": "v.",
+      "definition": "使能够,使成",
+      "example": "为可能"
+    },
+    {
+      "id": 1896,
+      "word": "triangle",
+      "phonetic": "[ˈtraɪæŋgl]",
+      "partOfSpeech": "n.",
+      "definition": "三角(形)",
+      "example": "Bermuda triangle"
+    },
+    {
+      "id": 1897,
+      "word": "blunder",
+      "phonetic": "[ˈblʌndə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(因无知等",
+      "example": "而)犯大错;踉"
+    },
+    {
+      "id": 1899,
+      "word": "visual",
+      "phonetic": "[ˈvɪʒuəl]",
+      "partOfSpeech": "a.",
+      "definition": "看的,视觉",
+      "example": "的"
+    },
+    {
+      "id": 1900,
+      "word": "epoch",
+      "phonetic": "[ˈi:pɒk]",
+      "partOfSpeech": "n.",
+      "definition": "时期,时代 a great epoch in history",
+      "example": "历史上的重要时期www.zkedu.com.cn"
+    },
+    {
+      "id": 1901,
+      "word": "unconscious",
+      "phonetic": "[ʌnˈkɒnʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "失去知觉的,",
+      "example": "无意识的;无意"
+    },
+    {
+      "id": 1902,
+      "word": "finish",
+      "phonetic": "[ˈfɪnɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.结束,完成;",
+      "example": "最后阶段"
+    },
+    {
+      "id": 1903,
+      "word": "unexpected",
+      "phonetic": "[ˌʌnɪkˈspektɪd]",
+      "partOfSpeech": "a.",
+      "definition": "想不到的,意",
+      "example": "外的"
+    },
+    {
+      "id": 1904,
+      "word": "exempt",
+      "phonetic": "[ɪgˈzempt]",
+      "partOfSpeech": "a.",
+      "definition": "免除的",
+      "example": "vt.使免除,豁免"
+    },
+    {
+      "id": 1905,
+      "word": "unless",
+      "phonetic": "[ənˈles]",
+      "partOfSpeech": "conj.",
+      "definition": "除非,如果",
+      "example": "不"
+    },
+    {
+      "id": 1906,
+      "word": "dean",
+      "phonetic": "[di:n]",
+      "partOfSpeech": "n.",
+      "definition": "(大学)院长,",
+      "example": "主持牧师,(基"
+    },
+    {
+      "id": 1907,
+      "word": "until",
+      "phonetic": "[ənˈtɪl]",
+      "partOfSpeech": "prep.",
+      "definition": "/conj.",
+      "example": "（"
+    },
+    {
+      "id": 1908,
+      "word": "classify",
+      "phonetic": "[ˈklæsɪfaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "分类,分等",
+      "example": "(级)"
+    },
+    {
+      "id": 1909,
+      "word": "upper",
+      "phonetic": "[ˈʌpə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "上面的;上部",
+      "example": "的,较高的"
+    },
+    {
+      "id": 1910,
+      "word": "sustain",
+      "phonetic": "[səˈsteɪn]",
+      "partOfSpeech": "v.",
+      "definition": "支撑,撑住;维",
+      "example": "持,持续,经受,"
+    },
+    {
+      "id": 1911,
+      "word": "valuable",
+      "phonetic": "[ˈvæljuəbl]",
+      "partOfSpeech": "a.",
+      "definition": "贵重的,有价",
+      "example": "值的"
+    },
+    {
+      "id": 1912,
+      "word": "sympathetic",
+      "phonetic": "[ˌsɪmpəˈθetɪk]",
+      "partOfSpeech": "a.",
+      "definition": "同情的,共鸣",
+      "example": "的"
+    },
+    {
+      "id": 1913,
+      "word": "vehicle",
+      "phonetic": "[ˈvi:əkl]",
+      "partOfSpeech": "n.",
+      "definition": "车辆,交通工",
+      "example": "具;媒介,载体"
+    },
+    {
+      "id": 1914,
+      "word": "equivalent",
+      "phonetic": "[ɪˈkwɪvələnt]",
+      "partOfSpeech": "a.",
+      "definition": "(to)相等的,",
+      "example": "等价的"
+    },
+    {
+      "id": 1915,
+      "word": "violate",
+      "phonetic": "[ˈvaɪəleɪt]",
+      "partOfSpeech": "vt.",
+      "definition": "违反; 侵犯;",
+      "example": "妨碍; 亵渎"
+    },
+    {
+      "id": 1916,
+      "word": "truly",
+      "phonetic": "[ˈtru:li]",
+      "partOfSpeech": "ad.",
+      "definition": "真正; 精确",
+      "example": "地,正确地;诚"
+    },
+    {
+      "id": 1917,
+      "word": "childhood",
+      "phonetic": "[ˈtʃaɪldhʊd]",
+      "partOfSpeech": "n.",
+      "definition": "幼年,童年",
+      "example": "studies of childhood consumption"
+    },
+    {
+      "id": 1918,
+      "word": "vocabulary",
+      "phonetic": "[vəˈkæbjələri]",
+      "partOfSpeech": "n.",
+      "definition": "词汇,词汇量;",
+      "example": "词汇表"
+    },
+    {
+      "id": 1919,
+      "word": "esteem",
+      "phonetic": "[ɪˈsti:m]",
+      "partOfSpeech": "vt.",
+      "definition": "尊敬",
+      "example": "Those people showed other markers for"
+    },
+    {
+      "id": 1920,
+      "word": "weaken",
+      "phonetic": "[ˈwi:kən]",
+      "partOfSpeech": "vt.",
+      "definition": "削弱",
+      "example": "weaken our sense of accomplishment"
+    },
+    {
+      "id": 1921,
+      "word": "weakness",
+      "phonetic": "[ˈwi:knəs]",
+      "partOfSpeech": "n.",
+      "definition": "弱点,缺点;",
+      "example": "软弱"
+    },
+    {
+      "id": 1922,
+      "word": "contributor",
+      "phonetic": "[kənˈtrɪbjətə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "捐献者,贡献",
+      "example": "者"
+    },
+    {
+      "id": 1923,
+      "word": "welfare",
+      "phonetic": "[ˈwelfeə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "福利",
+      "example": "Our focus should be shifted to community"
+    },
+    {
+      "id": 1924,
+      "word": "transportation",
+      "phonetic": "[ˌtrænspɔ:ˈteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "运输,运送",
+      "example": "New research on transportation biofuels is"
+    },
+    {
+      "id": 1925,
+      "word": "cover",
+      "phonetic": "[ˈkʌvə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "覆盖,包括,涉",
+      "example": "及,遮蔽"
+    },
+    {
+      "id": 1926,
+      "word": "total",
+      "phonetic": "[ˈtəʊtl]",
+      "partOfSpeech": "n.",
+      "definition": "总数,合计",
+      "example": "a.总的,全部的"
+    },
+    {
+      "id": 1927,
+      "word": "diet",
+      "phonetic": "[ˈdaɪət]",
+      "partOfSpeech": "n.",
+      "definition": "饮食,食物",
+      "example": "balance your diet"
+    },
+    {
+      "id": 1928,
+      "word": "widen",
+      "phonetic": "[ˈwaɪdn]",
+      "partOfSpeech": "vt.",
+      "definition": "加宽",
+      "example": "vi.变宽"
+    },
+    {
+      "id": 1929,
+      "word": "active",
+      "phonetic": "[ˈæktɪv]",
+      "partOfSpeech": "a.",
+      "definition": "积极的,活跃",
+      "example": "的"
+    },
+    {
+      "id": 1930,
+      "word": "wise",
+      "phonetic": "[waɪz]",
+      "partOfSpeech": "a.",
+      "definition": "有智慧的,聪",
+      "example": "明的"
+    },
+    {
+      "id": 1931,
+      "word": "analyze",
+      "phonetic": "['ænəlaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "(=analyse)分",
+      "example": "析,分解"
+    },
+    {
+      "id": 1932,
+      "word": "wonderful",
+      "phonetic": "[ˈwʌndəfl]",
+      "partOfSpeech": "a.",
+      "definition": "惊人的,奇妙",
+      "example": "的;极好的"
+    },
+    {
+      "id": 1933,
+      "word": "worldwide",
+      "phonetic": "[ˈwɜ:ldwaɪd]",
+      "partOfSpeech": "a.",
+      "definition": "世界范围的,",
+      "example": "全世界的"
+    },
+    {
+      "id": 1935,
+      "word": "wipe",
+      "phonetic": "[waɪp]",
+      "partOfSpeech": "v.",
+      "definition": "/n.擦,揩,抹 Customers eat snacks or wipe counters",
+      "example": "almost without thinking.（10,T3）"
+    },
+    {
+      "id": 1936,
+      "word": "advantage",
+      "phonetic": "[ədˈvɑ:ntɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "有利条件;",
+      "example": "益处; 优越"
+    },
+    {
+      "id": 1938,
+      "word": "talent",
+      "phonetic": "[ˈtælənt]",
+      "partOfSpeech": "n.",
+      "definition": "才能,天资;人",
+      "example": "才"
+    },
+    {
+      "id": 1939,
+      "word": "amount",
+      "phonetic": "[əˈmaʊnt]",
+      "partOfSpeech": "n.",
+      "definition": "数量,总额",
+      "example": "v.(+to)合计,总"
+    },
+    {
+      "id": 1940,
+      "word": "whatever",
+      "phonetic": "[wɒtˈevə(r)]",
+      "partOfSpeech": "pron.",
+      "definition": "无论什么",
+      "example": "a. 无论什么样"
+    },
+    {
+      "id": 1941,
+      "word": "basis",
+      "phonetic": "[ˈbeɪsɪs]",
+      "partOfSpeech": "n.",
+      "definition": "基础,根据",
+      "example": "Board members of public companies should"
+    },
+    {
+      "id": 1942,
+      "word": "double",
+      "phonetic": "[ˈdʌbl]",
+      "partOfSpeech": "a.",
+      "definition": "双的,两倍的",
+      "example": "v.使加倍,翻一"
+    },
+    {
+      "id": 1943,
+      "word": "broker",
+      "phonetic": "[ˈbrəʊkə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "经纪人",
+      "example": "a real estate broker"
+    },
+    {
+      "id": 1944,
+      "word": "brand",
+      "phonetic": "[brænd]",
+      "partOfSpeech": "n.",
+      "definition": "商标,标记,牌",
+      "example": "子 v.使铭记;打"
+    },
+    {
+      "id": 1946,
+      "word": "ceiling",
+      "phonetic": "[ˈsi:lɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "天花板",
+      "example": "glass ceiling."
+    },
+    {
+      "id": 1947,
+      "word": "vitamin",
+      "phonetic": "[ˈvɪtəmɪn]",
+      "partOfSpeech": "n.",
+      "definition": "维生素,维他",
+      "example": "命"
+    },
+    {
+      "id": 1948,
+      "word": "cigarette",
+      "phonetic": "[ˌsɪgəˈret]",
+      "partOfSpeech": "n.",
+      "definition": "香烟,纸烟,卷",
+      "example": "烟"
+    },
+    {
+      "id": 1949,
+      "word": "circulation",
+      "phonetic": "[ˌsɜ:kjəˈleɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "循环,(货币",
+      "example": "等)流通"
+    },
+    {
+      "id": 1950,
+      "word": "update",
+      "phonetic": "[ˌʌpˈdeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "更新,使现代",
+      "example": "化"
+    },
+    {
+      "id": 1951,
+      "word": "coal",
+      "phonetic": "[kəʊl]",
+      "partOfSpeech": "n.",
+      "definition": "煤,煤块,煤炭 President Trump has underline fossil",
+      "example": "fuels—especially coal—as the path to"
+    },
+    {
+      "id": 1952,
+      "word": "weld",
+      "phonetic": "[weld]",
+      "partOfSpeech": "v.",
+      "definition": "焊接,锻接",
+      "example": "n.焊接,焊缝"
+    },
+    {
+      "id": 1953,
+      "word": "cope",
+      "phonetic": "[kəʊp]",
+      "partOfSpeech": "v.",
+      "definition": "(+with) 竞",
+      "example": "争, 抗;(+with)"
+    },
+    {
+      "id": 1954,
+      "word": "whether",
+      "phonetic": "[ˈweðə(r)]",
+      "partOfSpeech": "conj.",
+      "definition": "是否,会不",
+      "example": "会,不管,无论"
+    },
+    {
+      "id": 1955,
+      "word": "crop",
+      "phonetic": "[krɒp]",
+      "partOfSpeech": "n.",
+      "definition": "作物,庄",
+      "example": "稼;(谷类等的)"
+    },
+    {
+      "id": 1956,
+      "word": "data",
+      "phonetic": "[ˈdeɪtə]",
+      "partOfSpeech": "n.",
+      "definition": "数据,资料",
+      "example": "The product they’re selling is data."
+    },
+    {
+      "id": 1957,
+      "word": "unlike",
+      "phonetic": "[ˌʌnˈlaɪk]",
+      "partOfSpeech": "a.",
+      "definition": "不同的,不相",
+      "example": "似的"
+    },
+    {
+      "id": 1958,
+      "word": "debt",
+      "phonetic": "[det]",
+      "partOfSpeech": "n.",
+      "definition": "债,债务",
+      "example": "The government prepares to reduce housing"
+    },
+    {
+      "id": 1959,
+      "word": "while",
+      "phonetic": "[waɪl]",
+      "partOfSpeech": "conj.",
+      "definition": "当…时;虽",
+      "example": "然"
+    },
+    {
+      "id": 1960,
+      "word": "differ",
+      "phonetic": "[ˈdɪfə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(+",
+      "example": "from)与…"
+    },
+    {
+      "id": 1961,
+      "word": "difference",
+      "phonetic": "[ˈdɪfrəns]",
+      "partOfSpeech": "n.",
+      "definition": "差别,差异,分",
+      "example": "歧"
+    },
+    {
+      "id": 1962,
+      "word": "different",
+      "phonetic": "[ˈdɪfrənt]",
+      "partOfSpeech": "a.",
+      "definition": "差异的,差异",
+      "example": "的,不同的"
+    },
+    {
+      "id": 1963,
+      "word": "evaporate",
+      "phonetic": "[ɪˈvæpəreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(使)蒸发,消",
+      "example": "失"
+    },
+    {
+      "id": 1964,
+      "word": "theoretical",
+      "phonetic": "[ˌθɪəˈretɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "理论(上)的 the dominant theoretical model of",
+      "example": "leadership"
+    },
+    {
+      "id": 1965,
+      "word": "draw",
+      "phonetic": "[drɔ:]",
+      "partOfSpeech": "v.",
+      "definition": "拉;画;汲取;",
+      "example": "引出;(+to)挨近"
+    },
+    {
+      "id": 1966,
+      "word": "exclusive",
+      "phonetic": "[ɪkˈsklu:sɪv]",
+      "partOfSpeech": "a.",
+      "definition": "专有的,独占",
+      "example": "的;除外的,排"
+    },
+    {
+      "id": 1968,
+      "word": "electricity",
+      "phonetic": "[ɪˌlekˈtrɪsəti]",
+      "partOfSpeech": "n.",
+      "definition": "电,电流;电学 Wind turbines provide enough electricity to",
+      "example": "power 95 percent of homes.（18,T2）"
+    },
+    {
+      "id": 1969,
+      "word": "emphasis",
+      "phonetic": "[ˈemfəsɪs]",
+      "partOfSpeech": "n.",
+      "definition": "强调,重点",
+      "example": "The historical emphasis on hard power is"
+    },
+    {
+      "id": 1970,
+      "word": "trap",
+      "phonetic": "[træp]",
+      "partOfSpeech": "n.",
+      "definition": "陷阱,圈套",
+      "example": "v.诱捕,使中圈"
+    },
+    {
+      "id": 1971,
+      "word": "engine",
+      "phonetic": "[ˈendʒɪn]",
+      "partOfSpeech": "n.",
+      "definition": "发动机,引擎;",
+      "example": "火车头"
+    },
+    {
+      "id": 1972,
+      "word": "throughout",
+      "phonetic": "[θru:ˈaʊt]",
+      "partOfSpeech": "prep.",
+      "definition": "通及,贯穿",
+      "example": "ad.到处,全部,"
+    },
+    {
+      "id": 1973,
+      "word": "ensure",
+      "phonetic": "[ɪn\n'\nʃ\nʊə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "确保,保证",
+      "example": "The policy ensures that every American has"
+    },
+    {
+      "id": 1974,
+      "word": "inadequate",
+      "phonetic": "[ɪnˈædɪkwət]",
+      "partOfSpeech": "a.",
+      "definition": "(+",
+      "example": "for,to)不充"
+    },
+    {
+      "id": 1975,
+      "word": "topic",
+      "phonetic": "[ˈtɒpɪk]",
+      "partOfSpeech": "n.",
+      "definition": "话题,主题,题",
+      "example": "目"
+    },
+    {
+      "id": 1976,
+      "word": "environment",
+      "phonetic": "[ɪnˈvaɪrənmənt]",
+      "partOfSpeech": "n.",
+      "definition": "环境,外界",
+      "example": "Ministers should also look at creating greater"
+    },
+    {
+      "id": 1977,
+      "word": "unbearable",
+      "phonetic": "[ʌnˈbeərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "不堪忍受的,",
+      "example": "难以忍受的,不"
+    },
+    {
+      "id": 1978,
+      "word": "equip",
+      "phonetic": "[ɪˈkwɪp]",
+      "partOfSpeech": "v.",
+      "definition": "(+with)装备,",
+      "example": "配备"
+    },
+    {
+      "id": 1979,
+      "word": "equipment",
+      "phonetic": "[ɪˈkwɪpmənt]",
+      "partOfSpeech": "n.",
+      "definition": "设备,器材,装",
+      "example": "置"
+    },
+    {
+      "id": 1981,
+      "word": "erupt",
+      "phonetic": "[ɪˈrʌpt]",
+      "partOfSpeech": "v.",
+      "definition": "(尤指火山)爆",
+      "example": "发,喷发"
+    },
+    {
+      "id": 1982,
+      "word": "vote",
+      "phonetic": "[vəʊt]",
+      "partOfSpeech": "n.",
+      "definition": "投票,表决;选",
+      "example": "票,选票数"
+    },
+    {
+      "id": 1983,
+      "word": "evade",
+      "phonetic": "[ɪˈveɪd]",
+      "partOfSpeech": "vt.",
+      "definition": "逃避,躲避 They tended to evade public engagement.",
+      "example": "（10,T4）他们想逃避公众参与。"
+    },
+    {
+      "id": 1984,
+      "word": "difficulty",
+      "phonetic": "[ˈdɪfɪkəlti]",
+      "partOfSpeech": "n.",
+      "definition": "困难,困境,难",
+      "example": "题"
+    },
+    {
+      "id": 1985,
+      "word": "evil",
+      "phonetic": "[ˈi:vl]",
+      "partOfSpeech": "a.",
+      "definition": "邪恶的,罪恶",
+      "example": "的"
+    },
+    {
+      "id": 1986,
+      "word": "helicopter",
+      "phonetic": "[ˈhelɪkɒptə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "直升(飞)机 Few American families acquired",
+      "example": "helicopters."
+    },
+    {
+      "id": 1987,
+      "word": "excel",
+      "phonetic": "[ɪkˈsel]",
+      "partOfSpeech": "vt.",
+      "definition": "优于,擅长",
+      "example": "vi.胜过"
+    },
+    {
+      "id": 1988,
+      "word": "drug",
+      "phonetic": "[drʌg]",
+      "partOfSpeech": "n.",
+      "definition": "药物;麻醉品;",
+      "example": "毒品"
+    },
+    {
+      "id": 1989,
+      "word": "thesis",
+      "phonetic": "[ˈθi:sɪs]",
+      "partOfSpeech": "n.",
+      "definition": "论文;论题;论",
+      "example": "点"
+    },
+    {
+      "id": 1990,
+      "word": "explain",
+      "phonetic": "[ɪkˈspleɪn]",
+      "partOfSpeech": "v.",
+      "definition": "解释,说明",
+      "example": "They explain how the world works."
+    },
+    {
+      "id": 1991,
+      "word": "tone",
+      "phonetic": "[təʊn]",
+      "partOfSpeech": "n.",
+      "definition": "音调,音色;风",
+      "example": "气,气氛;腔调,"
+    },
+    {
+      "id": 1992,
+      "word": "extensive",
+      "phonetic": "[ɪkˈstensɪv]",
+      "partOfSpeech": "a.",
+      "definition": "广大的,广阔",
+      "example": "的"
+    },
+    {
+      "id": 1993,
+      "word": "transfer",
+      "phonetic": "[trænsˈfɜ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "转让;转学;",
+      "example": "转乘;转会"
+    },
+    {
+      "id": 1994,
+      "word": "fear",
+      "phonetic": "[fɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "/n.害怕,畏惧 We fear rejection.",
+      "example": "（15,完型）我们害怕被拒绝。"
+    },
+    {
+      "id": 1995,
+      "word": "understanding",
+      "phonetic": "[ˌʌndəˈstændɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "理解,理解力;",
+      "example": "谅解"
+    },
+    {
+      "id": 1996,
+      "word": "flat",
+      "phonetic": "[flæt]",
+      "partOfSpeech": "a.",
+      "definition": "平坦的,扁平",
+      "example": "的,平淡的"
+    },
+    {
+      "id": 1997,
+      "word": "hail",
+      "phonetic": "[heɪl]",
+      "partOfSpeech": "v.",
+      "definition": "下雹;欢呼,欢",
+      "example": "迎"
+    },
+    {
+      "id": 1998,
+      "word": "goodness",
+      "phonetic": "[ˈgʊdnəs]",
+      "partOfSpeech": "n.",
+      "definition": "善良,仁慈,上",
+      "example": "帝"
+    },
+    {
+      "id": 1999,
+      "word": "harmful",
+      "phonetic": "[ˈhɑ:mfl]",
+      "partOfSpeech": "a.",
+      "definition": "(+to)有害的 the harmful effects of global warming",
+      "example": "（"
+    },
+    {
+      "id": 2000,
+      "word": "examine",
+      "phonetic": "[ɪgˈzæmɪn]",
+      "partOfSpeech": "v.",
+      "definition": "检查,调查;",
+      "example": "对…进行考试,"
+    },
+    {
+      "id": 2001,
+      "word": "incapable",
+      "phonetic": "[ɪnˈkeɪpəbl]",
+      "partOfSpeech": "a.",
+      "definition": "(+of)无能",
+      "example": "力的,不会的"
+    },
+    {
+      "id": 2002,
+      "word": "hint",
+      "phonetic": "[hɪnt]",
+      "partOfSpeech": "n.",
+      "definition": "暗示,提示,",
+      "example": "线索"
+    },
+    {
+      "id": 2003,
+      "word": "enter",
+      "phonetic": "[ˈentə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "走进,参加,",
+      "example": "加入"
+    },
+    {
+      "id": 2004,
+      "word": "liberation",
+      "phonetic": "[ˌlɪbə'reɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "解放",
+      "example": "female power and liberation in Norway"
+    },
+    {
+      "id": 2005,
+      "word": "income",
+      "phonetic": "[ˈ\nɪnkʌm]",
+      "partOfSpeech": "n.",
+      "definition": "收入,收益,",
+      "example": "所得"
+    },
+    {
+      "id": 2006,
+      "word": "natural",
+      "phonetic": "[ˈnætʃrəl]",
+      "partOfSpeech": "a.",
+      "definition": "正常的;自",
+      "example": "然界的,天然"
+    },
+    {
+      "id": 2007,
+      "word": "therapy",
+      "phonetic": "[ˈθerəpi]",
+      "partOfSpeech": "n.",
+      "definition": "治疗,理疗 They don’t need self-help books or therapy.",
+      "example": "（16,T5）他们不需要自助宝典,也不需要奇方"
+    },
+    {
+      "id": 2008,
+      "word": "heroic",
+      "phonetic": "[həˈrəʊɪk]",
+      "partOfSpeech": "a.",
+      "definition": "英雄的,英",
+      "example": "勇的"
+    },
+    {
+      "id": 2009,
+      "word": "tolerant",
+      "phonetic": "[ˈtɒlərənt]",
+      "partOfSpeech": "a.",
+      "definition": "容忍的,宽",
+      "example": "容的"
+    },
+    {
+      "id": 2010,
+      "word": "anger",
+      "phonetic": "[ˈæŋgə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "(愤)怒,气愤",
+      "example": "v.使发怒,激"
+    },
+    {
+      "id": 2011,
+      "word": "angry",
+      "phonetic": "[ˈæŋgri]",
+      "partOfSpeech": "a.",
+      "definition": "愤怒的;生",
+      "example": "气的;(风雨"
+    },
+    {
+      "id": 2012,
+      "word": "aside",
+      "phonetic": "[əˈsaɪd]",
+      "partOfSpeech": "ad.",
+      "definition": "在旁边,到",
+      "example": "旁边"
+    },
+    {
+      "id": 2013,
+      "word": "bug",
+      "phonetic": "[bʌg]",
+      "partOfSpeech": "n.",
+      "definition": "臭虫;小毛",
+      "example": "病;窃听器"
+    },
+    {
+      "id": 2014,
+      "word": "bull",
+      "phonetic": "[bʊl]",
+      "partOfSpeech": "n.",
+      "definition": "公牛",
+      "example": "The longest bull run in a century of art-market"
+    },
+    {
+      "id": 2015,
+      "word": "butcher",
+      "phonetic": "[ˈbʊtʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "屠 夫 , 卖 肉",
+      "example": "者"
+    },
+    {
+      "id": 2016,
+      "word": "calendar",
+      "phonetic": "[ˈkælɪndə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "日历,月历 Once on the calendar, I protect this time like I",
+      "example": "would a doctor’s appointment or important"
+    },
+    {
+      "id": 2017,
+      "word": "camp",
+      "phonetic": "[kæmp]",
+      "partOfSpeech": "n.",
+      "definition": "野营,营地;",
+      "example": "帐篷,阵营"
+    },
+    {
+      "id": 2018,
+      "word": "career",
+      "phonetic": "[kəˈrɪə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "职业",
+      "example": "future career path"
+    },
+    {
+      "id": 2019,
+      "word": "carpet",
+      "phonetic": "[ˈkɑ:pɪt]",
+      "partOfSpeech": "n.",
+      "definition": "地毯",
+      "example": "That’s about as effective as brushing dirt under"
+    },
+    {
+      "id": 2020,
+      "word": "carrot",
+      "phonetic": "[ˈkærət]",
+      "partOfSpeech": "n.",
+      "definition": "胡萝卜",
+      "example": "a pound of carrot"
+    },
+    {
+      "id": 2021,
+      "word": "guilty",
+      "phonetic": "[ˈgɪlti]",
+      "partOfSpeech": "a.",
+      "definition": "(of)有罪的,",
+      "example": "内疚的"
+    },
+    {
+      "id": 2022,
+      "word": "hydrogen",
+      "phonetic": "[ˈhaɪdrədʒən]",
+      "partOfSpeech": "n.",
+      "definition": "氢",
+      "example": "There are vague promises of manufacturing"
+    },
+    {
+      "id": 2023,
+      "word": "interview",
+      "phonetic": "[ˈ\nɪntəvju:]",
+      "partOfSpeech": "v.",
+      "definition": "/n. 会 见 ; 采",
+      "example": "访;面试"
+    },
+    {
+      "id": 2024,
+      "word": "job",
+      "phonetic": "[dʒɒb]",
+      "partOfSpeech": "n.",
+      "definition": "职业,职位;",
+      "example": "一件工作,活"
+    },
+    {
+      "id": 2025,
+      "word": "language",
+      "phonetic": "[ˈlæŋgwɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "语言",
+      "example": "programming languages"
+    },
+    {
+      "id": 2026,
+      "word": "law",
+      "phonetic": "[lɔ:]",
+      "partOfSpeech": "n.",
+      "definition": "法律,法令,",
+      "example": "法规;法则,规"
+    },
+    {
+      "id": 2027,
+      "word": "pull",
+      "phonetic": "[pʊl]",
+      "partOfSpeech": "v.",
+      "definition": "拉,拖",
+      "example": "n.拉,拖;拉力,"
+    },
+    {
+      "id": 2028,
+      "word": "subway",
+      "phonetic": "[ˈsʌbweɪ]",
+      "partOfSpeech": "n.",
+      "definition": "地下铁道 Everyone around us seems to agree by the way",
+      "example": "they cling to their phones, even without a"
+    },
+    {
+      "id": 2029,
+      "word": "transport",
+      "phonetic": "[ˈtrænspɔ:t]",
+      "partOfSpeech": "v.",
+      "definition": "运输,运送,",
+      "example": "搬运"
+    },
+    {
+      "id": 2030,
+      "word": "accounting",
+      "phonetic": "[əˈkaʊntɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "会计,会计",
+      "example": "学,借款对照"
+    },
+    {
+      "id": 2031,
+      "word": "accumulate",
+      "phonetic": "[əˈkju:mjəleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "积 累 , 积",
+      "example": "蓄,堆积"
+    },
+    {
+      "id": 2032,
+      "word": "accuse",
+      "phonetic": "[əˈkju:z]",
+      "partOfSpeech": "v.",
+      "definition": "指责,控告 I hate it when people accuse us of that.",
+      "example": "我讨厌别人就那件事指责我们。"
+    },
+    {
+      "id": 2033,
+      "word": "activate",
+      "phonetic": "[ˈæktɪveɪt]",
+      "partOfSpeech": "v.",
+      "definition": "使活动,起",
+      "example": "动"
+    },
+    {
+      "id": 2034,
+      "word": "administrate",
+      "phonetic": "[əd'mɪnɪstreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "掌管;管理 administrate the training programs",
+      "example": "管理培训项目"
+    },
+    {
+      "id": 2035,
+      "word": "administration",
+      "phonetic": "[ədˌmɪnɪˈstreɪʃn \n]",
+      "partOfSpeech": "n.",
+      "definition": "管 理 , 经",
+      "example": "营 ; 行 政 机"
+    },
+    {
+      "id": 2036,
+      "word": "alien",
+      "phonetic": "[ˈeɪliən]",
+      "partOfSpeech": "n.",
+      "definition": "外侨;外星",
+      "example": "人"
+    },
+    {
+      "id": 2037,
+      "word": "allocate",
+      "phonetic": "[ˈæləkeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "分 配 , 分",
+      "example": "派,把…拨给"
+    },
+    {
+      "id": 2038,
+      "word": "allocation",
+      "phonetic": "[ˌæləˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "拨给,分配His sons quarrel bitterly over the allocation of",
+      "example": "family resources."
+    },
+    {
+      "id": 2039,
+      "word": "anniversary",
+      "phonetic": "[ˌænɪˈvɜ:səri]",
+      "partOfSpeech": "n.",
+      "definition": "周年(纪念",
+      "example": "日)"
+    },
+    {
+      "id": 2040,
+      "word": "anxiety",
+      "phonetic": "[æŋˈzaɪəti]",
+      "partOfSpeech": "n.",
+      "definition": "挂 念 , 焦",
+      "example": "虑 , 焦 急 , 忧"
+    },
+    {
+      "id": 2041,
+      "word": "arrest",
+      "phonetic": "[əˈrest]",
+      "partOfSpeech": "v.",
+      "definition": "/n. 逮 捕 ,",
+      "example": "拘留"
+    },
+    {
+      "id": 2042,
+      "word": "arrestment",
+      "phonetic": "[ə'restmənt]",
+      "partOfSpeech": "n.",
+      "definition": "阻 止 , 逮",
+      "example": "捕,拘捕"
+    },
+    {
+      "id": 2043,
+      "word": "asset",
+      "phonetic": "[ˈæset]",
+      "partOfSpeech": "n.",
+      "definition": "资产",
+      "example": "From day one he's been a great asset to the"
+    },
+    {
+      "id": 2044,
+      "word": "astronaut",
+      "phonetic": "[ˈæstrənɔ:t]",
+      "partOfSpeech": "n.",
+      "definition": "宇航员",
+      "example": "The rocket boosts the astronaut into space."
+    },
+    {
+      "id": 2045,
+      "word": "audience",
+      "phonetic": "[ˈɔ:diəns]",
+      "partOfSpeech": "n.",
+      "definition": "听众,观众 They would always come out and warm up the",
+      "example": "audience."
+    },
+    {
+      "id": 2046,
+      "word": "avenue",
+      "phonetic": "[ˈævənju:]",
+      "partOfSpeech": "n.",
+      "definition": "林荫道,大",
+      "example": "街 ; 途 径 , 手"
+    },
+    {
+      "id": 2047,
+      "word": "avert",
+      "phonetic": "[əˈvɜ:t]",
+      "partOfSpeech": "v.",
+      "definition": "防 止 , 避",
+      "example": "免 ; 转 移 ( 目"
+    },
+    {
+      "id": 2048,
+      "word": "background",
+      "phonetic": "[ˈbækgraʊnd]",
+      "partOfSpeech": "n.",
+      "definition": "背景,经历 academic backgrounds",
+      "example": "（"
+    },
+    {
+      "id": 2049,
+      "word": "bacon",
+      "phonetic": "[ˈbeɪkən]",
+      "partOfSpeech": "n.",
+      "definition": "咸肉,熏肉 A kilo of bacon, please.",
+      "example": "请来一公斤咸肉。"
+    },
+    {
+      "id": 2050,
+      "word": "band",
+      "phonetic": "[bænd]",
+      "partOfSpeech": "n.",
+      "definition": "条 , 带 ; 乐",
+      "example": "队 ; 波 段 ; 一"
+    },
+    {
+      "id": 2051,
+      "word": "bang",
+      "phonetic": "[bæŋ]",
+      "partOfSpeech": "n.",
+      "definition": "砰 砰 的 声",
+      "example": "音;猛击"
+    },
+    {
+      "id": 2052,
+      "word": "betray",
+      "phonetic": "[bɪˈtreɪ]",
+      "partOfSpeech": "v.",
+      "definition": "背 叛 , 出",
+      "example": "卖;"
+    },
+    {
+      "id": 2053,
+      "word": "bite",
+      "phonetic": "[baɪt]",
+      "partOfSpeech": "v.",
+      "definition": "/n.咬,叮",
+      "example": "n.一口"
+    },
+    {
+      "id": 2054,
+      "word": "bleed",
+      "phonetic": "[bli:d]",
+      "partOfSpeech": "v.",
+      "definition": "出血,流血 If you cut your finger, it will bleed.",
+      "example": "如果你割破手指,它会流血。"
+    },
+    {
+      "id": 2055,
+      "word": "blend",
+      "phonetic": "[blend]",
+      "partOfSpeech": "n.",
+      "definition": "混合(物)",
+      "example": "v.混和,混杂"
+    },
+    {
+      "id": 2056,
+      "word": "boast",
+      "phonetic": "[bəʊst]",
+      "partOfSpeech": "v.",
+      "definition": "(of,about",
+      "example": ")自夸,夸耀"
+    },
+    {
+      "id": 2057,
+      "word": "bother",
+      "phonetic": "[ˈbɒðə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "打 扰 , 烦",
+      "example": "扰 ; 烦 恼 , 操"
+    },
+    {
+      "id": 2058,
+      "word": "bound",
+      "phonetic": "[baʊnd]",
+      "partOfSpeech": "v.",
+      "definition": "/n.跳(跃)",
+      "example": "a.被束缚的,"
+    },
+    {
+      "id": 2059,
+      "word": "brim",
+      "phonetic": "[brɪm]",
+      "partOfSpeech": "n.",
+      "definition": "边缘,帽沿 Richard filled her glass right up to the brim.",
+      "example": "理查德给她倒了满满一杯。"
+    },
+    {
+      "id": 2060,
+      "word": "bubble",
+      "phonetic": "[ˈbʌbl]",
+      "partOfSpeech": "n.",
+      "definition": "泡 , 水 泡 ,",
+      "example": "气 泡"
+    },
+    {
+      "id": 2061,
+      "word": "bullet",
+      "phonetic": "[ˈbʊlɪt]",
+      "partOfSpeech": "n.",
+      "definition": "子弹,枪弹 The bodies of the hostages were found riddled",
+      "example": "with bullets."
+    },
+    {
+      "id": 2062,
+      "word": "cancel",
+      "phonetic": "[ˈkænsl]",
+      "partOfSpeech": "v.",
+      "definition": "取消,把…",
+      "example": "作 废 ; 删 去 ,"
+    },
+    {
+      "id": 2063,
+      "word": "cart",
+      "phonetic": "[kɑ:t]",
+      "partOfSpeech": "n.",
+      "definition": "( 二 轮 货",
+      "example": "运 ) 马 车 , 手"
+    },
+    {
+      "id": 2064,
+      "word": "caution",
+      "phonetic": "[ˈkɔ:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "小 心 , 谨",
+      "example": "慎 ; 警 告 , 告"
+    },
+    {
+      "id": 2065,
+      "word": "champion",
+      "phonetic": "[ˈtʃæmpiən]",
+      "partOfSpeech": "n.",
+      "definition": "冠军,得胜",
+      "example": "者; 拥 护 者 ,"
+    },
+    {
+      "id": 2066,
+      "word": "cheerful",
+      "phonetic": "[ˈtʃɪəfl]",
+      "partOfSpeech": "a.",
+      "definition": "愉快的,高",
+      "example": "兴的"
+    },
+    {
+      "id": 2067,
+      "word": "civilize",
+      "phonetic": "[ˈsɪvəlaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "使文明,开",
+      "example": "化;启发"
+    },
+    {
+      "id": 2068,
+      "word": "classification",
+      "phonetic": "[ˌklæsɪfɪˈkeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "分类,分级 These things belong in",
+      "example": "a"
+    },
+    {
+      "id": 2069,
+      "word": "cliff",
+      "phonetic": "[klɪf]",
+      "partOfSpeech": "n.",
+      "definition": "悬崖;峭壁 It's almost impossible to climb up the cliff.",
+      "example": "要爬上这个峭壁几乎是不可能的。"
+    },
+    {
+      "id": 2070,
+      "word": "clinic",
+      "phonetic": "[ˈklɪnɪk]",
+      "partOfSpeech": "n.",
+      "definition": "诊所",
+      "example": "He went to a clinic to cure his drinking and"
+    },
+    {
+      "id": 2071,
+      "word": "clumsy",
+      "phonetic": "[ˈklʌmzi]",
+      "partOfSpeech": "a.",
+      "definition": "笨拙的,愚",
+      "example": "笨的"
+    },
+    {
+      "id": 2072,
+      "word": "cluster",
+      "phonetic": "[ˈklʌstə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "丛,群,串",
+      "example": "v.群集,丛生"
+    },
+    {
+      "id": 2073,
+      "word": "coast",
+      "phonetic": "[kəʊst]",
+      "partOfSpeech": "n.",
+      "definition": "海岸,海滨 The Atlantic coast is within sight of the hotel.",
+      "example": "从宾馆可以看见大西洋海岸。"
+    },
+    {
+      "id": 2074,
+      "word": "coil",
+      "phonetic": "[kɔɪl]",
+      "partOfSpeech": "v.",
+      "definition": "卷,盘绕",
+      "example": "n.("
+    },
+    {
+      "id": 2075,
+      "word": "colony",
+      "phonetic": "[ˈkɒləni]",
+      "partOfSpeech": "n.",
+      "definition": "殖民地",
+      "example": "They amassed huge wealth by plundering the"
+    },
+    {
+      "id": 2076,
+      "word": "combine",
+      "phonetic": "[kəmˈbaɪn]",
+      "partOfSpeech": "v.",
+      "definition": "(with)( 使",
+      "example": ") 结 合 , 联"
+    },
+    {
+      "id": 2077,
+      "word": "comparable",
+      "phonetic": "[ˈkɒmpərəbl]",
+      "partOfSpeech": "a.",
+      "definition": "(with,to)",
+      "example": "可比较的,比"
+    },
+    {
+      "id": 2078,
+      "word": "compulsory",
+      "phonetic": "[kəm\nˈ\np\nʌlsəri]",
+      "partOfSpeech": "a.",
+      "definition": "强制的,义",
+      "example": "务的,必修的"
+    },
+    {
+      "id": 2079,
+      "word": "congratulate",
+      "phonetic": "[kənˈgrætʃuleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(on)祝贺,",
+      "example": "向…致贺词"
+    },
+    {
+      "id": 2080,
+      "word": "congratulation",
+      "phonetic": "[kənˌgrætʃuˈleɪʃ \nn]",
+      "partOfSpeech": "n.",
+      "definition": "(on)",
+      "example": "祝"
+    },
+    {
+      "id": 2081,
+      "word": "conscientious",
+      "phonetic": "[ˌkɒnʃiˈenʃəs]",
+      "partOfSpeech": "a.",
+      "definition": "认真的,勤",
+      "example": "勤恳恳的;本"
+    },
+    {
+      "id": 2082,
+      "word": "conservation",
+      "phonetic": "[ˌkɒnsəˈveɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "保 存 , 保",
+      "example": "护 , 保 守 ; 守"
+    },
+    {
+      "id": 2083,
+      "word": "conservative",
+      "phonetic": "[kənˈsɜ:vətɪv]",
+      "partOfSpeech": "a.",
+      "definition": "保守的,守",
+      "example": "旧的 n.保守"
+    },
+    {
+      "id": 2084,
+      "word": "consistent",
+      "phonetic": "[kənˈsɪstənt]",
+      "partOfSpeech": "a.",
+      "definition": "(with) 前",
+      "example": "后一致的,始"
+    },
+    {
+      "id": 2085,
+      "word": "continent",
+      "phonetic": "[ˈkɒntɪnənt]",
+      "partOfSpeech": "n.",
+      "definition": "大陆,洲",
+      "example": "Its shops are among the most stylish on the"
+    },
+    {
+      "id": 2086,
+      "word": "counterpart",
+      "phonetic": "[ˈkaʊntəpɑ:t]",
+      "partOfSpeech": "n.",
+      "definition": "副 本 , 复",
+      "example": "本,配对物"
+    },
+    {
+      "id": 2087,
+      "word": "creep",
+      "phonetic": "[kri:p]",
+      "partOfSpeech": "v.",
+      "definition": "爬 , 爬",
+      "example": "行;(植物)蔓"
+    },
+    {
+      "id": 2088,
+      "word": "crime",
+      "phonetic": "[kraɪm]",
+      "partOfSpeech": "n.",
+      "definition": "罪行,犯罪 Drug-smuggling is a serious crime.",
+      "example": "走私毒品是严重的罪行。"
+    },
+    {
+      "id": 2089,
+      "word": "cross",
+      "phonetic": "[krɒs]",
+      "partOfSpeech": "n.",
+      "definition": "十字形,十",
+      "example": "字架 a.交叉"
+    },
+    {
+      "id": 2090,
+      "word": "cunning",
+      "phonetic": "[ˈkʌnɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "/n. 狡 猾",
+      "example": "( 的 ), 狡 诈"
+    },
+    {
+      "id": 2091,
+      "word": "cure",
+      "phonetic": "[kjʊə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "(of)治愈,",
+      "example": "医治;矫正"
+    },
+    {
+      "id": 2092,
+      "word": "cyberspace",
+      "phonetic": "[ˈsaɪbəspeɪs]",
+      "partOfSpeech": "n.",
+      "definition": "电脑空间,",
+      "example": "信息空间"
+    },
+    {
+      "id": 2093,
+      "word": "cycle",
+      "phonetic": "[ˈsaɪkl]",
+      "partOfSpeech": "n.",
+      "definition": "自行车;周",
+      "example": "期,循环"
+    },
+    {
+      "id": 2094,
+      "word": "dawn",
+      "phonetic": "[dɔ:n]",
+      "partOfSpeech": "n.",
+      "definition": "黎明,拂晓",
+      "example": "v.破晓;开始"
+    },
+    {
+      "id": 2095,
+      "word": "dedicate",
+      "phonetic": "[ˈdedɪkeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "奉献,把…",
+      "example": "用在"
+    },
+    {
+      "id": 2096,
+      "word": "delight",
+      "phonetic": "[dɪˈlaɪt]",
+      "partOfSpeech": "n.",
+      "definition": "快乐,高兴",
+      "example": "v.( 使 ) 高"
+    },
+    {
+      "id": 2097,
+      "word": "despise",
+      "phonetic": "[dɪˈspaɪz]",
+      "partOfSpeech": "v.",
+      "definition": "轻视,蔑视 I can never, ever forgive him. I despise him.",
+      "example": "我永远不会原谅他。我鄙视他。"
+    },
+    {
+      "id": 2098,
+      "word": "dip",
+      "phonetic": "[dɪp]",
+      "partOfSpeech": "v.",
+      "definition": "/n.浸,蘸 The sun dipped below the western sea.",
+      "example": "太阳慢慢沉入西边的大海里。"
+    },
+    {
+      "id": 2099,
+      "word": "discard",
+      "phonetic": "[dɪsˈkɑ:d]",
+      "partOfSpeech": "v.",
+      "definition": "丢弃,抛弃 We should discard old beliefs.",
+      "example": "我们应该抛弃旧观念。"
+    },
+    {
+      "id": 2100,
+      "word": "discuss",
+      "phonetic": "[dɪˈskʌs]",
+      "partOfSpeech": "v.",
+      "definition": "讨论,商议 Let us go back to the subject we were",
+      "example": "discussing."
+    },
+    {
+      "id": 2101,
+      "word": "disgrace",
+      "phonetic": "[dɪsˈgreɪs]",
+      "partOfSpeech": "n.",
+      "definition": "失宠,耻",
+      "example": "辱"
+    },
+    {
+      "id": 2102,
+      "word": "disguise",
+      "phonetic": "[dɪsˈgaɪz]",
+      "partOfSpeech": "n.",
+      "definition": "/v.",
+      "example": "假"
+    },
+    {
+      "id": 2103,
+      "word": "disorder",
+      "phonetic": "[dɪsˈɔ:də(r)]",
+      "partOfSpeech": "n.",
+      "definition": "混乱,杂",
+      "example": "乱 ; 骚 乱 ;"
+    },
+    {
+      "id": 2104,
+      "word": "dispatch",
+      "phonetic": "[dɪˈspætʃ]",
+      "partOfSpeech": "v.",
+      "definition": "派遣,发",
+      "example": "送"
+    },
+    {
+      "id": 2105,
+      "word": "display",
+      "phonetic": "[dɪˈspleɪ]",
+      "partOfSpeech": "v.",
+      "definition": "/n.",
+      "example": "陈"
+    },
+    {
+      "id": 2106,
+      "word": "distinguish",
+      "phonetic": "[dɪˈstɪŋgwɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "(from) 区",
+      "example": "别,辨别;辨"
+    },
+    {
+      "id": 2107,
+      "word": "distribute",
+      "phonetic": "[dɪˈstrɪbju:t]",
+      "partOfSpeech": "v.",
+      "definition": "分 配 ; 分",
+      "example": "布 ;(over)"
+    },
+    {
+      "id": 2108,
+      "word": "distribution",
+      "phonetic": "[ˌdɪstrɪˈbju:ʃn]",
+      "partOfSpeech": "n.",
+      "definition": "分 发 , 分",
+      "example": "配,分布"
+    },
+    {
+      "id": 2109,
+      "word": "disturb",
+      "phonetic": "[dɪˈstɜ:b]",
+      "partOfSpeech": "v.",
+      "definition": "扰 乱 , 妨",
+      "example": "碍,使不安"
+    },
+    {
+      "id": 2110,
+      "word": "doubt",
+      "phonetic": "[daʊt]",
+      "partOfSpeech": "n.",
+      "definition": "/v. 怀 疑 ,",
+      "example": "疑虑"
+    },
+    {
+      "id": 2111,
+      "word": "doubtful",
+      "phonetic": "[ˈdaʊtfl]",
+      "partOfSpeech": "a.",
+      "definition": "(of,about",
+      "example": ")怀疑的,可"
+    },
+    {
+      "id": 2112,
+      "word": "downtown",
+      "phonetic": "[ˌdaʊnˈtaʊn]",
+      "partOfSpeech": "ad.",
+      "definition": "在城市",
+      "example": "的 商 业 区"
+    },
+    {
+      "id": 2113,
+      "word": "drain",
+      "phonetic": "[dreɪn]",
+      "partOfSpeech": "n.",
+      "definition": "排 水 沟 ,",
+      "example": "阴沟;消耗,"
+    },
+    {
+      "id": 2114,
+      "word": "dull",
+      "phonetic": "[dʌl]",
+      "partOfSpeech": "a.",
+      "definition": "单 调 的 ;",
+      "example": "迟钝的,愚"
+    },
+    {
+      "id": 2115,
+      "word": "duplicate",
+      "phonetic": "[ˈdju:plɪkeɪt]",
+      "partOfSpeech": "n.",
+      "definition": "复制品 v.",
+      "example": "复制,使加"
+    },
+    {
+      "id": 2116,
+      "word": "dusk",
+      "phonetic": "[dʌsk]",
+      "partOfSpeech": "n.",
+      "definition": "薄 暮 , 黄",
+      "example": "昏"
+    },
+    {
+      "id": 2117,
+      "word": "dust",
+      "phonetic": "[dʌst]",
+      "partOfSpeech": "n.",
+      "definition": "灰 尘 , 尘",
+      "example": "土"
+    },
+    {
+      "id": 2118,
+      "word": "emission",
+      "phonetic": "[iˈmɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "排放，排",
+      "example": "放量"
+    },
+    {
+      "id": 2119,
+      "word": "emit",
+      "phonetic": "[iˈmɪt]",
+      "partOfSpeech": "v.",
+      "definition": "散 发 , 发",
+      "example": "射"
+    },
+    {
+      "id": 2120,
+      "word": "encyclopedia",
+      "phonetic": "[ɪnˌsaɪklə\n'\np\ni:dɪə]",
+      "partOfSpeech": "n.",
+      "definition": "百 科 全",
+      "example": "书"
+    },
+    {
+      "id": 2121,
+      "word": "endure",
+      "phonetic": "[ɪnˈdjʊə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "忍 受 , 持",
+      "example": "久,持续"
+    },
+    {
+      "id": 2122,
+      "word": "episode",
+      "phonetic": "[ˈepɪsəʊd]",
+      "partOfSpeech": "n.",
+      "definition": "片断,(连",
+      "example": "续剧的)一"
+    },
+    {
+      "id": 2123,
+      "word": "essay",
+      "phonetic": "[ˈeseɪ]",
+      "partOfSpeech": "n.",
+      "definition": "文 章 , 短",
+      "example": "文"
+    },
+    {
+      "id": 2124,
+      "word": "essence",
+      "phonetic": "[ˈesns]",
+      "partOfSpeech": "n.",
+      "definition": "本 质 , 实",
+      "example": "质"
+    },
+    {
+      "id": 2125,
+      "word": "except",
+      "phonetic": "[ɪkˈsept]",
+      "partOfSpeech": "prep.",
+      "definition": "除 …",
+      "example": "之外"
+    },
+    {
+      "id": 2126,
+      "word": "exclude",
+      "phonetic": "[ɪkˈsklu:d]",
+      "partOfSpeech": "v.",
+      "definition": "拒 绝 ,",
+      "example": "把 … 排 除"
+    },
+    {
+      "id": 2127,
+      "word": "exhaust",
+      "phonetic": "[ɪgˈzɔ:st]",
+      "partOfSpeech": "v.",
+      "definition": "使筋疲力",
+      "example": "尽,耗尽;抽"
+    },
+    {
+      "id": 2128,
+      "word": "exhibit",
+      "phonetic": "[ɪgˈzɪbɪt]",
+      "partOfSpeech": "v.",
+      "definition": "展 出 , 陈",
+      "example": "列"
+    },
+    {
+      "id": 2129,
+      "word": "expense",
+      "phonetic": "[ɪkˈspens]",
+      "partOfSpeech": "n.",
+      "definition": "花 费 , 消",
+      "example": "费,消耗"
+    },
+    {
+      "id": 2130,
+      "word": "expire",
+      "phonetic": "[ɪkˈspaɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "期满,(期",
+      "example": "限)终止;呼"
+    },
+    {
+      "id": 2131,
+      "word": "explosion",
+      "phonetic": "[ɪkˈspləʊʒn]",
+      "partOfSpeech": "n.",
+      "definition": "爆 炸 , 爆",
+      "example": "发"
+    },
+    {
+      "id": 2133,
+      "word": "fade",
+      "phonetic": "[feɪd]",
+      "partOfSpeech": "v.",
+      "definition": "褪 色 ; 衰",
+      "example": "减,消失"
+    },
+    {
+      "id": 2134,
+      "word": "familiar",
+      "phonetic": "[fəˈmɪliə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "(with,to)",
+      "example": "熟悉的,通"
+    },
+    {
+      "id": 2135,
+      "word": "feasible",
+      "phonetic": "[ˈfi:zəbl]",
+      "partOfSpeech": "a.",
+      "definition": "可 行 的 ,",
+      "example": "可能的"
+    },
+    {
+      "id": 2136,
+      "word": "federation",
+      "phonetic": "[ˌfedəˈreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "联 邦 , 联",
+      "example": "合,联盟"
+    },
+    {
+      "id": 2137,
+      "word": "feedback",
+      "phonetic": "[ˈfi:dbæk]",
+      "partOfSpeech": "n.",
+      "definition": "反馈",
+      "example": "I'd appreciate some feedback on my work."
+    },
+    {
+      "id": 2138,
+      "word": "fall",
+      "phonetic": "[fɔːl]",
+      "partOfSpeech": "v.",
+      "definition": "落下; 跌",
+      "example": "倒 ; 进 入"
+    },
+    {
+      "id": 2139,
+      "word": "fiction",
+      "phonetic": "[ˈfɪkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "虚 构 , 编",
+      "example": "造;小说"
+    },
+    {
+      "id": 2140,
+      "word": "fierce",
+      "phonetic": "[fɪəs]",
+      "partOfSpeech": "a.",
+      "definition": "凶 猛 的 ,",
+      "example": "残忍的;狂"
+    },
+    {
+      "id": 2141,
+      "word": "flash",
+      "phonetic": "[flæʃ]",
+      "partOfSpeech": "n.",
+      "definition": "闪光",
+      "example": "v. 发 闪 光 ,"
+    },
+    {
+      "id": 2142,
+      "word": "flexible",
+      "phonetic": "[ˈfleksəbl]",
+      "partOfSpeech": "a.",
+      "definition": "柔 韧 的 ,",
+      "example": "易弯曲的,"
+    },
+    {
+      "id": 2143,
+      "word": "flourish",
+      "phonetic": "[ˈflʌrɪʃ]",
+      "partOfSpeech": "v.",
+      "definition": "繁 荣 , 茂",
+      "example": "盛,兴旺"
+    },
+    {
+      "id": 2144,
+      "word": "forgive",
+      "phonetic": "[fəˈgɪv]",
+      "partOfSpeech": "v.",
+      "definition": "原 谅 , 饶",
+      "example": "恕"
+    },
+    {
+      "id": 2145,
+      "word": "forth",
+      "phonetic": "[fɔ:θ]",
+      "partOfSpeech": "ad.",
+      "definition": "向前,向",
+      "example": "外"
+    },
+    {
+      "id": 2146,
+      "word": "fragile",
+      "phonetic": "[ˈfrædʒaɪl]",
+      "partOfSpeech": "a.",
+      "definition": "脆 的 , 体",
+      "example": "质弱的"
+    },
+    {
+      "id": 2147,
+      "word": "fragment",
+      "phonetic": "[ˈfrægmənt]",
+      "partOfSpeech": "n.",
+      "definition": "碎 片 , 破",
+      "example": "片,碎块"
+    },
+    {
+      "id": 2148,
+      "word": "friction",
+      "phonetic": "[ˈfrɪkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "磨 擦 , 摩",
+      "example": "擦力"
+    },
+    {
+      "id": 2149,
+      "word": "fright",
+      "phonetic": "[fraɪt]",
+      "partOfSpeech": "n.",
+      "definition": "恐怖",
+      "example": "One boy, aged about 11, looks frozen with fright."
+    },
+    {
+      "id": 2150,
+      "word": "frighten",
+      "phonetic": "[ˈfraɪtn]",
+      "partOfSpeech": "v.",
+      "definition": "使惊恐 Sorry, I didn't mean to frighten you.",
+      "example": "对不起,我没有吓唬你的意思。"
+    },
+    {
+      "id": 2151,
+      "word": "gamble",
+      "phonetic": "[ˈgæmbl]",
+      "partOfSpeech": "n.",
+      "definition": "/v. 投 机 ,",
+      "example": "冒险;赌博"
+    },
+    {
+      "id": 2152,
+      "word": "gaze",
+      "phonetic": "[geɪz]",
+      "partOfSpeech": "v.",
+      "definition": "/n. 凝 视 ,",
+      "example": "注视"
+    },
+    {
+      "id": 2153,
+      "word": "grand",
+      "phonetic": "[grænd]",
+      "partOfSpeech": "a.",
+      "definition": "盛 大 的 ,",
+      "example": "豪华的;重"
+    },
+    {
+      "id": 2154,
+      "word": "greet",
+      "phonetic": "[gri:t]",
+      "partOfSpeech": "v.",
+      "definition": "致 敬 , 敬",
+      "example": "意,迎接;扑"
+    },
+    {
+      "id": 2155,
+      "word": "hardship",
+      "phonetic": "[ˈhɑ:dʃɪp]",
+      "partOfSpeech": "n.",
+      "definition": "艰 难 , 困",
+      "example": "苦"
+    },
+    {
+      "id": 2156,
+      "word": "heat",
+      "phonetic": "[hi:t]",
+      "partOfSpeech": "n.",
+      "definition": "热,热度;",
+      "example": "热烈,激烈"
+    },
+    {
+      "id": 2158,
+      "word": "hence",
+      "phonetic": "[hens]",
+      "partOfSpeech": "ad.",
+      "definition": "从此,今",
+      "example": "后;因此"
+    },
+    {
+      "id": 2159,
+      "word": "hide",
+      "phonetic": "[haɪd]",
+      "partOfSpeech": "v.",
+      "definition": "隐 藏 , 躲",
+      "example": "藏;隐瞒 n."
+    },
+    {
+      "id": 2160,
+      "word": "hobby",
+      "phonetic": "[ˈhɒbi]",
+      "partOfSpeech": "n.",
+      "definition": "业 余 爱",
+      "example": "好,嗜好,兴"
+    },
+    {
+      "id": 2161,
+      "word": "hunger",
+      "phonetic": "[ˈhʌŋgə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "/v. 饥 饿 ;",
+      "example": "渴望"
+    },
+    {
+      "id": 2163,
+      "word": "ignorant",
+      "phonetic": "[ˈ\nɪgnərənt]",
+      "partOfSpeech": "a.",
+      "definition": "无 知 的 ,",
+      "example": "愚昧的;不"
+    },
+    {
+      "id": 2164,
+      "word": "illiterate",
+      "phonetic": "[ɪˈlɪtərət]",
+      "partOfSpeech": "a.",
+      "definition": "文 盲 的 ,",
+      "example": "未 受 教 育"
+    },
+    {
+      "id": 2165,
+      "word": "illusion",
+      "phonetic": "[ɪˈlu:ʒn]",
+      "partOfSpeech": "n.",
+      "definition": "幻 想 , 错",
+      "example": "觉,假象"
+    },
+    {
+      "id": 2166,
+      "word": "immerse",
+      "phonetic": "[ɪˈmɜ:s]",
+      "partOfSpeech": "v.",
+      "definition": "使 沉 浸",
+      "example": "在;使浸没"
+    },
+    {
+      "id": 2167,
+      "word": "impart",
+      "phonetic": "[ɪm\nˈ\np\nɑ:t]",
+      "partOfSpeech": "vt.",
+      "definition": "给予,传",
+      "example": "授"
+    },
+    {
+      "id": 2168,
+      "word": "imply",
+      "phonetic": "[ɪm\nˈ\np\nlaɪ]",
+      "partOfSpeech": "v.",
+      "definition": "意 指 ,",
+      "example": "含…意思,"
+    },
+    {
+      "id": 2169,
+      "word": "inch",
+      "phonetic": "[ɪntʃ]",
+      "partOfSpeech": "n.",
+      "definition": "英寸",
+      "example": "We are prepared to fight for every inch of"
+    },
+    {
+      "id": 2170,
+      "word": "incidentally",
+      "phonetic": "[ˌɪnsɪˈdentli]",
+      "partOfSpeech": "ad.",
+      "definition": "附带地,",
+      "example": "顺便提及"
+    },
+    {
+      "id": 2171,
+      "word": "incur",
+      "phonetic": "[ɪnˈkɜ:(r)]",
+      "partOfSpeech": "v.",
+      "definition": "招 致 , 惹",
+      "example": "起,遭受"
+    },
+    {
+      "id": 2172,
+      "word": "index",
+      "phonetic": "[ˈ\nɪndeks]",
+      "partOfSpeech": "n.",
+      "definition": "索引",
+      "example": "v.附以索引"
+    },
+    {
+      "id": 2173,
+      "word": "infinity",
+      "phonetic": "[ɪnˈfɪnəti]",
+      "partOfSpeech": "n.",
+      "definition": "无 限 , 无",
+      "example": "穷;大量"
+    },
+    {
+      "id": 2174,
+      "word": "influential",
+      "phonetic": "[ˌɪnfluˈenʃl]",
+      "partOfSpeech": "a.",
+      "definition": "有 影 响",
+      "example": "的;有权势"
+    },
+    {
+      "id": 2175,
+      "word": "initial",
+      "phonetic": "[ɪˈnɪʃl]",
+      "partOfSpeech": "a.",
+      "definition": "最 初 的 ,",
+      "example": "开头的;词"
+    },
+    {
+      "id": 2176,
+      "word": "inject",
+      "phonetic": "[ɪnˈdʒekt]",
+      "partOfSpeech": "v.",
+      "definition": "注 射 , 注",
+      "example": "入"
+    },
+    {
+      "id": 2177,
+      "word": "inquiry",
+      "phonetic": "[ɪn'kwaɪərɪ]",
+      "partOfSpeech": "n.",
+      "definition": "询 问 , 打",
+      "example": "听,调查"
+    },
+    {
+      "id": 2178,
+      "word": "instability",
+      "phonetic": "[ˌɪnstəˈbɪləti]",
+      "partOfSpeech": "n.",
+      "definition": "不 稳 定",
+      "example": "(性)"
+    },
+    {
+      "id": 2179,
+      "word": "instrumental",
+      "phonetic": "[ˌɪnstrəˈmentl]",
+      "partOfSpeech": "a.",
+      "definition": "仪 器 的 ;",
+      "example": "有帮助的;"
+    },
+    {
+      "id": 2180,
+      "word": "integrity",
+      "phonetic": "[ɪnˈtegrəti]",
+      "partOfSpeech": "n.",
+      "definition": "正 直 , 诚",
+      "example": "实;完整,完"
+    },
+    {
+      "id": 2181,
+      "word": "interpret",
+      "phonetic": "[ɪnˈtɜ:prɪt]",
+      "partOfSpeech": "v.",
+      "definition": "解 释 , 说",
+      "example": "明;口译"
+    },
+    {
+      "id": 2182,
+      "word": "intimate",
+      "phonetic": "[ˈ\nɪntɪmət]",
+      "partOfSpeech": "a.",
+      "definition": "亲 密 的 ,",
+      "example": "密切的"
+    },
+    {
+      "id": 2183,
+      "word": "invert",
+      "phonetic": "[ɪnˈvɜ:t]",
+      "partOfSpeech": "v.",
+      "definition": "倒 置 , 倒",
+      "example": "转,颠倒"
+    },
+    {
+      "id": 2184,
+      "word": "invisible",
+      "phonetic": "[ɪnˈvɪzəbl]",
+      "partOfSpeech": "a.",
+      "definition": "看 不 见",
+      "example": "的,无形的"
+    },
+    {
+      "id": 2185,
+      "word": "item",
+      "phonetic": "[ˈaɪtəm]",
+      "partOfSpeech": "n.",
+      "definition": "条,条款,",
+      "example": "项目"
+    },
+    {
+      "id": 2186,
+      "word": "journal",
+      "phonetic": "[ˈdʒɜ:nl]",
+      "partOfSpeech": "n.",
+      "definition": "定 期 刊",
+      "example": "物,杂志,日"
+    },
+    {
+      "id": 2187,
+      "word": "kick",
+      "phonetic": "[kɪk]",
+      "partOfSpeech": "v.",
+      "definition": "/n.踢",
+      "example": "In the end I just couldn't kick Jimmy when he was"
+    },
+    {
+      "id": 2188,
+      "word": "leak",
+      "phonetic": "[li:k]",
+      "partOfSpeech": "v.",
+      "definition": "漏,泄漏",
+      "example": "n. 漏 洞 , 漏"
+    },
+    {
+      "id": 2189,
+      "word": "lecture",
+      "phonetic": "[ˈlektʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "/v. 演 讲 ,",
+      "example": "讲课;训斥,"
+    },
+    {
+      "id": 2190,
+      "word": "liberate",
+      "phonetic": "[ˈlɪbəreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "解 放 , 释",
+      "example": "放"
+    },
+    {
+      "id": 2191,
+      "word": "license",
+      "phonetic": "[ˈlaɪsns]",
+      "partOfSpeech": "n.",
+      "definition": "许 可 证 ,",
+      "example": "执照"
+    },
+    {
+      "id": 2192,
+      "word": "likewise",
+      "phonetic": "[ˈlaɪkwaɪz]",
+      "partOfSpeech": "ad.",
+      "definition": "同样地,",
+      "example": "照样地;又,"
+    },
+    {
+      "id": 2193,
+      "word": "linger",
+      "phonetic": "[ˈlɪŋgə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "逗 留 , 徘",
+      "example": "徊,拖延"
+    },
+    {
+      "id": 2194,
+      "word": "literary",
+      "phonetic": "[ˈlɪtərəri]",
+      "partOfSpeech": "a.",
+      "definition": "文 学 上",
+      "example": "的,文学的;"
+    },
+    {
+      "id": 2195,
+      "word": "load",
+      "phonetic": "[ləʊd]",
+      "partOfSpeech": "v.",
+      "definition": "装(货),装",
+      "example": "载"
+    },
+    {
+      "id": 2196,
+      "word": "lobby",
+      "phonetic": "[ˈlɒbi]",
+      "partOfSpeech": "n.",
+      "definition": "门 廊 , 门",
+      "example": "厅 ,( 会 议 )"
+    },
+    {
+      "id": 2197,
+      "word": "luxury",
+      "phonetic": "[ˈlʌkʃəri]",
+      "partOfSpeech": "n.",
+      "definition": "奢 侈 , 华",
+      "example": "贵;奢侈品"
+    },
+    {
+      "id": 2198,
+      "word": "magnificent",
+      "phonetic": "[mægˈnɪfɪsnt]",
+      "partOfSpeech": "a.",
+      "definition": "壮 丽 的 ,",
+      "example": "宏伟的"
+    },
+    {
+      "id": 2199,
+      "word": "manpower",
+      "phonetic": "[ˈmænpaʊə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "人 力 ;人",
+      "example": "力资源"
+    },
+    {
+      "id": 2200,
+      "word": "memory",
+      "phonetic": "[ˈmeməri]",
+      "partOfSpeech": "n.",
+      "definition": "记 忆 , 记",
+      "example": "忆力;回忆;"
+    },
+    {
+      "id": 2201,
+      "word": "enhance",
+      "phonetic": "[ɪnˈhɑ:ns]",
+      "partOfSpeech": "v.",
+      "definition": "提高,增强 Scarcity enhances the pleasure of most things",
+      "example": "for most people.（14,T1）"
+    },
+    {
+      "id": 2202,
+      "word": "yield",
+      "phonetic": "[ji:ld]",
+      "partOfSpeech": "v.",
+      "definition": "产生,出产,",
+      "example": "让步;屈服,"
+    },
+    {
+      "id": 2203,
+      "word": "empire",
+      "phonetic": "[ˈempaɪə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "帝国",
+      "example": "The Roman Empire"
+    },
+    {
+      "id": 2204,
+      "word": "so-called",
+      "phonetic": "[səʊ kɔ:ld]",
+      "partOfSpeech": "a.",
+      "definition": "所谓的,号",
+      "example": "称的"
+    },
+    {
+      "id": 2205,
+      "word": "manufacturer",
+      "phonetic": "[ˌmænjuˈfæktʃərə]",
+      "partOfSpeech": "n.",
+      "definition": "制造商",
+      "example": "the world's largest doll manufacturer"
+    },
+    {
+      "id": 2206,
+      "word": "particular",
+      "phonetic": "[pəˈtɪkjələ(r)]",
+      "partOfSpeech": "a.",
+      "definition": "特殊的;特",
+      "example": "定的,个别的"
+    },
+    {
+      "id": 2207,
+      "word": "grateful",
+      "phonetic": "[ˈgreɪtfl]",
+      "partOfSpeech": "a.",
+      "definition": "(+to/for)感",
+      "example": "激的;感谢的"
+    },
+    {
+      "id": 2208,
+      "word": "fasten",
+      "phonetic": "[ˈfɑ:sn]",
+      "partOfSpeech": "v.",
+      "definition": "扎牢,使固",
+      "example": "定"
+    },
+    {
+      "id": 2209,
+      "word": "loyalty",
+      "phonetic": "[ˈlɔɪəlti]",
+      "partOfSpeech": "n.",
+      "definition": "忠诚,忠心 strengthen employee loyalty（15,T3）",
+      "example": "加强员工的忠诚"
+    },
+    {
+      "id": 2210,
+      "word": "loyal",
+      "phonetic": "[ˈlɔɪəl]",
+      "partOfSpeech": "a.",
+      "definition": "忠诚的,忠",
+      "example": "贞的"
+    },
+    {
+      "id": 2211,
+      "word": "convert",
+      "phonetic": "[kənˈvɜ:t]",
+      "partOfSpeech": "v.",
+      "definition": "变换,转化 Convert our lives to data for the benefit of the",
+      "example": "digital giants.（18,T3）"
+    },
+    {
+      "id": 2212,
+      "word": "commercial",
+      "phonetic": "[kəˈmɜ:ʃl]",
+      "partOfSpeech": "a.",
+      "definition": "商业的,商",
+      "example": "务的,贸易的"
+    },
+    {
+      "id": 2213,
+      "word": "endeavor",
+      "phonetic": "[ɪn'devə]",
+      "partOfSpeech": "v.",
+      "definition": "/n.努力,尽",
+      "example": "力,力图"
+    },
+    {
+      "id": 2214,
+      "word": "inform",
+      "phonetic": "[ɪnˈfɔ:m]",
+      "partOfSpeech": "v.",
+      "definition": "(of,about)",
+      "example": "通知,告诉,"
+    },
+    {
+      "id": 2215,
+      "word": "youngster",
+      "phonetic": "[ˈjʌŋstə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "年青人,少",
+      "example": "年"
+    },
+    {
+      "id": 2216,
+      "word": "illustrate",
+      "phonetic": "[ˈ\nɪləstreɪt]",
+      "partOfSpeech": "v.",
+      "definition": "举例说明,",
+      "example": "阐明;图解,"
+    },
+    {
+      "id": 2217,
+      "word": "illustration",
+      "phonetic": "[ˌɪləˈstreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "说明,例证;",
+      "example": "图解"
+    },
+    {
+      "id": 2218,
+      "word": "declaration",
+      "phonetic": "[ˌdekləˈreɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "宣言,宣布,",
+      "example": "声明"
+    },
+    {
+      "id": 2219,
+      "word": "replace",
+      "phonetic": "[rɪ\nˈ\np\nleɪs]",
+      "partOfSpeech": "v.",
+      "definition": "放回,替换,",
+      "example": "取代;归还"
+    },
+    {
+      "id": 2220,
+      "word": "capture",
+      "phonetic": "[ˈkæptʃə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "/n.捕获,俘",
+      "example": "虏;夺得,攻"
+    },
+    {
+      "id": 2221,
+      "word": "manufacture",
+      "phonetic": "[ˌmænjuˈfæktʃə]",
+      "partOfSpeech": "v.",
+      "definition": "制造,加工 The US doesn’t manufacture anything",
+      "example": "anymore."
+    },
+    {
+      "id": 2222,
+      "word": "information",
+      "phonetic": "[ˌɪnfəˈmeɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "通知,报告;",
+      "example": "情报,资料,"
+    },
+    {
+      "id": 2223,
+      "word": "invent",
+      "phonetic": "[ɪnˈvent]",
+      "partOfSpeech": "v.",
+      "definition": "发明,创造;",
+      "example": "捏造,虚构"
+    },
+    {
+      "id": 2224,
+      "word": "invention",
+      "phonetic": "[ɪnˈvenʃn]",
+      "partOfSpeech": "n.",
+      "definition": "发明,创造 The spinning wheel was a Chinese invention.",
+      "example": "纺车是中国人的发明。"
+    },
+    {
+      "id": 2225,
+      "word": "inventor",
+      "phonetic": "[ɪnˈventə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "发明者,发",
+      "example": "明家"
+    },
+    {
+      "id": 2226,
+      "word": "assess",
+      "phonetic": "[əˈses]",
+      "partOfSpeech": "v.",
+      "definition": "估价,评价 But we need more time to assess other factors.",
+      "example": "（13,T3）但我们需要更多时间来评估其他因"
+    },
+    {
+      "id": 2227,
+      "word": "assessment",
+      "phonetic": "[əˈsesmənt]",
+      "partOfSpeech": "n.",
+      "definition": "评估,评价 The tests are supposed to provide a basis for",
+      "example": "the assessment of children."
+    },
+    {
+      "id": 2228,
+      "word": "nature",
+      "phonetic": "[ˈneɪtʃə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "自然界,大",
+      "example": "自然;性质,"
+    },
+    {
+      "id": 2229,
+      "word": "involve",
+      "phonetic": "[ɪnˈvɒlv]",
+      "partOfSpeech": "v.",
+      "definition": "卷入,陷入,",
+      "example": "连累;包含,"
+    },
+    {
+      "id": 2230,
+      "word": "invoice",
+      "phonetic": "[ˈ\nɪnvɔɪs]",
+      "partOfSpeech": "n.",
+      "definition": "发票",
+      "example": "We will then send you an invoice for the total"
+    },
+    {
+      "id": 2231,
+      "word": "impulse",
+      "phonetic": "[ˈ\nɪmpʌls]",
+      "partOfSpeech": "v.",
+      "definition": "推动 n.推",
+      "example": "动;冲动,刺"
+    },
+    {
+      "id": 2232,
+      "word": "improve",
+      "phonetic": "[ɪm\nˈ\np\nru:v]",
+      "partOfSpeech": "v.",
+      "definition": "改善,改进,",
+      "example": "增进;好转,"
+    },
+    {
+      "id": 2233,
+      "word": "improvement",
+      "phonetic": "[ɪm\nˈ\np\nru:vmənt]",
+      "partOfSpeech": "n.",
+      "definition": "改进,进步,",
+      "example": "增进;改进措"
+    },
+    {
+      "id": 2234,
+      "word": "mean",
+      "phonetic": "[mi:n]",
+      "partOfSpeech": "v.",
+      "definition": "表示…的",
+      "example": "意思 a.卑鄙"
+    },
+    {
+      "id": 2235,
+      "word": "meaning",
+      "phonetic": "[ˈmi:nɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "意思,意义,",
+      "example": "含义"
+    },
+    {
+      "id": 2236,
+      "word": "meaningful",
+      "phonetic": "[ˈmi:nɪŋfl]",
+      "partOfSpeech": "adj.",
+      "definition": "有意义",
+      "example": "的"
+    },
+    {
+      "id": 2237,
+      "word": "peak",
+      "phonetic": "[pi:k]",
+      "partOfSpeech": "n.",
+      "definition": "山顶,最高",
+      "example": "点;峰,山峰"
+    },
+    {
+      "id": 2238,
+      "word": "perform",
+      "phonetic": "[pəˈfɔ:m]",
+      "partOfSpeech": "v.",
+      "definition": "履行,执行,",
+      "example": "做,完全;表"
+    },
+    {
+      "id": 2239,
+      "word": "tough",
+      "phonetic": "[tʌf]",
+      "partOfSpeech": "a.",
+      "definition": "坚韧的,棘",
+      "example": "手的;强健"
+    },
+    {
+      "id": 2240,
+      "word": "possess",
+      "phonetic": "[pəˈzes]",
+      "partOfSpeech": "v.",
+      "definition": "占有,拥有 It possessed no immense wealth nor waged",
+      "example": "battles.（"
+    },
+    {
+      "id": 2241,
+      "word": "possession",
+      "phonetic": "[pəˈzeʃn]",
+      "partOfSpeech": "n.",
+      "definition": "持有,拥有;",
+      "example": "所有权;所有"
+    },
+    {
+      "id": 2242,
+      "word": "overlook",
+      "phonetic": "[ˌəʊvəˈlʊk]",
+      "partOfSpeech": "v.",
+      "definition": "看漏,忽略;",
+      "example": "俯瞰,眺望;"
+    },
+    {
+      "id": 2243,
+      "word": "overseas",
+      "phonetic": "[ˌəʊvəˈsi:z]",
+      "partOfSpeech": "a.",
+      "definition": "外国的,海",
+      "example": "外的"
+    },
+    {
+      "id": 2245,
+      "word": "participate",
+      "phonetic": "[pɑ:ˈtɪsɪpeɪt]",
+      "partOfSpeech": "v.",
+      "definition": "(+in)参与,",
+      "example": "参加;分享,"
+    },
+    {
+      "id": 2246,
+      "word": "participant",
+      "phonetic": "[pɑ:ˈtɪsɪpənt]",
+      "partOfSpeech": "n.",
+      "definition": "参加者,参",
+      "example": "与者"
+    },
+    {
+      "id": 2247,
+      "word": "peanut",
+      "phonetic": "[\nˈ\np\ni:nʌt]",
+      "partOfSpeech": "n.",
+      "definition": "花生,微不",
+      "example": "足道的人,小"
+    },
+    {
+      "id": 2248,
+      "word": "deliberate",
+      "phonetic": "[dɪˈlɪbərət]",
+      "partOfSpeech": "a.",
+      "definition": "深思熟虑",
+      "example": "的,故意的"
+    },
+    {
+      "id": 2249,
+      "word": "depend",
+      "phonetic": "[dɪ\nˈ\np\nend]",
+      "partOfSpeech": "v.",
+      "definition": "(+on)取决",
+      "example": "于,依靠,信"
+    },
+    {
+      "id": 2250,
+      "word": "dependent",
+      "phonetic": "[dɪ\nˈ\np\nendənt]",
+      "partOfSpeech": "a.",
+      "definition": "依靠的,依",
+      "example": "赖的,从属"
+    },
+    {
+      "id": 2251,
+      "word": "dependence",
+      "phonetic": "[dɪ\nˈ\np\nendəns]",
+      "partOfSpeech": "n.",
+      "definition": "依靠;依",
+      "example": "赖;信赖"
+    },
+    {
+      "id": 2252,
+      "word": "derive",
+      "phonetic": "[dɪˈraɪv]",
+      "partOfSpeech": "v.",
+      "definition": "（",
+      "example": "+from）"
+    },
+    {
+      "id": 2253,
+      "word": "million",
+      "phonetic": "[ˈmɪljən]",
+      "partOfSpeech": "n.",
+      "definition": "百万,百万",
+      "example": "个"
+    },
+    {
+      "id": 2254,
+      "word": "millionaire",
+      "phonetic": "[ˌmɪljəˈneə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "百万富翁 By the time he died, he was a millionaire.",
+      "example": "到他去世的时候,他已经是一位百万富翁了。"
+    },
+    {
+      "id": 2255,
+      "word": "compensate",
+      "phonetic": "[ˈkɒmpenseɪt]",
+      "partOfSpeech": "vt.",
+      "definition": "vi.补偿,",
+      "example": "赔偿"
+    },
+    {
+      "id": 2256,
+      "word": "suppose",
+      "phonetic": "[sə\nˈ\np\nəʊz]",
+      "partOfSpeech": "v.",
+      "definition": "料想,猜想;",
+      "example": "假定;(用于"
+    },
+    {
+      "id": 2258,
+      "word": "compensation",
+      "phonetic": "[ˌkɒmpenˈseɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "补偿,赔偿 He received one year's salary as compensation",
+      "example": "for loss of office."
+    },
+    {
+      "id": 2259,
+      "word": "willing",
+      "phonetic": "[ˈwɪlɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "情愿的,乐",
+      "example": "意的"
+    },
+    {
+      "id": 2261,
+      "word": "ability",
+      "phonetic": "[əˈbɪlətɪ]",
+      "partOfSpeech": "n.",
+      "definition": "能力,才能 the ability to focus without distraction",
+      "example": "（18, T4）注意力不受干扰的能力"
+    },
+    {
+      "id": 2262,
+      "word": "absence",
+      "phonetic": "['æbs(ə)ns]",
+      "partOfSpeech": "n.",
+      "definition": "缺席,不在",
+      "example": "场;缺乏,没"
+    },
+    {
+      "id": 2263,
+      "word": "element",
+      "phonetic": "['elɪm(ə)nt]",
+      "partOfSpeech": "n.",
+      "definition": "元素,因",
+      "example": "素，组成部"
+    },
+    {
+      "id": 2264,
+      "word": "foresee",
+      "phonetic": "[fɔː 'siː ]",
+      "partOfSpeech": "v.",
+      "definition": "预见,预知 This",
+      "example": "phenomenon"
+    },
+    {
+      "id": 2265,
+      "word": "paradise",
+      "phonetic": "[\n'\np\nærədaɪs]",
+      "partOfSpeech": "n.",
+      "definition": "天堂",
+      "example": "If they were captured they wished to die,"
+    },
+    {
+      "id": 2266,
+      "word": "parcel",
+      "phonetic": "[\n'\np\nɑː s(ə)l]",
+      "partOfSpeech": "n.",
+      "definition": "包裹,邮包",
+      "example": "v.打包,捆扎"
+    },
+    {
+      "id": 2267,
+      "word": "private",
+      "phonetic": "[\nˈ\np\nraɪvɪt]",
+      "partOfSpeech": "a.",
+      "definition": "私人的,私",
+      "example": "密的"
+    },
+    {
+      "id": 2268,
+      "word": "privacy",
+      "phonetic": "[\n'\np\nraɪvəsi]",
+      "partOfSpeech": "n.",
+      "definition": "隐私,秘密 The press invade people's privacy unjustifiably",
+      "example": "every day."
+    },
+    {
+      "id": 2269,
+      "word": "diary",
+      "phonetic": "['daɪərɪ]",
+      "partOfSpeech": "n.",
+      "definition": "日记,日记",
+      "example": "簿"
+    },
+    {
+      "id": 2270,
+      "word": "enrich",
+      "phonetic": "[ɪn'rɪtʃ]",
+      "partOfSpeech": "v.",
+      "definition": "使富足;使",
+      "example": "肥沃"
+    },
+    {
+      "id": 2271,
+      "word": "headmaster",
+      "phonetic": "[hed'mɑː stə]",
+      "partOfSpeech": "n.",
+      "definition": "校长",
+      "example": "He was headmaster of a public school in the"
+    },
+    {
+      "id": 2272,
+      "word": "discourage",
+      "phonetic": "[dɪs'kʌrɪdʒ]",
+      "partOfSpeech": "v.",
+      "definition": "使泄气,使",
+      "example": "失去信心,不"
+    },
+    {
+      "id": 2273,
+      "word": "consumer",
+      "phonetic": "[kən'sjuː mə]",
+      "partOfSpeech": "n.",
+      "definition": "消费者",
+      "example": "improving public services and consumer rights"
+    },
+    {
+      "id": 2274,
+      "word": "domestic",
+      "phonetic": "[də'mestɪk]",
+      "partOfSpeech": "a.",
+      "definition": "家里的;本",
+      "example": "国的;驯养的"
+    },
+    {
+      "id": 2275,
+      "word": "dictionary",
+      "phonetic": "['dɪkʃ(ə)n(ə)rɪ]",
+      "partOfSpeech": "n.",
+      "definition": "词典,字典 This dictionary is available in electronic form.",
+      "example": "本词典有电子版。"
+    },
+    {
+      "id": 2276,
+      "word": "absorb",
+      "phonetic": "[əb'sɔː b]",
+      "partOfSpeech": "v.",
+      "definition": "吸收;吸",
+      "example": "引…的注意,"
+    },
+    {
+      "id": 2277,
+      "word": "eliminate",
+      "phonetic": "[ɪ'lɪmɪneɪt]",
+      "partOfSpeech": "v.",
+      "definition": "消除",
+      "example": "Planning ahead should eliminate wastage."
+    },
+    {
+      "id": 2278,
+      "word": "elimination",
+      "phonetic": "[ɪ,lɪmɪ'neɪʃən]",
+      "partOfSpeech": "n.",
+      "definition": "除去,剔除 I was eliminated from the 400 metres in the",
+      "example": "semi-finals."
+    },
+    {
+      "id": 2279,
+      "word": "encourage",
+      "phonetic": "[ɪn'kʌrɪdʒ]",
+      "partOfSpeech": "v.",
+      "definition": "鼓励,怂恿 ...is not really encouraged by the",
+      "example": "US government （18,T2）"
+    },
+    {
+      "id": 2280,
+      "word": "encouragement",
+      "phonetic": "[ɪn'kɝɪdʒmənt]",
+      "partOfSpeech": "n.",
+      "definition": "鼓励,激励,",
+      "example": "奖励"
+    },
+    {
+      "id": 2281,
+      "word": "object",
+      "phonetic": "['ɑbdʒɛkt]",
+      "partOfSpeech": "n.",
+      "definition": "物体;客体,",
+      "example": "对象;目标;"
+    },
+    {
+      "id": 2282,
+      "word": "objection",
+      "phonetic": "[əbˈdʒekʃn]",
+      "partOfSpeech": "n.",
+      "definition": "(to)反对,",
+      "example": "异议"
+    },
+    {
+      "id": 2283,
+      "word": "objective",
+      "phonetic": "[əb'dʒektɪv]",
+      "partOfSpeech": "n.",
+      "definition": "目标,目的",
+      "example": "a.客观的,真"
+    },
+    {
+      "id": 2284,
+      "word": "outlook",
+      "phonetic": "[ˈaʊtlʊk]",
+      "partOfSpeech": "n.",
+      "definition": "景色,风光;",
+      "example": "观点,见解;"
+    },
+    {
+      "id": 2285,
+      "word": "obscure",
+      "phonetic": "[əbˈskjʊə(r)]",
+      "partOfSpeech": "a.",
+      "definition": "暗的,朦胧",
+      "example": "的;模糊的,"
+    },
+    {
+      "id": 2286,
+      "word": "limit",
+      "phonetic": "[ˈlɪmɪt]",
+      "partOfSpeech": "n.",
+      "definition": "界限,限度,",
+      "example": "范围 v.(+to)"
+    },
+    {
+      "id": 2287,
+      "word": "limitation",
+      "phonetic": "[ˌlɪmɪˈteɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "限制,局限",
+      "example": "性"
+    },
+    {
+      "id": 2288,
+      "word": "limited",
+      "phonetic": "[ˈlɪmɪtɪd]",
+      "partOfSpeech": "a.",
+      "definition": "有限的,被",
+      "example": "限制的"
+    },
+    {
+      "id": 2289,
+      "word": "limitless",
+      "phonetic": "[ˈlɪmɪtləs]",
+      "partOfSpeech": "a.",
+      "definition": "无限的,无",
+      "example": "界限的"
+    },
+    {
+      "id": 2290,
+      "word": "opinion",
+      "phonetic": "[ə\nˈ\np\nɪnjən]",
+      "partOfSpeech": "n.",
+      "definition": "意见,看法,",
+      "example": "主张"
+    },
+    {
+      "id": 2291,
+      "word": "opponent",
+      "phonetic": "[ə\nˈ\np\nəʊnənt]",
+      "partOfSpeech": "n.",
+      "definition": "对手,反对",
+      "example": "者,敌手 a."
+    },
+    {
+      "id": 2292,
+      "word": "November",
+      "phonetic": "[nəʊˈvembə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "十一月 缩",
+      "example": "写：Nov."
+    },
+    {
+      "id": 2293,
+      "word": "struggle",
+      "phonetic": "[ˈstrʌgl]",
+      "partOfSpeech": "n.",
+      "definition": "/v.挣扎",
+      "example": "Masses will struggle in an impoverished"
+    },
+    {
+      "id": 2294,
+      "word": "sole",
+      "phonetic": "[səʊl]",
+      "partOfSpeech": "a.",
+      "definition": "单独的,唯",
+      "example": "一的"
+    },
+    {
+      "id": 2295,
+      "word": "solemn",
+      "phonetic": "[ˈsɒləm]",
+      "partOfSpeech": "a.",
+      "definition": "庄严的,隆",
+      "example": "重的;严肃的"
+    },
+    {
+      "id": 2296,
+      "word": "contemporary",
+      "phonetic": "[kənˈtemprəri]",
+      "partOfSpeech": "a.",
+      "definition": "现代的,当",
+      "example": "代的;同时代"
+    },
+    {
+      "id": 2297,
+      "word": "conceal",
+      "phonetic": "[kənˈsi:l]",
+      "partOfSpeech": "v.",
+      "definition": "隐藏,隐瞒,",
+      "example": "隐蔽"
+    },
+    {
+      "id": 2298,
+      "word": "concrete",
+      "phonetic": "[ˈkɒŋkri:t]",
+      "partOfSpeech": "a.",
+      "definition": "具体的,实",
+      "example": "质性的 n.混"
+    },
+    {
+      "id": 2299,
+      "word": "abundant",
+      "phonetic": "[əˈbʌndənt]",
+      "partOfSpeech": "a.",
+      "definition": "大量的,充",
+      "example": "裕的,丰富的"
+    },
+    {
+      "id": 2300,
+      "word": "abundance",
+      "phonetic": "[əˈbʌndəns]",
+      "partOfSpeech": "n.",
+      "definition": "丰富,充裕 Food was in abundance.",
+      "example": "食品充足。www.zkedu.com.cn"
+    },
+    {
+      "id": 2301,
+      "word": "thereby",
+      "phonetic": "[ˌðeəˈbaɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "因此,从而 There are concerns that government,",
+      "example": "employers, and marketers might be able to"
+    },
+    {
+      "id": 2302,
+      "word": "thick",
+      "phonetic": "[θɪk]",
+      "partOfSpeech": "a.",
+      "definition": "厚的,粗的,稠",
+      "example": "的,浓的"
+    },
+    {
+      "id": 2303,
+      "word": "throw",
+      "phonetic": "[θrəʊ]",
+      "partOfSpeech": "v.",
+      "definition": "扔,抛,投",
+      "example": "throw oneself into a hobby"
+    },
+    {
+      "id": 2304,
+      "word": "tile",
+      "phonetic": "[taɪl]",
+      "partOfSpeech": "n.",
+      "definition": "瓦片,瓷砖",
+      "example": "The bathroom is faced with tile."
+    },
+    {
+      "id": 2305,
+      "word": "tire",
+      "phonetic": "[ˈtaɪə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "( 使 ) 疲 倦 ,",
+      "example": "(使)厌倦"
+    },
+    {
+      "id": 2306,
+      "word": "tired",
+      "phonetic": "[ˈtaɪəd]",
+      "partOfSpeech": "a.",
+      "definition": "疲劳的;厌倦",
+      "example": "的"
+    },
+    {
+      "id": 2307,
+      "word": "tobacco",
+      "phonetic": "[təˈbækəʊ]",
+      "partOfSpeech": "n.",
+      "definition": "烟草,烟叶",
+      "example": "I certainly think there should be a ban on"
+    },
+    {
+      "id": 2308,
+      "word": "tolerance",
+      "phonetic": "[ˈtɒlərəns]",
+      "partOfSpeech": "n.",
+      "definition": "容忍,耐性;公",
+      "example": "差"
+    },
+    {
+      "id": 2309,
+      "word": "toll",
+      "phonetic": "[təʊl]",
+      "partOfSpeech": "n.",
+      "definition": "费用",
+      "example": "Many everyday tasks take a surprising toll"
+    },
+    {
+      "id": 2310,
+      "word": "trace",
+      "phonetic": "[treɪs]",
+      "partOfSpeech": "n.",
+      "definition": "痕迹,踪迹;极",
+      "example": "少量"
+    },
+    {
+      "id": 2311,
+      "word": "traffic",
+      "phonetic": "[ˈtræfɪk]",
+      "partOfSpeech": "n.",
+      "definition": "交通,交通量 There was heavy traffic on the roads.",
+      "example": "道路上交通阻塞。www.zkedu.com.cn"
+    },
+    {
+      "id": 2312,
+      "word": "trail",
+      "phonetic": "[treɪl]",
+      "partOfSpeech": "n.",
+      "definition": "踪 迹 , 痕",
+      "example": "迹;(乡间)小道"
+    },
+    {
+      "id": 2313,
+      "word": "transaction",
+      "phonetic": "[trænˈzækʃn]",
+      "partOfSpeech": "n.",
+      "definition": "办理,处理;交",
+      "example": "易,事务;(pl.)会"
+    },
+    {
+      "id": 2314,
+      "word": "translate",
+      "phonetic": "[trænsˈleɪt]",
+      "partOfSpeech": "v.",
+      "definition": "翻译",
+      "example": "These jokes would be far too difficult to"
+    },
+    {
+      "id": 2315,
+      "word": "triple",
+      "phonetic": "[ˈtrɪpl]",
+      "partOfSpeech": "a.",
+      "definition": "三部分的,三",
+      "example": "方的;三倍的"
+    },
+    {
+      "id": 2316,
+      "word": "triumph",
+      "phonetic": "[ˈtraɪʌmf]",
+      "partOfSpeech": "n.",
+      "definition": "胜利,成功",
+      "example": "v.得胜,战胜"
+    },
+    {
+      "id": 2317,
+      "word": "trivial",
+      "phonetic": "[ˈtrɪviəl]",
+      "partOfSpeech": "a.",
+      "definition": "琐碎的;无足",
+      "example": "轻重的"
+    },
+    {
+      "id": 2318,
+      "word": "troop",
+      "phonetic": "[tru:p]",
+      "partOfSpeech": "n.",
+      "definition": "部 队 , 军",
+      "example": "队;(一)群/队"
+    },
+    {
+      "id": 2319,
+      "word": "tropical",
+      "phonetic": "[ˈtrɒpɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "热带的",
+      "example": "She exits into the tropical storm."
+    },
+    {
+      "id": 2320,
+      "word": "troublesome",
+      "phonetic": "[ˈtrʌblsəm]",
+      "partOfSpeech": "a.",
+      "definition": "令人烦恼的,",
+      "example": "讨厌的"
+    },
+    {
+      "id": 2321,
+      "word": "turnover",
+      "phonetic": "[ˈtɜ:nəʊvə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "翻倒(物);人",
+      "example": "员调整;(资金"
+    },
+    {
+      "id": 2322,
+      "word": "twinkle",
+      "phonetic": "[ˈtwɪŋkl]",
+      "partOfSpeech": "v.",
+      "definition": "/n.闪烁,闪亮 The twinkle in his eyes was dimmed by",
+      "example": "tears."
+    },
+    {
+      "id": 2323,
+      "word": "twist",
+      "phonetic": "[twɪst]",
+      "partOfSpeech": "v.",
+      "definition": "捻,搓;绞,拧;",
+      "example": "歪曲"
+    },
+    {
+      "id": 2324,
+      "word": "unwilling",
+      "phonetic": "[ʌnˈwɪlɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "不情愿的",
+      "example": "Many consumers are unwilling to give up."
+    },
+    {
+      "id": 2326,
+      "word": "upset",
+      "phonetic": "[ʌpˈset]",
+      "partOfSpeech": "v.",
+      "definition": "扰乱,使…心",
+      "example": "烦意乱;打翻,"
+    },
+    {
+      "id": 2327,
+      "word": "up-to-date",
+      "phonetic": "['ʌptə'deɪt]",
+      "partOfSpeech": "a.",
+      "definition": "时新的,新式",
+      "example": "的;跟上时代的"
+    },
+    {
+      "id": 2328,
+      "word": "upward",
+      "phonetic": "[ˈʌpwəd]",
+      "partOfSpeech": "a.",
+      "definition": "向上的,上升",
+      "example": "的"
+    },
+    {
+      "id": 2329,
+      "word": "utmost",
+      "phonetic": "[ˈʌtməʊst]",
+      "partOfSpeech": "a.",
+      "definition": "最远的;极度",
+      "example": "的"
+    },
+    {
+      "id": 2330,
+      "word": "utter",
+      "phonetic": "[ˈʌtə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "说 , 发 出 ( 声",
+      "example": "音)"
+    },
+    {
+      "id": 2331,
+      "word": "vain",
+      "phonetic": "[veɪn]",
+      "partOfSpeech": "a.",
+      "definition": "徒劳的,徒然",
+      "example": "的;自负的"
+    },
+    {
+      "id": 2332,
+      "word": "valley",
+      "phonetic": "[ˈvæli]",
+      "partOfSpeech": "n.",
+      "definition": "(山)谷;流域 Silicon Valley",
+      "example": "（"
+    },
+    {
+      "id": 2333,
+      "word": "variable",
+      "phonetic": "[ˈveəriəbl]",
+      "partOfSpeech": "a.",
+      "definition": "易变的;可变",
+      "example": "的,变量的"
+    },
+    {
+      "id": 2334,
+      "word": "village",
+      "phonetic": "[ˈvɪlɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "村,村庄",
+      "example": "We ran across some old friends in the"
+    },
+    {
+      "id": 2335,
+      "word": "violent",
+      "phonetic": "[ˈvaɪələnt]",
+      "partOfSpeech": "a.",
+      "definition": "猛烈的,激烈",
+      "example": "的 ; 暴 力 引 起"
+    },
+    {
+      "id": 2336,
+      "word": "voyage",
+      "phonetic": "[ˈvɔɪɪdʒ]",
+      "partOfSpeech": "n.",
+      "definition": "航海中,航程",
+      "example": "v.航海,航行,旅"
+    },
+    {
+      "id": 2337,
+      "word": "wander",
+      "phonetic": "[ˈwɒndə(r)]",
+      "partOfSpeech": "v.",
+      "definition": "漫步,徘徊;迷",
+      "example": "路,迷失方向;"
+    },
+    {
+      "id": 2338,
+      "word": "warn",
+      "phonetic": "[wɔ:n]",
+      "partOfSpeech": "v.",
+      "definition": "警告,告诫",
+      "example": "I must warn you against raising your hopes."
+    },
+    {
+      "id": 2339,
+      "word": "warning",
+      "phonetic": "[ˈwɔ:nɪŋ]",
+      "partOfSpeech": "n.",
+      "definition": "警告",
+      "example": "issue a warning"
+    },
+    {
+      "id": 2340,
+      "word": "wheat",
+      "phonetic": "[wi:t]",
+      "partOfSpeech": "n.",
+      "definition": "小麦",
+      "example": "Production of corn, cotton, rice, soybeans"
+    },
+    {
+      "id": 2341,
+      "word": "whereas",
+      "phonetic": "[ˌweərˈæz]",
+      "partOfSpeech": "conj.",
+      "definition": "而 , 却 , 反",
+      "example": "之"
+    },
+    {
+      "id": 2342,
+      "word": "whip",
+      "phonetic": "[wɪp]",
+      "partOfSpeech": "n.",
+      "definition": "鞭子",
+      "example": "v.抽打,鞭策;搅"
+    },
+    {
+      "id": 2343,
+      "word": "withdrawal",
+      "phonetic": "[wɪðˈdrɔ:əl]",
+      "partOfSpeech": "n.",
+      "definition": "收回;撤退",
+      "example": "If you experience any unusual symptoms"
+    },
+    {
+      "id": 2344,
+      "word": "wonder",
+      "phonetic": "[ˈwʌndə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "惊奇,惊异;奇",
+      "example": "迹,奇事"
+    },
+    {
+      "id": 2345,
+      "word": "wood",
+      "phonetic": "[wʊd]",
+      "partOfSpeech": "n.",
+      "definition": "木头,木",
+      "example": "材;(pl.)小森林,"
+    },
+    {
+      "id": 2346,
+      "word": "Bibliography",
+      "phonetic": "[ˌbɪbliˈɒgrəfi]",
+      "partOfSpeech": "n.",
+      "definition": "参考书目",
+      "example": "Before reading a book, I normally look at"
+    },
+    {
+      "id": 2347,
+      "word": "bore",
+      "phonetic": "[bɔ:(r)]",
+      "partOfSpeech": "n.",
+      "definition": "讨厌的人,",
+      "example": "麻烦事"
+    },
+    {
+      "id": 2348,
+      "word": "calcium",
+      "phonetic": "[ˈkælsiəm]",
+      "partOfSpeech": "n.",
+      "definition": "钙",
+      "example": "Heavier women are less likely to develop"
+    },
+    {
+      "id": 2349,
+      "word": "cap",
+      "phonetic": "[kæp]",
+      "partOfSpeech": "n.",
+      "definition": "帽子，上限",
+      "example": "v.覆盖于…"
+    },
+    {
+      "id": 2350,
+      "word": "conjunction",
+      "phonetic": "[kənˈdʒʌŋkʃn]",
+      "partOfSpeech": "n.",
+      "definition": "连接,连结;",
+      "example": "连接词"
+    },
+    {
+      "id": 2351,
+      "word": "consumerism",
+      "phonetic": "[kənˈsju:mərɪz \nəm]",
+      "partOfSpeech": "n.",
+      "definition": "消费主义;",
+      "example": "用户至上主"
+    },
+    {
+      "id": 2352,
+      "word": "copper",
+      "phonetic": "[ˈkɒpə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "铜;铜币,铜",
+      "example": "制器"
+    },
+    {
+      "id": 2353,
+      "word": "corn",
+      "phonetic": "[kɔ:n]",
+      "partOfSpeech": "n.",
+      "definition": "谷物,庄稼,",
+      "example": "玉米"
+    },
+    {
+      "id": 2354,
+      "word": "headline",
+      "phonetic": "[ˈhedlaɪn]",
+      "partOfSpeech": "n.",
+      "definition": "大字标题,",
+      "example": "新闻提要;头"
+    },
+    {
+      "id": 2355,
+      "word": "lag",
+      "phonetic": "[læg]",
+      "partOfSpeech": "v.",
+      "definition": "/n.落后",
+      "example": "(于),滞后"
+    },
+    {
+      "id": 2356,
+      "word": "lumber",
+      "phonetic": "[ˈlʌmbə(r)]",
+      "partOfSpeech": "n.",
+      "definition": "木材,木料",
+      "example": "solid lumber"
+    },
+    {
+      "id": 2357,
+      "word": "molecule",
+      "phonetic": "[ˈmɒlɪkju:l]",
+      "partOfSpeech": "n.",
+      "definition": "分子",
+      "example": "DNA molecule"
+    },
+    {
+      "id": 2358,
+      "word": "numerical",
+      "phonetic": "[nju:ˈmerɪkl]",
+      "partOfSpeech": "a.",
+      "definition": "数字的",
+      "example": "Such numerical standards seem"
+    },
+    {
+      "id": 2359,
+      "word": "premium",
+      "phonetic": "[\nˈ\np\nri:miəm]",
+      "partOfSpeech": "n.",
+      "definition": "保险费;额",
+      "example": "外费用;附加"
+    },
+    {
+      "id": 2360,
+      "word": "appointment",
+      "phonetic": "[ə\nˈ\np\nɔɪntmənt]",
+      "partOfSpeech": "n.",
+      "definition": "约会;约定；",
+      "example": "任命;职务;"
+    },
+    {
+      "id": 2361,
+      "word": "admission",
+      "phonetic": "[ədˈmɪʃn]",
+      "partOfSpeech": "n.",
+      "definition": "准许进入,",
+      "example": "承认,供认"
+    },
+    {
+      "id": 2362,
+      "word": "unfortunate",
+      "phonetic": "[ʌnˈfɔ:tʃənət]",
+      "partOfSpeech": "a.",
+      "definition": "不幸的,倒",
+      "example": "霉的 n.不幸"
+    },
+    {
+      "id": 2363,
+      "word": "reluctance",
+      "phonetic": "[rɪ'lʌktəns]",
+      "partOfSpeech": "n.",
+      "definition": "不愿意,勉",
+      "example": "强"
+    },
+    {
+      "id": 2364,
+      "word": "suburban",
+      "phonetic": "[səˈbɜ:bən]",
+      "partOfSpeech": "a.",
+      "definition": "城郊的,在",
+      "example": "郊区的"
+    },
+    {
+      "id": 2365,
+      "word": "weakness",
+      "phonetic": "[ˈwi:knəs]",
+      "partOfSpeech": "n.",
+      "definition": "弱点;软弱,",
+      "example": "疲软"
+    },
+    {
+      "id": 2366,
+      "word": "existing",
+      "phonetic": "[ɪgˈzɪstɪŋ]",
+      "partOfSpeech": "a.",
+      "definition": "现存的;目",
+      "example": "前的"
+    },
+    {
+      "id": 2367,
+      "word": "temporarily",
+      "phonetic": "[tempəˈrerɪlɪ]",
+      "partOfSpeech": "ad.",
+      "definition": "临时地",
+      "example": "He temporarily surface to take care of"
+    },
+    {
+      "id": 2368,
+      "word": "arrangement",
+      "phonetic": "[əˈreɪndʒmənt]",
+      "partOfSpeech": "n.",
+      "definition": "整理,排列,",
+      "example": "安排"
+    },
+    {
+      "id": 2369,
+      "word": "assistance",
+      "phonetic": "[əˈsɪstəns]",
+      "partOfSpeech": "n.",
+      "definition": "帮助,援助",
+      "example": "Any assistance you could give the police"
+    },
+    {
+      "id": 2370,
+      "word": "assurance",
+      "phonetic": "[əˈʃʊərəns]",
+      "partOfSpeech": "n.",
+      "definition": "确保,断言;",
+      "example": "保证,担保"
+    },
+    {
+      "id": 2371,
+      "word": "bankrupt",
+      "phonetic": "[ˈbæŋkrʌpt]",
+      "partOfSpeech": "a.",
+      "definition": "破产的",
+      "example": "If the firm cannot sell its products, it will"
+    }
+        // ... 添加更多单词
+    ];
+}
+
+// 显示当前卡片
+function displayCurrentCard() {
+    const word = wordsData[currentIndex];
+    if (!word) return;
+    
+    document.getElementById('word').textContent = word.word;
+    document.getElementById('phonetic').textContent = word.phonetic;
+    document.getElementById('partOfSpeech').textContent = word.partOfSpeech;
+    document.getElementById('definition').textContent = word.definition;
+    document.getElementById('example').textContent = word.example;
+    
+    // 重置卡片状态
+    document.getElementById('front').style.display = 'block';
+    document.getElementById('back').style.display = 'none';
+    isFlipped = false;
+    
+    // 更新按钮状态
+    document.getElementById('prevBtn').disabled = currentIndex === 0;
+    document.getElementById('nextBtn').disabled = currentIndex === wordsData.length - 1;
+    
+    // 更新已掌握按钮状态
+    document.getElementById('knownBtn').textContent = word.known ? '已掌握 ✓' : '标记为已掌握';
+    document.getElementById('knownBtn').style.background = word.known ? '#28a745' : '#667eea';
+}
+
+// 翻转卡片
+function flipCard() {
+    const front = document.getElementById('front');
+    const back = document.getElementById('back');
+    
+    if (!isFlipped) {
+        front.style.display = 'none';
+        back.style.display = 'block';
+    } else {
+        front.style.display = 'block';
+        back.style.display = 'none';
+    }
+    
+    isFlipped = !isFlipped;
+}
+
+// 下一个单词
+function nextCard() {
+    if (currentIndex < wordsData.length - 1) {
+        currentIndex++;
+        displayCurrentCard();
+        updateProgress();
+        saveProgress();
+    }
+}
+
+// 上一个单词
+function previousCard() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        displayCurrentCard();
+        updateProgress();
+        saveProgress();
+    }
+}
+
+// 标记为已掌握
+function markAsKnown() {
+    wordsData[currentIndex].known = !wordsData[currentIndex].known;
+    displayCurrentCard();
+    saveProgress();
+}
+
+// 更新进度显示
+function updateProgress() {
+    const knownCount = wordsData.filter(word => word.known).length;
+    document.getElementById('progress').textContent = 
+        `${currentIndex + 1}/${wordsData.length} (已掌握: ${knownCount})`;
+}
+
+// 保存学习进度
+function saveProgress() {
+    const knownWords = [];
+    wordsData.forEach((word, index) => {
+        if (word.known) {
+            knownWords.push(index);
+        }
+    });
+    
+    const progress = {
+        currentIndex: currentIndex,
+        knownWords: knownWords,
+        lastStudied: new Date().toISOString()
+    };
+    
+    localStorage.setItem('wordCardProgress', JSON.stringify(progress));
+}
+
+// 键盘快捷键
+document.addEventListener('keydown', function(event) {
+    switch(event.key) {
+        case 'ArrowLeft':
+            previousCard();
+            break;
+        case 'ArrowRight':
+            nextCard();
+            break;
+        case ' ':
+            event.preventDefault();
+            flipCard();
+            break;
+        case 'k':
+            markAsKnown();
+            break;
+    }
+});
+
+// 初始化应用
+init();
