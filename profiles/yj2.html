@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- html2pdf库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #1e3a5f;        /* 深蓝稳重 */
+            --secondary: #2e5a7f;
+            --text: #1e1e1e;
+            --background: #ffffff;
+            --border-light: #dce3eb;
+            --accent: #0a3143;
+            --muted: #4a5b6e;
+        }
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.5;
+            color: var(--text);
+            background: var(--background);
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            font-size: 15px;
+        }
+        .pdf-export {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+        .pdf-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            border: 1px solid white;
+            transition: none;
+            font-weight: 400;
+        }
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 6px;
+            background: white;
+            padding: 4px 6px;
+            border-radius: 40px;
+            border: 1px solid var(--border-light);
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .i18n-content {
+            display: none;
+            width: 100%;
+        }
+        .i18n-content.active {
+            display: block;
+        }
+        header {
+            margin-bottom: 36px;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 18px;
+        }
+        h1 {
+            font-size: 50px;
+            color: var(--primary);
+        }
+        .contact {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .contact a {
+            color: var(--secondary);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-color: #b3c9d6;
+        }
+        section {
+            margin-bottom: 36px;
+        }
+        h2 {
+            font-size: 30px;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 6px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 520;
+            color: #0a2a3b;
+            margin: 16px 0 6px 0;
+        }
+        .job, .project-item, .community-item, .competition-item {
+            margin-bottom: 24px;
+        }
+        .job h3, .project-item h3, .project-block h3, .project-featured h3 {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            font-size: 1.08rem;
+            font-weight: 540;
+            margin-bottom: 4px;
+        }
+        .date {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--muted);
+        }
+        ul {
+            padding-left: 1.5rem;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+        li {
+            margin-bottom: 5px;
+            color: #2a3b45;
+        }
+        .project-tech {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin: 2px 0 6px 0;
+        }
+        .project-card, .project-block, .project-featured, .project-normal {
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            box-shadow: none;
+        }
+        .project-block .project-card,
+        .project-block > div,
+        .project-inline {
+            border: none;
+            background: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            box-shadow: none;
+        }
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .skill {
+            background: #edf2f7;
+            color: #1e3a5f;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 450;
+            border: none;
+        }
+        a {
+            color: var(--secondary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            text-decoration-thickness: 0.5px;
+        }
+        a:hover {
+            color: #0a1a2a;
+        }
+        .status {
+            display: none;
+        }
+        @media print {
+            .pdf-export, .language-switcher { display: none; }
+            body { padding: 20px; background: white; }
+            a { text-decoration: none; color: black; }
+        }
+        .project-card, [class*="project-card"], .project-block div, .project-inline {
+            border: none !important;
+            background: transparent !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+        }
+        .job h3 a, h3 a {
+            text-decoration: underline;
+            color: var(--secondary);
+        }
+        ul ul {
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
+        strong {
+            color: #0f2e41;
+        }
+        .project-block {
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+        .pdf-btn, .lang-btn {
+            box-shadow: none;
+        }
+        .pdf-btn svg {
+            margin-right: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- PDF导出按钮 -->
+    <div class="pdf-export">
+        <button class="pdf-btn" id="exportPdf">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+            </svg>
+            PDF
+        </button>
+    </div>
+
+    <div class="i18n-content active" data-lang="zh">
+            <h1>谭峻瀚</h1>
+            <div class="contact">
+                邮箱：poly@openatom.club<br>
+                电话：18382252278<br>
+                GitHub: <a href="https://github.com/polypopopo" target="_blank">github.com/polypopopo</a><br>
+                本科在读 · 西南财经大学天府学院
+            </div>
+
+        <!-- 工作经历 —— 重新排序：按时间倒序，突出技术深度与量化成果 -->
+        <section id="work">
+            <h2>工作经历</h2>
+            <div class="job">
+                <h3><a href="https://iscas-ai.gitlab.io/" target="_blank">中科院软件所智能软件研究中心</a> · OpenEuler OLK (RVCK) 开发实习 <span class="date">2025.05 –2025.08</span></h3>
+                <p>
+                背景： 国产RISC-V架构操作系统亟需完善IOMMU虚拟化支持以进入上游Linux内核，需要完成关键驱动模块的适配验证与补丁重构。
+                <br>行动：
+                <br>负责Linux RISC-V IOMMU驱动在QEMU/裸机环境的完整验证链路搭建，独立研究AIA中断控制器驱动移植及irqbypass模块的补丁反向移植，形成可复现的测试用例
+                <br>根据导师要求，针对上游社区“补丁需原子化、可追溯”的评审要求，将下发的功能补丁拆分为5个逻辑独立的commit拟定，分别涵盖：驱动框架适配、设备树解析、中断路由、DMA域管理、性能计数器接口；并保证commit均通过邮件列表审查规范
+                <br>分析RISC-V IOMMU HPM（硬件性能监视）与嵌套IOMMU的社区候选方案，输出3份技术调研报告
+                <br>结果：
+                <br>每周向软件所内部同步进展，建立RISC-V IOMMU验证的可参考技术基线
+                <br>深入理解Intel VT-d4与RISC-V IOMMU在设备域隔离、页表格式上的设计异同，具备跨架构虚拟化技术迁移的思维
+                </p>
+            </div>
+            <!-- 2. 傲来操作系统 · 嵌入式系统研发助理工程师 (2024.07-2024.11) -->
+            <div class="job">
+                <h3><a href="https://eulixos.com" target="_blank">中科院软件所（傲来操作系统）</a> · 嵌入式系统研发助理工程师 <span class="date">2024.07 – 2024.11</span></h3>
+                <p>
+
+                  傲来操作系统（基于OpenEuler RISC-V数据中心操作系统商业发行版）需在Q4完成与主流x86架构的性能对标测试，同时构建可复用的AI基础软件测试能力；通过调研发现，团队面临测试数据手工录入效率低、跨架构结果可比性差,测试效率低的痛点。
+                  参与基于OpenEuler RISC-V的傲来操作系统商业发行版性能对比测试，提供论文数据支撑。
+                  开发基于perf的RISC-V架构AI算子测试框架，支持mxnet、pytorch、onnx深度学习框架等基础软件的测试与性能分析
+                  该框架实现了6000+行表格数据的高效录入与验证，方案被广泛纳入其他基础软件的测试
+
+                </p>
+            </div>
+            <!-- 3. 高校门户网站前端开发 (2022.11-2023.03) —— 突出数据库/缓存优化 -->
+            <div class="job">
+              <h3><a>高校门户网站前端开发</a> ·电子科技大学成都学院（民办，非985） <span class="date">2022.11 – 2023.03</span></h3>
+                <p>
+                由于旧站点技术陈旧(php)，代码耦合高，学校成立开发团队进行重构<br>
+独立负责3个门户子站点的架构设计与前端实现，技术栈：Vue3 + Thymeleaf；设计基于RBAC的前端路由守卫，实现页面级与按钮级权限隔离
+对接教务系统RESTful接口，针对高频读、低频写的业务特征，设计缓存淘汰策略
+分析主从数据库慢查询日志，对3张核心表的索引结构进行重构（联合索引覆盖、最左匹配优化），将选课高峰期的平均接口响应时间从2.1秒降至0.4秒
+
+                </p>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h2>项目经历</h2>
+              严格地说，以下项目为一个整体
+            <div class="project-item">
+                <h3>PolyCtrlOS · 组件化嵌入式操作系统 <span class="date">2022 – 至今</span></h3>
+                <div class="project-tech">x86 Assembly, C, 内存管理, VFS</div>
+                <p>
+                目前以构建air-gapped cluster system的端侧设备的基座系统为目的开发。
+                <br>基于rcore的组件化思想开发的嵌入式操作系统，采用intel-asm风格的86汇编语言开发，c实现顶层模块封装。目前已实现基础模块，并支持非核心模块User
+                interface通过编译选项实现命令行界面、fs模块的插拔。以及一个pcie读写模块的切换，该特性能够控制io速度和容量。
+                <br>在内核中，设计并实现简易文件系统。实现VFS层抽象，思想和git类似。通过实现平衡树与哈希表管理文件索引针对嵌入式场景设计轻量级目录项缓存情景，在qemu模拟环境中可以做到kb级文件的秒级读、存，通过编译的.app文件实现应用的接入，为后续移植标准版本控制系统提供底层接口支撑。
+                <br>用户接口遵循bash和powershell风格,目前已实现dir/ls,file,sleep等内置命令行
+                <br>还开发了bash脚本集，实现对数据结构的提取、函/参数索引、unix风格的一键段前注释工具、以intel手册为主的rag知识库。
+                <br>部分内容作为专科阶段的毕业设计提交（类slab内存管理模块），经历2次核心架构重构（平坦内存→Buddy系统、全局锁→细粒度锁），积累大型基础软件项目架构阶段与开发阶段的权衡取舍经验。目前项目整体代码量达到18262行
+                <br>                </p>
+            </div>
+
+            <div class="project-item">
+                <h3>基于NixOS的环境资产容灾管理系统<span class="date">2025.04–至今</span></h3>
+                <div class="project-tech">Nix语言, NixOS, 声明式配置, 离线分发</div>
+                <p>
+                  项目定位：将开发环境、工具链、配置文件视为需要版本管理与容灾备份的数字资产，解决团队协作中“环境漂移”与“新人 onboarding 效率低”的核心矛盾。作为Air-gapped分布式框架的组件之一，探索离线网络下的软件资产可信分发。
+                  <br>实现过程：声明式配置清单：使用Nix语言为异构设备（ARM/x86)定义统一、可复现的开发环境描述；单条命令即可完成环境的完整重建或历史版本回滚，消除“在我电脑上能跑”问题
+                  <br>个人网络痕迹清楚机制：针对浏览器、网络缓存工具做流量分发和缓存删除，配置留存，实现安全访问，并为接入独立的混淆设备留出了接口
+                  <br>资产同步与分发：配套开发CLI工具，支持20+种环境隔离定义与按需部署；结合启动盘与云存储设备，实现离线场景下的配置文件留存与切换
+                  <br>价值沉淀：
+                  <br>另外，作为正在开发的air-gapped工作流分布式框架的组件之一，通过不同启动盘以及云存储设备实现灵活的系统环境切换和配置文件留存。该工作流理想情况下通过互联网和开发环境隔离（沙盒以及虚拟机）实现攻击面相对窄的开发环境
+                  <br>本质上是面向开发环境的声明式资产管理原型，其“可回滚、可审计”特性与企业级VCS客户端环境标准化需求相似。
+                  为Air-gapped集群的节点环境批量复制与版本锁定提供技术预研
+                </p>
+            </div>
+
+            <div class="project-item">
+                <h3>嵌入式全流程开发套件 <span class="date">2025.09-至今</span></h3>
+                <div class="project-tech">yocto, stm32cube, esp-idf, cmake, openocd</div>
+                由于在国内mcu开发厂商对windows的软件有相对强的依赖，以及团队对linux的生态缺失感。而在使用linux作为mcu程序开发为主流的当下，使开发过程更为平滑。减少环境变量对开发者精力的消耗。
+                <br>                为以yocto->stmcube/esp-dif->cmake工作流为核心开发了旨在为中小型项目提供更简易的，实现一条命令完成“代码编写 → 构建 → 烧录”。
+                <br>根据在小熊哌开源社区的贡献经验和弊端分析，架构了封装STM32/ESP32的编译、链接、烧录全流程。深度集成yocot和scons，能够自动进行编码规范检查与增量编译验证。
+                <br>依赖项版本管理：针对ARM GCC、OpenOCD、ESP-IDF等工具链，实现本地化版本锁定与快速切换，避免多项目间的工具链冲突，本质上是小型化的二进制资产管理工具。
+                <br>将重复性手工操作减少90%，项目新成员上手时间从2天缩短至2小时。使团队能够聚焦与makefile的调整，eos的编译定制
+            </div>
+
+        </section>
+
+<section id="community">
+    <h2>志愿经历</h2>
+    <ul>
+        <li>
+            <strong>Qulab实验室生物细胞标注</strong>
+            <br>参与生物信息学项目，负责高精度细胞图像标注与数据预处理
+        </li>
+        <li>
+            <strong>海淀志愿注册志愿者</strong>
+            作为OpenCamp-git训练营（1000+学员）参与git训练营的线上答疑工作。设计自动化代码风格检查与提交流程校验脚本。在C语言训练营中参与设计CI/CD实现：学员提交-判题-更新排名到网站排行榜。<br>
+        </li>
+        <li>
+            <strong><a href="https://mp.weixin.qq.com/s/a2WyhQnTDrQiNC8HC96Rog" target="_blank">GOSIM CHINA</a></strong>
+            <br>接受CSDN媒体采访，分享技术和竞赛经验
+        </li>
+    </ul>
+</section>
+
+        <section id="skills">
+            <h2>技术栈与核心能力</h2>
+            <ul>
+                <li><strong>版本控制系统</strong>：Git (Trunk-based/Git-flow/Forking-flow 多模式协作，阿里云Codeup/GitLab/GitHub托管)；SVN/Mercurial 基础使用。</li>
+                <li><strong>CI/CD与自动化</strong>：GitLab CI / GitHub Actions（千人训练营自动判题流水线）</li>
+                <li><strong>开发语言</strong>：系统级（RISC-V/x86 汇编）；应用/脚本（Python/Java/Rust/VBScript）；前端（Vue3/Thymeleaf）。</li>
+                <li><strong>操作系统与调试</strong>：有Arch/Debian/Fedora等分发版作为日用系统使用经验，目前nixos使用一年；性能剖析(perf/iostat/nmap)等Linux内核和网络调试基础。</li>
+                <li><strong>大模型工程化</strong>：llama.cpp/ollama/vLLM部署和接口封装；智能体系统架构、目标检测调优。</li>
+                <li><strong>文档与协作</strong>：LaTeX/Markdown；技术分享账号 OSC-DEV（小红书500+赞）；<strong>4年6人小型团队带队经验</strong>，擅长技术拆解与里程碑推进。</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <script>
+        (function() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const contents = document.querySelectorAll('.i18n-content');
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const lang = this.dataset.lang;
+                    langButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    contents.forEach(c => {
+                        c.classList.remove('active');
+                        if (c.dataset.lang === lang) c.classList.add('active');
+                    });
+                });
+            });
+
+            // PDF导出 —— 针对当前激活内容
+            const exportBtn = document.getElementById('exportPdf');
+            exportBtn.addEventListener('click', function() {
+                const activeContent = document.querySelector('.i18n-content.active');
+                if (!activeContent) return;
+                const opt = {
+                    margin:        [0.5, 0.5, 0.5, 0.5],
+                    filename:     'poly_resume_optimized.pdf',
+                    image:        { type: 'jpeg', quality: 0.95 },
+                    html2canvas:  { scale: 2, letterRendering: true, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(activeContent).save();
+            });
+        })();
+    </script>
+</body>
+</html>
